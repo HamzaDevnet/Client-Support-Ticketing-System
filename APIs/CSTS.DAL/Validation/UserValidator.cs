@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using CSTS.DAL.Models;
-using CSTS.DAL.Enum;
 
 namespace CSTS.DAL.Validation
 {
@@ -11,6 +10,7 @@ namespace CSTS.DAL.Validation
             RuleFor(x => x.UserName)
                 .NotEmpty().WithMessage("User name is required.")
                 .Length(3, 50).WithMessage("User name must be between 3 and 50 characters.");
+
             RuleFor(x => x.FullName)
                 .NotEmpty().WithMessage("Please Enter your Name.")
                 .Length(3, 50).WithMessage("Full Name must be between 3 and 50 characters.");
@@ -35,6 +35,12 @@ namespace CSTS.DAL.Validation
 
             RuleFor(x => x.RegistrationDate)
                 .LessThanOrEqualTo(DateTime.Now).WithMessage("Registration date must be in the past or present.");
+
+            RuleFor(x => x.UserStatus)
+                .IsInEnum().WithMessage("Invalid user status.");
+
+            RuleFor(x => x.UserType)
+                .IsInEnum().WithMessage("Invalid user type.");
         }
     }
 }
