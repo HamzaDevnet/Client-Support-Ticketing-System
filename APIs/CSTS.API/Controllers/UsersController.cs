@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CSTS.DAL.Models;
-using CSTS.DAL;
 using CSTS.DAL.Repository.IRepository;
 using FluentValidation;
 using FluentValidation.Results;
+using CSTS.DAL.Enum;
 
 namespace CSTS.API.Controllers
 {
@@ -59,10 +58,15 @@ namespace CSTS.API.Controllers
                 return BadRequest(result.Errors);
             }
 
-            await _unitOfWork.Users.AddAsync(user);
-            await _unitOfWork.CompleteAsync();
+            // Support Manager can add Support Team members
+            if (user.UserType == UserType.SupportTeamMember || user.UserType == UserType.ExternalClient)
+            {
+                await _unitOfWork.Users.AddAsync(user);
+                await _unitOfWork.CompleteAsync();
+                return CreatedAtAction(nameof(Get), new { id = user.UserId }, user);
+            }
 
-            return CreatedAtAction(nameof(Get), new { id = user.UserId }, user);
+            return BadRequest("Invalid user type for registration.");
         }
 
         // PUT api/users/5
@@ -88,7 +92,7 @@ namespace CSTS.API.Controllers
             }
 
             existingUser.UserName = user.UserName;
-            existingUser.UserName = user.FullName;
+            existingUser.FullName = user.FullName;
             existingUser.MobileNumber = user.MobileNumber;
             existingUser.Email = user.Email;
             existingUser.Image = user.Image;
@@ -97,6 +101,7 @@ namespace CSTS.API.Controllers
             existingUser.Password = user.Password;
             existingUser.Address = user.Address;
             existingUser.RegistrationDate = user.RegistrationDate;
+            existingUser.UserStatus = user.UserStatus;
 
             await _unitOfWork.Users.UpdateAsync(existingUser);
             await _unitOfWork.CompleteAsync();
@@ -118,6 +123,56 @@ namespace CSTS.API.Controllers
             await _unitOfWork.CompleteAsync();
 
             return NoContent();
+        }
+
+        // Activate a user
+        [HttpPatch("{id}/activate")]
+        public async Task<IActionResult> Activate(Guid id)
+        {
+            var user = await _unitOfWork.Users.GetByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.UserStatus = UserStatus.Active;
+            await _unitOfWork.Users.UpdateAsync(user);
+            await _unitOfWork.CompleteAsync();
+
+            return NoContent();
+        }
+
+        // Deactivate a user
+        [HttpPatch("{id}/deactivate")]
+        public async Task<IActionResult> Deactivate(Guid id)
+        {
+            var user = await _unitOfWork.Users.GetByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.UserStatus = UserStatus.Deactivated;
+            await _unitOfWork.Users.UpdateAsync(user);
+            await _unitOfWork.CompleteAsync();
+
+            return NoContent();
+        }
+
+        // GET: api/users/support-team-members
+        [HttpGet("support-team-members")]
+        public async Task<ActionResult<IEnumerable<User>>> GetSupportTeamMembers()
+        {
+            var users = await _unitOfWork.Users.FindAsync(u => u.UserType == UserType.SupportTeamMember);
+            return Ok(users);
+        }
+
+        // GET: api/users/external-clients
+        [HttpGet("external-clients")]
+        public async Task<ActionResult<IEnumerable<User>>> GetExternalClients()
+        {
+            var users = await _unitOfWork.Users.FindAsync(u => u.UserType == UserType.ExternalClient);
+            return Ok(users);
         }
     }
 }

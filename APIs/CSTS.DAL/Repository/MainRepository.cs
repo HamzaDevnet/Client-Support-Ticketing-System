@@ -1,4 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 public class Repository<T> : IRepository<T> where T : class
 {
@@ -24,6 +29,7 @@ public class Repository<T> : IRepository<T> where T : class
     public async Task AddAsync(T entity)
     {
         await _dbSet.AddAsync(entity);
+        await _context.SaveChangesAsync(); // Ensure the changes are saved
     }
 
     public async Task UpdateAsync(T entity)
@@ -38,7 +44,12 @@ public class Repository<T> : IRepository<T> where T : class
         if (entity != null)
         {
             _dbSet.Remove(entity);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); // Ensure the changes are saved
         }
+    }
+
+    public async Task<IEnumerable<T>> FindAsync(Func<T, bool> predicate)
+    {
+        return await Task.FromResult(_dbSet.Where(predicate).ToList());
     }
 }
