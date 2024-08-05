@@ -23,4 +23,8 @@ public class UnitOfWork : IUnitOfWork
     {
         return await _context.SaveChangesAsync();
     }
+    public async Task<bool> CanConnectAsync()
+    {
+        return await _context.Database.CanConnectAsync();
+    }
 }
