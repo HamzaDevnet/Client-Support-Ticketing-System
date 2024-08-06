@@ -92,4 +92,8 @@ export class NavbarComponent implements OnInit{
 
       }
 
+      UserProfile():void{
+        this.router.navigate(['/userprofile']);
+      }
+
 }

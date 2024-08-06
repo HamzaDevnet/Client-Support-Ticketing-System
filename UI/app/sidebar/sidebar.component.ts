@@ -10,13 +10,14 @@ export interface RouteInfo {
 
 export const ROUTES: RouteInfo[] = [
     { path: '/dashboard',     title: 'Dashboard',         icon:'nc-bank',       class: '' },
-    { path: '/icons',         title: 'Support Team',      icon:'nc-single-02',    class: '' },
-    { path: '/maps',          title: 'Tickets',           icon:'nc-paper',      class: '' },
+    { path: '/support',         title: 'Support Team',      icon:'nc-single-02',    class: '' },
+    { path: '/tickets',          title: 'Tickets',           icon:'nc-paper',      class: '' },
     { path: '/notifications', title: 'Notifications',     icon:'nc-bell-55',    class: '' },
     { path: '/user',          title: 'User Profile',      icon:'nc-diamond',  class: '' },
     { path: '/table',         title: 'Table List',        icon:'nc-tile-56',    class: '' },
     { path: '/typography',    title: 'Typography',        icon:'nc-caps-small', class: '' },
     { path: '/upgrade',       title: 'Upgrade to PRO',    icon:'nc-spaceship',  class: 'active-pro' },
+  
 ];
 
 @Component({

@@ -23,25 +23,28 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { IconsComponent } from "./pages/icons/icons.component";
 import { EditDialogComponent } from './pages/edit-dialog/edit-dialog.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from "@angular/forms";
-import { MapsComponent } from "./pages/maps/maps.component";
 import {MatMenuModule} from '@angular/material/menu';
 import { AddTicketComponent } from './pages/add-ticket/add-ticket.component';
 import { MatSelectModule } from "@angular/material/select";
+import { UserProfileComponent } from './user-profile/user-profile.component';
+import { SupportTeamMemberComponent } from './pages/support-team-member/support-team-member.component';
+import { TicketComponent } from './pages/ticket/ticket.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     AdminLayoutComponent,
-    IconsComponent,
+    SupportTeamMemberComponent,
     EditDialogComponent,
-    MapsComponent,
-    AddTicketComponent
+    AddTicketComponent,
+    UserProfileComponent,
+    TicketComponent,
+
   ],
   imports: [
     BrowserModule,
