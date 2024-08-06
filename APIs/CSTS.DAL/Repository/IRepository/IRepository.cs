@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 
 public interface IRepository<T> where T : class
 {
-    Task<IEnumerable<T>> GetAllAsync();
-    Task<T> GetByIdAsync(Guid id);
-    Task AddAsync(T entity);
-    Task UpdateAsync(T entity);
-    Task DeleteAsync(Guid id);
-    Task<IEnumerable<T>> FindAsync(Func<T, bool> predicate);
+    Task<WebResponse<IEnumerable<T>>> GetAllAsync();
+    Task<WebResponse<T>> GetByIdAsync(Guid id);
+    Task<WebResponse<bool>> AddAsync(T entity);
+    Task<WebResponse<bool>> UpdateAsync(T entity);
+    Task<WebResponse<bool>> DeleteAsync(Guid id);
+    Task<WebResponse<IEnumerable<T>>> FindAsync(Func<T, bool> predicate);
 }
