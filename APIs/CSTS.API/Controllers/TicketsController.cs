@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CSTS.DAL.Models;
-using CSTS.DAL;
 using CSTS.DAL.Repository.IRepository;
 using FluentValidation;
 using FluentValidation.Results;
+using CSTS.DAL.Enum;
 
 namespace CSTS.API.Controllers
 {
@@ -25,95 +25,123 @@ namespace CSTS.API.Controllers
 
         // GET: api/tickets
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Ticket>>> Get()
+        public async Task<ActionResult<WebResponse<IEnumerable<Ticket>>>> Get()
         {
-            var tickets = await _unitOfWork.Tickets.GetAllAsync();
-            return Ok(tickets);
+            try
+            {
+                var response = await _unitOfWork.Tickets.GetAllAsync();
+                return Ok(new WebResponse<IEnumerable<Ticket>>() { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new WebResponse<IEnumerable<Ticket>> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
+            }
         }
 
         // GET api/tickets/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Ticket>> Get(Guid id)
+        public async Task<ActionResult<WebResponse<Ticket>>> Get(Guid id)
         {
-            var ticket = await _unitOfWork.Tickets.GetByIdAsync(id);
-            if (ticket == null)
+            try
             {
-                return NotFound();
+                var response = await _unitOfWork.Tickets.GetByIdAsync(id);
+                if (response.Data == null)
+                {
+                    return NotFound(new WebResponse<Ticket> { Data = null, Code = ResponseCode.Null, Message = "Ticket not found." });
+                }
+                return Ok(new WebResponse<Ticket> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
             }
-            return Ok(ticket);
+            catch (Exception ex)
+            {
+                return StatusCode(500, new WebResponse<Ticket> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
+            }
         }
 
         // POST api/tickets
         [HttpPost]
-        public async Task<ActionResult<Ticket>> Post([FromBody] Ticket ticket)
+        public async Task<ActionResult<WebResponse<Ticket>>> Post([FromBody] Ticket ticket)
         {
-            if (ticket == null)
+            try
             {
-                return BadRequest("Ticket cannot be null.");
-            }
+                if (ticket == null)
+                {
+                    return BadRequest(new WebResponse<Ticket> { Data = null, Code = ResponseCode.Null, Message = "Ticket cannot be null." });
+                }
 
-            // Validate ticket
-            ValidationResult result = _validator.Validate(ticket);
-            if (!result.IsValid)
+                // Validate ticket
+                ValidationResult result = _validator.Validate(ticket);
+                if (!result.IsValid)
+                {
+                    return BadRequest(new WebResponse<Ticket> { Data = null, Code = ResponseCode.Error, Message = result.Errors.ToString() });
+                }
+
+                var response = await _unitOfWork.Tickets.AddAsync(ticket);
+                return CreatedAtAction(nameof(Get), new { id = ticket.TicketId }, new WebResponse<Ticket> { Data = ticket, Code = ResponseCode.Success, Message = "Success" });
+            }
+            catch (Exception ex)
             {
-                return BadRequest(result.Errors);
+                return StatusCode(500, new WebResponse<Ticket> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
             }
-
-            await _unitOfWork.Tickets.AddAsync(ticket);
-            await _unitOfWork.CompleteAsync();
-
-            return CreatedAtAction(nameof(Get), new { id = ticket.TicketId }, ticket);
         }
 
         // PUT api/tickets/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(Guid id, [FromBody] Ticket ticket)
+        public async Task<ActionResult<WebResponse<bool>>> Put(Guid id, [FromBody] Ticket ticket)
         {
-            if (ticket == null || ticket.TicketId != id)
+            try
             {
-                return BadRequest("Ticket is null or ID mismatch.");
-            }
+                if (ticket == null || ticket.TicketId != id)
+                {
+                    return BadRequest(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "Ticket is null or ID mismatch." });
+                }
 
-            var existingTicket = await _unitOfWork.Tickets.GetByIdAsync(id);
-            if (existingTicket == null)
+                var existingTicket = await _unitOfWork.Tickets.GetByIdAsync(id);
+                if (existingTicket.Data == null)
+                {
+                    return NotFound(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "Ticket not found." });
+                }
+
+                // Validate ticket
+                ValidationResult result = _validator.Validate(ticket);
+                if (!result.IsValid)
+                {
+                    return BadRequest(new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = result.Errors.ToString() });
+                }
+
+                existingTicket.Data.Product = ticket.Product;
+                existingTicket.Data.ProblemDescription = ticket.ProblemDescription;
+                existingTicket.Data.CreatedDate = ticket.CreatedDate;
+                existingTicket.Data.Status = ticket.Status;
+                existingTicket.Data.CreatedById = ticket.CreatedById;
+                existingTicket.Data.AssignedToId = ticket.AssignedToId;
+
+                var response = await _unitOfWork.Tickets.UpdateAsync(existingTicket.Data);
+                return Ok(new WebResponse<bool> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                return StatusCode(500, new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
             }
-
-            // Validate ticket
-            ValidationResult result = _validator.Validate(ticket);
-            if (!result.IsValid)
-            {
-                return BadRequest(result.Errors);
-            }
-
-            existingTicket.Product = ticket.Product;
-            existingTicket.ProblemDescription = ticket.ProblemDescription;
-            existingTicket.CreatedDate = ticket.CreatedDate;
-            existingTicket.Status = ticket.Status;
-            existingTicket.CreatedById = ticket.CreatedById;
-            existingTicket.AssignedToId = ticket.AssignedToId;
-
-            await _unitOfWork.Tickets.UpdateAsync(existingTicket);
-            await _unitOfWork.CompleteAsync();
-
-            return NoContent();
         }
 
         // DELETE api/tickets/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<ActionResult<WebResponse<bool>>> Delete(Guid id)
         {
-            var ticket = await _unitOfWork.Tickets.GetByIdAsync(id);
-            if (ticket == null)
+            try
             {
-                return NotFound();
+                var response = await _unitOfWork.Tickets.DeleteAsync(id);
+                if (!response.Data)
+                {
+                    return NotFound(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "Ticket not found." });
+                }
+
+                return Ok(new WebResponse<bool> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
             }
-
-            await _unitOfWork.Tickets.DeleteAsync(id);
-            await _unitOfWork.CompleteAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
+            }
         }
     }
 }

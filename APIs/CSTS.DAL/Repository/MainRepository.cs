@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using CSTS.DAL.Enum;
+using CSTS.DAL.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,40 +18,129 @@ public class Repository<T> : IRepository<T> where T : class
         _dbSet = _context.Set<T>();
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync()
+    public async Task<WebResponse<IEnumerable<T>>> GetAllAsync()
     {
-        return await _dbSet.ToListAsync();
+        var data = await _dbSet.ToListAsync();
+        return new WebResponse<IEnumerable<T>>()
+        {
+            Data = data,
+            Code = ResponseCode.Success,
+            Message = ResponseCode.Success.ToString()
+        };
     }
 
-    public async Task<T> GetByIdAsync(Guid id)
-    {
-        return await _dbSet.FindAsync(id);
-    }
-
-    public async Task AddAsync(T entity)
-    {
-        await _dbSet.AddAsync(entity);
-        await _context.SaveChangesAsync(); // Ensure the changes are saved
-    }
-
-    public async Task UpdateAsync(T entity)
-    {
-        _dbSet.Update(entity);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DeleteAsync(Guid id)
+    public async Task<WebResponse<T>> GetByIdAsync(Guid id)
     {
         var entity = await _dbSet.FindAsync(id);
-        if (entity != null)
+        if (entity == null)
         {
-            _dbSet.Remove(entity);
-            await _context.SaveChangesAsync(); // Ensure the changes are saved
+            return new WebResponse<T>()
+            {
+                Data = null,
+                Code = ResponseCode.Null,
+                Message = "Entity not found."
+            };
+        }
+
+        return new WebResponse<T>()
+        {
+            Data = entity,
+            Code = ResponseCode.Success,
+            Message = ResponseCode.Success.ToString()
+        };
+    }
+
+    public async Task<WebResponse<bool>> AddAsync(T entity)
+    {
+        try
+        {
+            await _dbSet.AddAsync(entity);
+            var result = await _context.SaveChangesAsync();
+            return new WebResponse<bool>()
+            {
+                Data = result > 0,
+                Code = result > 0 ? ResponseCode.Success : ResponseCode.Error,
+                Message = result > 0 ? ResponseCode.Success.ToString() : ResponseCode.Error.ToString()
+            };
+        }
+        catch (Exception ex)
+        {
+            return new WebResponse<bool>()
+            {
+                Data = false,
+                Code = ResponseCode.Error,
+                Message = ex.Message
+            };
         }
     }
 
-    public async Task<IEnumerable<T>> FindAsync(Func<T, bool> predicate)
+    public async Task<WebResponse<bool>> UpdateAsync(T entity)
     {
-        return await Task.FromResult(_dbSet.Where(predicate).ToList());
+        try
+        {
+            _dbSet.Update(entity);
+            var result = await _context.SaveChangesAsync();
+            return new WebResponse<bool>()
+            {
+                Data = result > 0,
+                Code = result > 0 ? ResponseCode.Success : ResponseCode.Error,
+                Message = result > 0 ? ResponseCode.Success.ToString() : ResponseCode.Error.ToString()
+            };
+        }
+        catch (Exception ex)
+        {
+            return new WebResponse<bool>()
+            {
+                Data = false,
+                Code = ResponseCode.Error,
+                Message = ex.Message
+            };
+        }
+    }
+
+    public async Task<WebResponse<bool>> DeleteAsync(Guid id)
+    {
+        try
+        {
+            var entity = await _dbSet.FindAsync(id);
+            if (entity == null)
+            {
+                return new WebResponse<bool>()
+                {
+                    Data = false,
+                    Code = ResponseCode.Error,
+                    Message = "Entity not found."
+                };
+            }
+
+            _dbSet.Remove(entity);
+            var result = await _context.SaveChangesAsync();
+            return new WebResponse<bool>()
+            {
+                Data = result > 0,
+                Code = result > 0 ? ResponseCode.Success : ResponseCode.Error,
+                Message = result > 0 ? ResponseCode.Success.ToString() : ResponseCode.Error.ToString()
+            };
+        }
+        catch (Exception ex)
+        {
+            return new WebResponse<bool>()
+            {
+                Data = false,
+                Code = ResponseCode.Error,
+                Message = ex.Message
+            };
+        }
+    }
+
+    public async Task<WebResponse<IEnumerable<T>>> FindAsync(Func<T, bool> predicate)
+    {
+        var data = await Task.FromResult(_dbSet.Where(predicate).ToList());
+        return new WebResponse<IEnumerable<T>>()
+        {
+            Data = data,
+            Code = ResponseCode.Success,
+            Message = ResponseCode.Success.ToString()
+        };
     }
 }

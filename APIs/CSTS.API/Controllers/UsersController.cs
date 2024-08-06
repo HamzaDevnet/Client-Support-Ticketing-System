@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CSTS.DAL.Models;
@@ -24,155 +25,208 @@ namespace CSTS.API.Controllers
 
         // GET: api/users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> Get()
+        public async Task<ActionResult<WebResponse<IEnumerable<User>>>> Get()
         {
-            var users = await _unitOfWork.Users.GetAllAsync();
-            return Ok(users);
+            try
+            {
+                var response = await _unitOfWork.Users.GetAllAsync();
+                return Ok(new WebResponse<IEnumerable<User>>() { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new WebResponse<IEnumerable<User>> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
+            }
         }
 
         // GET api/users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> Get(Guid id)
+        public async Task<ActionResult<WebResponse<User>>> Get(Guid id)
         {
-            var user = await _unitOfWork.Users.GetByIdAsync(id);
-            if (user == null)
+            try
             {
-                return NotFound();
+                var response = await _unitOfWork.Users.GetByIdAsync(id);
+                if (response.Data == null)
+                {
+                    return NotFound(new WebResponse<User> { Data = null, Code = ResponseCode.Null, Message = "User not found." });
+                }
+                return Ok(new WebResponse<User> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
             }
-            return Ok(user);
+            catch (Exception ex)
+            {
+                return StatusCode(500, new WebResponse<User> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
+            }
         }
 
         // POST api/users
         [HttpPost]
-        public async Task<ActionResult<User>> Post([FromBody] User user)
+        public async Task<ActionResult<WebResponse<User>>> Post([FromBody] User user)
         {
-            if (user == null)
+            try
             {
-                return BadRequest("User cannot be null.");
-            }
+                if (user == null)
+                {
+                    return BadRequest(new WebResponse<User> { Data = null, Code = ResponseCode.Null, Message = "User cannot be null." });
+                }
 
-            // Validate user
-            ValidationResult result = _validator.Validate(user);
-            if (!result.IsValid)
+                // Validate user
+                ValidationResult result = _validator.Validate(user);
+                if (!result.IsValid)
+                {
+                    return BadRequest(new WebResponse<User> { Data = null, Code = ResponseCode.Error, Message = result.Errors.ToString() });
+                }
+
+                // Support Manager can add Support Team members
+                if (user.UserType == UserType.SupportTeamMember || user.UserType == UserType.ExternalClient)
+                {
+                    var response = await _unitOfWork.Users.AddAsync(user);
+                    return CreatedAtAction(nameof(Get), new { id = user.UserId }, new WebResponse<User> { Data = user, Code = ResponseCode.Success, Message = "Success" });
+                }
+
+                return BadRequest(new WebResponse<User> { Data = null, Code = ResponseCode.Error, Message = "Invalid user type for registration." });
+            }
+            catch (Exception ex)
             {
-                return BadRequest(result.Errors);
+                return StatusCode(500, new WebResponse<User> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
             }
-
-            // Support Manager can add Support Team members
-            if (user.UserType == UserType.SupportTeamMember || user.UserType == UserType.ExternalClient)
-            {
-                await _unitOfWork.Users.AddAsync(user);
-                await _unitOfWork.CompleteAsync();
-                return CreatedAtAction(nameof(Get), new { id = user.UserId }, user);
-            }
-
-            return BadRequest("Invalid user type for registration.");
         }
 
         // PUT api/users/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(Guid id, [FromBody] User user)
+        public async Task<ActionResult<WebResponse<bool>>> Put(Guid id, [FromBody] User user)
         {
-            if (user == null || user.UserId != id)
+            try
             {
-                return BadRequest("User is null or ID mismatch.");
-            }
+                if (user == null || user.UserId != id)
+                {
+                    return BadRequest(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User is null or ID mismatch." });
+                }
 
-            var existingUser = await _unitOfWork.Users.GetByIdAsync(id);
-            if (existingUser == null)
+                var existingUser = await _unitOfWork.Users.GetByIdAsync(id);
+                if (existingUser.Data == null)
+                {
+                    return NotFound(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
+                }
+
+                // Validate user
+                ValidationResult result = _validator.Validate(user);
+                if (!result.IsValid)
+                {
+                    return BadRequest(new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = result.Errors.ToString() });
+                }
+
+                existingUser.Data.UserName = user.UserName;
+                existingUser.Data.FullName = user.FullName;
+                existingUser.Data.MobileNumber = user.MobileNumber;
+                existingUser.Data.Email = user.Email;
+                existingUser.Data.Image = user.Image;
+                existingUser.Data.DateOfBirth = user.DateOfBirth;
+                existingUser.Data.UserType = user.UserType;
+                existingUser.Data.Password = user.Password;
+                existingUser.Data.Address = user.Address;
+                existingUser.Data.RegistrationDate = user.RegistrationDate;
+                existingUser.Data.UserStatus = user.UserStatus;
+
+                var response = await _unitOfWork.Users.UpdateAsync(existingUser.Data);
+                return Ok(new WebResponse<bool> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                return StatusCode(500, new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
             }
-
-            // Validate user
-            ValidationResult result = _validator.Validate(user);
-            if (!result.IsValid)
-            {
-                return BadRequest(result.Errors);
-            }
-
-            existingUser.UserName = user.UserName;
-            existingUser.FullName = user.FullName;
-            existingUser.MobileNumber = user.MobileNumber;
-            existingUser.Email = user.Email;
-            existingUser.Image = user.Image;
-            existingUser.DateOfBirth = user.DateOfBirth;
-            existingUser.UserType = user.UserType;
-            existingUser.Password = user.Password;
-            existingUser.Address = user.Address;
-            existingUser.RegistrationDate = user.RegistrationDate;
-            existingUser.UserStatus = user.UserStatus;
-
-            await _unitOfWork.Users.UpdateAsync(existingUser);
-            await _unitOfWork.CompleteAsync();
-
-            return NoContent();
         }
 
         // DELETE api/users/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<ActionResult<WebResponse<bool>>> Delete(Guid id)
         {
-            var user = await _unitOfWork.Users.GetByIdAsync(id);
-            if (user == null)
+            try
             {
-                return NotFound();
+                var response = await _unitOfWork.Users.DeleteAsync(id);
+                if (!response.Data)
+                {
+                    return NotFound(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
+                }
+
+                return Ok(new WebResponse<bool> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
             }
-
-            await _unitOfWork.Users.DeleteAsync(id);
-            await _unitOfWork.CompleteAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
+            }
         }
 
         // Activate a user
         [HttpPatch("{id}/activate")]
-        public async Task<IActionResult> Activate(Guid id)
+        public async Task<ActionResult<WebResponse<bool>>> Activate(Guid id)
         {
-            var user = await _unitOfWork.Users.GetByIdAsync(id);
-            if (user == null)
+            try
             {
-                return NotFound();
+                var response = await _unitOfWork.Users.GetByIdAsync(id);
+                if (response.Data == null)
+                {
+                    return NotFound(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
+                }
+
+                response.Data.UserStatus = UserStatus.Active;
+                var updateResponse = await _unitOfWork.Users.UpdateAsync(response.Data);
+                return Ok(new WebResponse<bool> { Data = updateResponse.Data, Code = ResponseCode.Success, Message = "Success" });
             }
-
-            user.UserStatus = UserStatus.Active;
-            await _unitOfWork.Users.UpdateAsync(user);
-            await _unitOfWork.CompleteAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
+            }
         }
 
         // Deactivate a user
         [HttpPatch("{id}/deactivate")]
-        public async Task<IActionResult> Deactivate(Guid id)
+        public async Task<ActionResult<WebResponse<bool>>> Deactivate(Guid id)
         {
-            var user = await _unitOfWork.Users.GetByIdAsync(id);
-            if (user == null)
+            try
             {
-                return NotFound();
+                var response = await _unitOfWork.Users.GetByIdAsync(id);
+                if (response.Data == null)
+                {
+                    return NotFound(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
+                }
+
+                response.Data.UserStatus = UserStatus.Deactivated;
+                var updateResponse = await _unitOfWork.Users.UpdateAsync(response.Data);
+                return Ok(new WebResponse<bool> { Data = updateResponse.Data, Code = ResponseCode.Success, Message = "Success" });
             }
-
-            user.UserStatus = UserStatus.Deactivated;
-            await _unitOfWork.Users.UpdateAsync(user);
-            await _unitOfWork.CompleteAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
+            }
         }
 
         // GET: api/users/support-team-members
         [HttpGet("support-team-members")]
-        public async Task<ActionResult<IEnumerable<User>>> GetSupportTeamMembers()
+        public async Task<ActionResult<WebResponse<IEnumerable<User>>>> GetSupportTeamMembers()
         {
-            var users = await _unitOfWork.Users.FindAsync(u => u.UserType == UserType.SupportTeamMember);
-            return Ok(users);
+            try
+            {
+                var response = await _unitOfWork.Users.FindAsync(u => u.UserType == UserType.SupportTeamMember);
+                return Ok(new WebResponse<IEnumerable<User>> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new WebResponse<IEnumerable<User>> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
+            }
         }
 
         // GET: api/users/external-clients
         [HttpGet("external-clients")]
-        public async Task<ActionResult<IEnumerable<User>>> GetExternalClients()
+        public async Task<ActionResult<WebResponse<IEnumerable<User>>>> GetExternalClients()
         {
-            var users = await _unitOfWork.Users.FindAsync(u => u.UserType == UserType.ExternalClient);
-            return Ok(users);
+            try
+            {
+                var response = await _unitOfWork.Users.FindAsync(u => u.UserType == UserType.ExternalClient);
+                return Ok(new WebResponse<IEnumerable<User>> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new WebResponse<IEnumerable<User>> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
+            }
         }
     }
 }
