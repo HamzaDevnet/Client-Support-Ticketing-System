@@ -1,0 +1,23 @@
+
+      <h3  mat-dialog-title>Add Ticket</h3>
+      <div mat-dialog-content>
+    <form [formGroup]="AssignedTo">
+      <mat-form-field appearance="outline">
+        <mat-label>User</mat-label>
+        <mat-select formControlName="AssignedTo">
+          <mat-option *ngFor="let supportteam of supportTeam" [value]="supportteam.id">
+            {{ supportteam.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Ticket Name</mat-label>
+        <input matInput type="text" formControlName="TicketName">
+      </mat-form-field>
+    </form>
+</div>
+
+<div mat-dialog-actions>
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button (click)="onSave()" cdkFocusInitial>Save</button>
+  </div>

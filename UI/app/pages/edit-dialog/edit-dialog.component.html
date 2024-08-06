@@ -1,0 +1,63 @@
+<h1 mat-dialog-title>Edit Profile</h1>
+<div mat-dialog-content>
+  <form [formGroup]="editForm">
+    <div class="row">
+      <div class="col-md-5 pr-1">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" class="form-control" placeholder="Name" formControlName="name">
+        </div>
+      </div>
+      <div class="col-md-3 px-1">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" class="form-control" placeholder="Username" formControlName="username">
+        </div>
+      </div>
+      <div class="col-md-4 pl-1">
+        <div class="form-group">
+          <label for="exampleInputEmail1">Email address</label>
+          <input type="email" class="form-control" placeholder="Email" formControlName="email">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group">
+          <label>Address</label>
+          <input type="text" class="form-control" placeholder="Home Address" formControlName="address">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4 pr-1">
+        <div class="form-group">
+          <label>Street</label>
+          <input type="text" class="form-control" placeholder="Street" formControlName="street">
+        </div>
+      </div>
+      <div class="col-md-4 pr-1">
+        <div class="form-group">
+          <label>City</label>
+          <input type="text" class="form-control" placeholder="City" formControlName="city">
+        </div>
+      </div>
+      <div class="col-md-4 px-1">
+        <div class="form-group">
+          <label>State</label>
+          <input type="text" class="form-control" placeholder="state" formControlName="state">
+        </div>
+      </div>
+      <div class="col-md-4 pl-1">
+        <div class="form-group">
+          <label>Postal Code</label>
+          <input type="number" class="form-control" placeholder="ZIP Code" formControlName="zipcode">
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-button (click)="onSave()" cdkFocusInitial>Save</button>
+</div>
