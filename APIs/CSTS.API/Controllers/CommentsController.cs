@@ -30,101 +30,140 @@ namespace CSTS.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CommentSummaryDTO>>> Get()
         {
-            var response = await _unitOfWork.Comments.GetAllAsync();
-            var dtos = response.Data.Select(c => new CommentSummaryDTO
+            try
             {
-                CommentId = c.CommentId,
-                Content = c.Content
-            }).ToList();
-            return Ok(dtos);
+                var response = await _unitOfWork.Comments.GetAllAsync();
+                var dtos = response.Data.Select(c => new CommentSummaryDTO
+                {
+                    CommentId = c.CommentId,
+                    Content = c.Content
+                }).ToList();
+                return Ok(dtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
-        // GET api/comments/5
+        // GET api/comments/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<CommentResponseDTO>> Get(Guid id)
         {
-            var response = await _unitOfWork.Comments.GetByIdAsync(id);
-            if (response.Data == null)
+            try
             {
-                return NotFound("Comment not found.");
-            }
+                var response = await _unitOfWork.Comments.GetByIdAsync(id);
+                if (response.Data == null)
+                {
+                    return NotFound("Comment not found.");
+                }
 
-            var dto = new CommentResponseDTO
+                var dto = new CommentResponseDTO
+                {
+                    CommentId = response.Data.CommentId,
+                    Content = response.Data.Content,
+                    CreatedDate = response.Data.CreatedDate,
+                    UserName = response.Data.User?.UserName
+                };
+                return Ok(dto);
+            }
+            catch (Exception ex)
             {
-                CommentId = response.Data.CommentId,
-                Content = response.Data.Content,
-                CreatedDate = response.Data.CreatedDate,
-                UserName = response.Data.User?.UserName // Assuming User navigation property
-            };
-            return Ok(dto);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         // POST api/comments
         [HttpPost]
         public async Task<ActionResult<CommentResponseDTO>> Post([FromBody] CreateCommentDTO dto)
         {
-            var comment = new Comment
+            try
             {
-                Content = dto.Content,
-                UserId = dto.UserId,
-                TicketId = dto.TicketId,
-                CreatedDate = DateTime.UtcNow
-            };
+                var comment = new Comment
+                {
+                    Content = dto.Content,
+                    UserId = dto.UserId,
+                    TicketId = dto.TicketId,
+                    CreatedDate = DateTime.UtcNow
+                };
 
-            var result = _validator.Validate(comment);
-            if (!result.IsValid)
-            {
-                return BadRequest(result.Errors.Select(e => e.ErrorMessage));
+                var result = _validator.Validate(comment);
+                if (!result.IsValid)
+                {
+                    return BadRequest(result.Errors.Select(e => e.ErrorMessage));
+                }
+
+                var response = await _unitOfWork.Comments.AddAsync(comment);
+                if (!response.Data)
+                {
+                    return StatusCode(500, "Failed to add comment");
+                }
+
+                var responseDto = new CommentResponseDTO
+                {
+                    CommentId = comment.CommentId,
+                    Content = comment.Content,
+                    CreatedDate = comment.CreatedDate,
+                    UserName = comment.User?.UserName
+                };
+                return CreatedAtAction(nameof(Get), new { id = comment.CommentId }, responseDto);
             }
-
-            var response = await _unitOfWork.Comments.AddAsync(comment);
-            if (!response.Data)
+            catch (Exception ex)
             {
-                return StatusCode(500, "Failed to add comment");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
-
-            var responseDto = new CommentResponseDTO
-            {
-                CommentId = comment.CommentId,
-                Content = comment.Content,
-                CreatedDate = comment.CreatedDate,
-                UserName = comment.User?.UserName // Assuming User navigation property
-            };
-            return CreatedAtAction(nameof(Get), new { id = comment.CommentId }, responseDto);
         }
 
-        // PUT api/comments/5
+        // PUT api/comments/{id}
         [HttpPut("{id}")]
         public async Task<ActionResult<bool>> Put(Guid id, [FromBody] UpdateCommentDTO dto)
         {
-            var existingComment = await _unitOfWork.Comments.GetByIdAsync(id);
-            if (existingComment.Data == null)
+            try
             {
-                return NotFound("Comment not found.");
+                var existingComment = await _unitOfWork.Comments.GetByIdAsync(id);
+                if (existingComment.Data == null)
+                {
+                    return NotFound("Comment not found.");
+                }
+
+                existingComment.Data.Content = dto.Content;
+
+                var result = _validator.Validate(existingComment.Data);
+                if (!result.IsValid)
+                {
+                    return BadRequest(result.Errors.Select(e => e.ErrorMessage));
+                }
+
+                var response = await _unitOfWork.Comments.UpdateAsync(existingComment.Data);
+                if (!response.Data)
+                {
+                    return StatusCode(500, "Failed to update comment");
+                }
+                return Ok(true);
             }
-
-            existingComment.Data.Content = dto.Content;
-
-            var result = _validator.Validate(existingComment.Data);
-            if (!result.IsValid)
+            catch (Exception ex)
             {
-                return BadRequest(result.Errors.Select(e => e.ErrorMessage));
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
-
-            var response = await _unitOfWork.Comments.UpdateAsync(existingComment.Data);
-            return Ok(response.Data);
         }
 
-        // DELETE api/comments/5
+        // DELETE api/comments/{id}
         [HttpDelete("{id}")]
         public async Task<ActionResult<bool>> Delete(Guid id)
         {
-            var response = await _unitOfWork.Comments.DeleteAsync(id);
-            if (!response.Data)
+            try
             {
-                return NotFound("Comment not found.");
+                var response = await _unitOfWork.Comments.DeleteAsync(id);
+                if (!response.Data)
+                {
+                    return NotFound("Comment not found.");
+                }
+                return Ok(true);
             }
-            return Ok(true);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }
