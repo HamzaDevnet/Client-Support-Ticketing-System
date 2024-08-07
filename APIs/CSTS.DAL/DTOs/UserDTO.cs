@@ -13,7 +13,7 @@ namespace CSTS.DAL.DTOs
         public string FullName { get; set; }
         public string MobileNumber { get; set; }
         public string Email { get; set; }
-        public byte[]? Image { get; set; }
+        //public byte[]? Image { get; set; }
         public DateTime DateOfBirth { get; set; }
         public UserType UserType { get; set; }
         public string Password { get; set; }

@@ -88,7 +88,7 @@ namespace CSTS.API.Controllers
                     Attachments = createDto.Attachments,
                     AssignedToId = createDto.AssignedToId,
                     CreatedDate = DateTime.UtcNow,
-                    Status = TicketStatus.New // Assuming new tickets are always 'New'
+                    Status = TicketStatus.New
                 };
 
                 var result = _validator.Validate(ticket);

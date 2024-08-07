@@ -25,8 +25,8 @@ namespace CSTS.DAL.Validation
             RuleFor(x => x.CreatedDate)
                 .LessThanOrEqualTo(DateTime.Now).WithMessage("Created date must be in the past or present.");
 
-            RuleFor(x => x.ModifiedDate)
-                .GreaterThanOrEqualTo(x => x.CreatedDate).WithMessage("Modified date must be greater than or equal to created date.");
+            //RuleFor(x => x.ModifiedDate)
+                //.GreaterThanOrEqualTo(x => x.CreatedDate).WithMessage("Modified date must be greater than or equal to created date.");
         }
     }
 }
