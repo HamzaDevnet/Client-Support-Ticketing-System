@@ -17,17 +17,17 @@ export class RegisterComponent implements OnInit {
     this.registerForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
+      username: ['', Validators.required],
       phone: ['', [Validators.pattern('^[0-9]+$')]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       dob: [''],
-      sex: ['']
     });
   }
 
   onSubmit(): void {
     if (this.registerForm.valid) {
-      console.log(this.registerForm.value);
+      console.log(this.registerForm.value); //replace this command with command that store the information in the api 
       this.router.navigate(['/dashboard']);
     } else {
       console.log('Form is invalid');

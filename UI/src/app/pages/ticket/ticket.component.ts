@@ -14,7 +14,7 @@ import { AddTicketComponent } from '../add-ticket/add-ticket.component';
 
 export class TicketComponent {
     tickets:Ticket[]=[];
-    displayedColumns: string[] = ['product'];
+    displayedColumns: string[] = ['id','AssignedTo'];
     dataSource = new MatTableDataSource<Ticket>(this.tickets);
     selectedFilter: string = 'Filter Tickets';
 

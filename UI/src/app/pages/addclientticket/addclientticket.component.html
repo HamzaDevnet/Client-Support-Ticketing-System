@@ -1,0 +1,18 @@
+<h1 mat-dialog-title>Add Ticket</h1>
+<div mat-dialog-content>
+  <mat-form-field appearance="fill">
+    <mat-label>Title</mat-label>
+    <input matInput [(ngModel)]="ticketData.title">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Description</mat-label>
+    <textarea matInput [(ngModel)]="ticketData.description"></textarea>
+  </mat-form-field>
+
+  <input type="file" (change)="onFileSelected($event)" />
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-button (click)="onSubmit()">Submit</button>
+</div>

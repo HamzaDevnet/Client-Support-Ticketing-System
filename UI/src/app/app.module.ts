@@ -36,6 +36,10 @@ import { TicketComponent } from './pages/ticket/ticket.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { MatNativeDateModule } from "@angular/material/core";
 import { LoginComponent } from './pages/login/login.component';
+import { MyopenticketComponent } from './pages/myopenticket/myopenticket.component';
+import { FormsModule } from '@angular/forms';
+import { ClientticketsComponent } from './pages/clienttickets/clienttickets.component';
+import { AddclientticketComponent } from './pages/addclientticket/addclientticket.component'; // Import FormsModule
 
 
 
@@ -50,6 +54,9 @@ import { LoginComponent } from './pages/login/login.component';
     TicketComponent,
     RegisterComponent,
     LoginComponent,
+    MyopenticketComponent,
+    ClientticketsComponent,
+    AddclientticketComponent,
 
   ],
   imports: [
@@ -66,6 +73,7 @@ import { LoginComponent } from './pages/login/login.component';
     MatInputModule,
     MatSelectModule,
     ReactiveFormsModule,
+    FormsModule,
     MatMenuModule,
     MatCardModule,
     MatCardModule,
