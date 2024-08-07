@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CSTS.DAL.Models;
 using CSTS.DAL.Repository.IRepository;
 using FluentValidation;
 using FluentValidation.Results;
 using CSTS.DAL.Enum;
-using CSTS.DAL.DTOs;
-using static CSTS.DAL.DTOs.CommentResponseDTO;
 
 namespace CSTS.API.Controllers
 {
@@ -28,141 +25,120 @@ namespace CSTS.API.Controllers
 
         // GET: api/comments
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CommentSummaryDTO>>> Get()
+        public async Task<ActionResult<WebResponse<IEnumerable<Comment>>>> Get()
         {
             try
             {
                 var response = await _unitOfWork.Comments.GetAllAsync();
-                var dtos = response.Data.Select(c => new CommentSummaryDTO
-                {
-                    CommentId = c.CommentId,
-                    Content = c.Content
-                }).ToList();
-                return Ok(dtos);
+                return Ok(new WebResponse<IEnumerable<Comment>>() { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new WebResponse<IEnumerable<Comment>> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
             }
         }
 
-        // GET api/comments/{id}
+        // GET api/comments/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CommentResponseDTO>> Get(Guid id)
+        public async Task<ActionResult<WebResponse<Comment>>> Get(Guid id)
         {
             try
             {
                 var response = await _unitOfWork.Comments.GetByIdAsync(id);
                 if (response.Data == null)
                 {
-                    return NotFound("Comment not found.");
+                    return NotFound(new WebResponse<Comment> { Data = null, Code = ResponseCode.Null, Message = "Comment not found." });
                 }
-
-                var dto = new CommentResponseDTO
-                {
-                    CommentId = response.Data.CommentId,
-                    Content = response.Data.Content,
-                    CreatedDate = response.Data.CreatedDate,
-                    UserName = response.Data.User?.UserName
-                };
-                return Ok(dto);
+                return Ok(new WebResponse<Comment> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new WebResponse<Comment> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
             }
         }
 
         // POST api/comments
         [HttpPost]
-        public async Task<ActionResult<CommentResponseDTO>> Post([FromBody] CreateCommentDTO dto)
+        public async Task<ActionResult<WebResponse<Comment>>> Post([FromBody] Comment comment)
         {
             try
             {
-                var comment = new Comment
+                if (comment == null)
                 {
-                    Content = dto.Content,
-                    UserId = dto.UserId,
-                    TicketId = dto.TicketId,
-                    CreatedDate = DateTime.UtcNow
-                };
+                    return BadRequest(new WebResponse<Comment> { Data = null, Code = ResponseCode.Null, Message = "Comment cannot be null." });
+                }
 
-                var result = _validator.Validate(comment);
+                // Validate comment
+                ValidationResult result = _validator.Validate(comment);
                 if (!result.IsValid)
                 {
-                    return BadRequest(result.Errors.Select(e => e.ErrorMessage));
+                    return BadRequest(new WebResponse<Comment> { Data = null, Code = ResponseCode.Error, Message = result.Errors.ToString() });
                 }
 
                 var response = await _unitOfWork.Comments.AddAsync(comment);
-                if (!response.Data)
-                {
-                    return StatusCode(500, "Failed to add comment");
-                }
-
-                var responseDto = new CommentResponseDTO
-                {
-                    CommentId = comment.CommentId,
-                    Content = comment.Content,
-                    CreatedDate = comment.CreatedDate,
-                    UserName = comment.User?.UserName
-                };
-                return CreatedAtAction(nameof(Get), new { id = comment.CommentId }, responseDto);
+                return CreatedAtAction(nameof(Get), new { id = comment.CommentId }, new WebResponse<Comment> { Data = comment, Code = ResponseCode.Success, Message = "Success" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new WebResponse<Comment> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
             }
         }
 
-        // PUT api/comments/{id}
+        // PUT api/comments/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<bool>> Put(Guid id, [FromBody] UpdateCommentDTO dto)
+        public async Task<ActionResult<WebResponse<bool>>> Put(Guid id, [FromBody] Comment comment)
         {
             try
             {
+                if (comment == null || comment.CommentId != id)
+                {
+                    return BadRequest(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "Comment is null or ID mismatch." });
+                }
+
                 var existingComment = await _unitOfWork.Comments.GetByIdAsync(id);
                 if (existingComment.Data == null)
                 {
-                    return NotFound("Comment not found.");
+                    return NotFound(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "Comment not found." });
                 }
 
-                existingComment.Data.Content = dto.Content;
-
-                var result = _validator.Validate(existingComment.Data);
+                // Validate comment
+                ValidationResult result = _validator.Validate(comment);
                 if (!result.IsValid)
                 {
-                    return BadRequest(result.Errors.Select(e => e.ErrorMessage));
+                    return BadRequest(new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = result.Errors.ToString() });
                 }
 
+                existingComment.Data.Content = comment.Content;
+                existingComment.Data.CreatedDate = comment.CreatedDate;
+                existingComment.Data.UserId = comment.UserId;
+                existingComment.Data.TicketId = comment.TicketId;
+
                 var response = await _unitOfWork.Comments.UpdateAsync(existingComment.Data);
-                if (!response.Data)
-                {
-                    return StatusCode(500, "Failed to update comment");
-                }
-                return Ok(true);
+                return Ok(new WebResponse<bool> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
             }
         }
 
-        // DELETE api/comments/{id}
+        // DELETE api/comments/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<bool>> Delete(Guid id)
+        public async Task<ActionResult<WebResponse<bool>>> Delete(Guid id)
         {
             try
             {
                 var response = await _unitOfWork.Comments.DeleteAsync(id);
                 if (!response.Data)
                 {
-                    return NotFound("Comment not found.");
+                    return NotFound(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "Comment not found." });
                 }
-                return Ok(true);
+
+                return Ok(new WebResponse<bool> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
             }
         }
     }
