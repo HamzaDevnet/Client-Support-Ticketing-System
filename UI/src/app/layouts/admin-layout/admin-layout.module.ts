@@ -10,6 +10,7 @@ import { UserComponent }            from '../../pages/user/user.component';
 
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { MyopenticketComponent } from 'app/pages/myopenticket/myopenticket.component';
 
 @NgModule({
   imports: [
@@ -21,6 +22,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
   declarations: [
     DashboardComponent,
     UserComponent,
+    
   ]
 })
 

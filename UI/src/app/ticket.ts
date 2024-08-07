@@ -1,8 +1,9 @@
 import { TicketStatus } from "./enums/ticket.enum";
 
 export interface Ticket {
-    ticketId: string;
-    product: string;
-    status: number;
-  }
-  
+        ticketId : String , 
+        status: TicketStatus , 
+        product: string,
+        
+
+}

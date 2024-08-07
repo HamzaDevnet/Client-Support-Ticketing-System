@@ -12,6 +12,9 @@ export const ROUTES: RouteInfo[] = [
     { path: '/dashboard',     title: 'Dashboard',         icon:'nc-bank',       class: '' },
     { path: '/support',         title: 'Support Team',      icon:'nc-single-02',    class: '' },
     { path: '/tickets',          title: 'Tickets',           icon:'nc-paper',      class: '' },
+    { path: '/openticket',          title: 'Assigned Tickets',           icon:'nc-paper',      class: '' },
+    { path: '/myTickets',          title: 'My Tickets',           icon:'nc-paper',      class: '' },
+
     
   
 ];

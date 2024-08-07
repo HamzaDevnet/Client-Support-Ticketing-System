@@ -10,11 +10,12 @@ import { AddTicketComponent } from '../add-ticket/add-ticket.component';
   selector: 'app-ticket',
   templateUrl: 'ticket.component.html',
 })
-export class TicketComponent implements OnInit {
-  tickets: Ticket[] = [];
-  displayedColumns: string[] = ['ticketId', 'product', 'status'];
-  dataSource = new MatTableDataSource<Ticket>(this.tickets);
-  selectedFilter: string = 'Filter Tickets';
+
+export class TicketComponent {
+    tickets:Ticket[]=[];
+    displayedColumns: string[] = ['id','AssignedTo'];
+    dataSource = new MatTableDataSource<Ticket>(this.tickets);
+    selectedFilter: string = 'Filter Tickets';
 
   constructor(private ticketService: TicketService, public dialog: MatDialog) {}
 
