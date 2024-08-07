@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CSTS.DAL.Models;
 using CSTS.DAL.Repository.IRepository;
 using FluentValidation;
 using FluentValidation.Results;
 using CSTS.DAL.Enum;
+using CSTS.DAL.DTOs;
 
 namespace CSTS.API.Controllers
 {
@@ -25,123 +27,106 @@ namespace CSTS.API.Controllers
 
         // GET: api/tickets
         [HttpGet]
-        public async Task<ActionResult<WebResponse<IEnumerable<Ticket>>>> Get()
+        public async Task<ActionResult<IEnumerable<TicketSummaryDTO>>> Get()
         {
-            try
+            var tickets = await _unitOfWork.Tickets.GetAllAsync();
+            var ticketDtos = tickets.Data.Select(t => new TicketSummaryDTO
             {
-                var response = await _unitOfWork.Tickets.GetAllAsync();
-                return Ok(new WebResponse<IEnumerable<Ticket>>() { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new WebResponse<IEnumerable<Ticket>> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
-            }
+                TicketId = t.TicketId,
+                Product = t.Product,
+                Status = t.Status
+            }).ToList();
+
+            return Ok(ticketDtos);
         }
 
         // GET api/tickets/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<WebResponse<Ticket>>> Get(Guid id)
+        public async Task<ActionResult<TicketResponseDTO>> Get(Guid id)
         {
-            try
+            var ticket = await _unitOfWork.Tickets.GetByIdAsync(id);
+            if (ticket.Data == null)
+                return NotFound("Ticket not found.");
+
+            var ticketDto = new TicketResponseDTO
             {
-                var response = await _unitOfWork.Tickets.GetByIdAsync(id);
-                if (response.Data == null)
-                {
-                    return NotFound(new WebResponse<Ticket> { Data = null, Code = ResponseCode.Null, Message = "Ticket not found." });
-                }
-                return Ok(new WebResponse<Ticket> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new WebResponse<Ticket> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
-            }
+                TicketId = ticket.Data.TicketId,
+                Product = ticket.Data.Product,
+                ProblemDescription = ticket.Data.ProblemDescription,
+                Status = ticket.Data.Status,
+                CreatedDate = ticket.Data.CreatedDate,
+                AssignedToUserName = ticket.Data.AssignedTo?.UserName
+            };
+
+            return Ok(ticketDto);
         }
 
         // POST api/tickets
         [HttpPost]
-        public async Task<ActionResult<WebResponse<Ticket>>> Post([FromBody] Ticket ticket)
+        public async Task<ActionResult<TicketResponseDTO>> Post([FromBody] CreateTicketDTO createDto)
         {
-            try
+            var ticket = new Ticket
             {
-                if (ticket == null)
-                {
-                    return BadRequest(new WebResponse<Ticket> { Data = null, Code = ResponseCode.Null, Message = "Ticket cannot be null." });
-                }
+                Product = createDto.Product,
+                ProblemDescription = createDto.ProblemDescription,
+                Attachments = createDto.Attachments,
+                AssignedToId = createDto.AssignedToId,
+                CreatedDate = DateTime.UtcNow,
+                Status = TicketStatus.New // Assuming new tickets are always 'New'
+            };
 
-                // Validate ticket
-                ValidationResult result = _validator.Validate(ticket);
-                if (!result.IsValid)
-                {
-                    return BadRequest(new WebResponse<Ticket> { Data = null, Code = ResponseCode.Error, Message = result.Errors.ToString() });
-                }
+            var result = _validator.Validate(ticket);
+            if (!result.IsValid)
+                return BadRequest(result.Errors.Select(e => e.ErrorMessage));
 
-                var response = await _unitOfWork.Tickets.AddAsync(ticket);
-                return CreatedAtAction(nameof(Get), new { id = ticket.TicketId }, new WebResponse<Ticket> { Data = ticket, Code = ResponseCode.Success, Message = "Success" });
-            }
-            catch (Exception ex)
+            var response = await _unitOfWork.Tickets.AddAsync(ticket);
+            if (!response.Data)
+                return StatusCode(500, "Failed to create ticket");
+
+            var ticketDto = new TicketResponseDTO
             {
-                return StatusCode(500, new WebResponse<Ticket> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
-            }
+                TicketId = ticket.TicketId,
+                Product = ticket.Product,
+                ProblemDescription = ticket.ProblemDescription,
+                Status = ticket.Status,
+                CreatedDate = ticket.CreatedDate,
+                AssignedToUserName = ticket.AssignedTo?.UserName
+            };
+
+            return CreatedAtAction(nameof(Get), new { id = ticket.TicketId }, ticketDto);
         }
 
         // PUT api/tickets/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult<WebResponse<bool>>> Put(Guid id, [FromBody] Ticket ticket)
+        public async Task<ActionResult<UpdateResponseDTO>> Put(Guid id, [FromBody] UpdateTicketDTO updateDto)
         {
-            try
-            {
-                if (ticket == null || ticket.TicketId != id)
-                {
-                    return BadRequest(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "Ticket is null or ID mismatch." });
-                }
+            var ticket = await _unitOfWork.Tickets.GetByIdAsync(id);
+            if (ticket.Data == null)
+                return NotFound("Ticket not found.");
 
-                var existingTicket = await _unitOfWork.Tickets.GetByIdAsync(id);
-                if (existingTicket.Data == null)
-                {
-                    return NotFound(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "Ticket not found." });
-                }
+            ticket.Data.Product = updateDto.Product;
+            ticket.Data.ProblemDescription = updateDto.ProblemDescription;
+            ticket.Data.Attachments = updateDto.Attachments;
+            ticket.Data.Status = updateDto.Status;
+            ticket.Data.AssignedToId = updateDto.AssignedToId;
 
-                // Validate ticket
-                ValidationResult result = _validator.Validate(ticket);
-                if (!result.IsValid)
-                {
-                    return BadRequest(new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = result.Errors.ToString() });
-                }
+            var result = _validator.Validate(ticket.Data);
+            if (!result.IsValid)
+                return BadRequest(new UpdateResponseDTO { Success = false, Message = string.Join("; ", result.Errors.Select(e => e.ErrorMessage)) });
 
-                existingTicket.Data.Product = ticket.Product;
-                existingTicket.Data.ProblemDescription = ticket.ProblemDescription;
-                existingTicket.Data.CreatedDate = ticket.CreatedDate;
-                existingTicket.Data.Status = ticket.Status;
-                existingTicket.Data.CreatedById = ticket.CreatedById;
-                existingTicket.Data.AssignedToId = ticket.AssignedToId;
-
-                var response = await _unitOfWork.Tickets.UpdateAsync(existingTicket.Data);
-                return Ok(new WebResponse<bool> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
-            }
+            var response = await _unitOfWork.Tickets.UpdateAsync(ticket.Data);
+            return Ok(new UpdateResponseDTO { Success = response.Data, Message = "Ticket updated successfully" });
         }
 
         // DELETE api/tickets/{id}
         [HttpDelete("{id}")]
-        public async Task<ActionResult<WebResponse<bool>>> Delete(Guid id)
+        public async Task<ActionResult<bool>> Delete(Guid id)
         {
-            try
-            {
-                var response = await _unitOfWork.Tickets.DeleteAsync(id);
-                if (!response.Data)
-                {
-                    return NotFound(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "Ticket not found." });
-                }
+            var response = await _unitOfWork.Tickets.DeleteAsync(id);
+            if (!response.Data)
+                return NotFound("Ticket not found.");
 
-                return Ok(new WebResponse<bool> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
-            }
+            return Ok(true);
         }
     }
 }

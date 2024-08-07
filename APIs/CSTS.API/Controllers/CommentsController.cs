@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CSTS.DAL.Models;
 using CSTS.DAL.Repository.IRepository;
 using FluentValidation;
 using FluentValidation.Results;
 using CSTS.DAL.Enum;
+using CSTS.DAL.DTOs;
+using static CSTS.DAL.DTOs.CommentResponseDTO;
 
 namespace CSTS.API.Controllers
 {
@@ -25,121 +28,103 @@ namespace CSTS.API.Controllers
 
         // GET: api/comments
         [HttpGet]
-        public async Task<ActionResult<WebResponse<IEnumerable<Comment>>>> Get()
+        public async Task<ActionResult<IEnumerable<CommentSummaryDTO>>> Get()
         {
-            try
+            var response = await _unitOfWork.Comments.GetAllAsync();
+            var dtos = response.Data.Select(c => new CommentSummaryDTO
             {
-                var response = await _unitOfWork.Comments.GetAllAsync();
-                return Ok(new WebResponse<IEnumerable<Comment>>() { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new WebResponse<IEnumerable<Comment>> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
-            }
+                CommentId = c.CommentId,
+                Content = c.Content
+            }).ToList();
+            return Ok(dtos);
         }
 
         // GET api/comments/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<WebResponse<Comment>>> Get(Guid id)
+        public async Task<ActionResult<CommentResponseDTO>> Get(Guid id)
         {
-            try
+            var response = await _unitOfWork.Comments.GetByIdAsync(id);
+            if (response.Data == null)
             {
-                var response = await _unitOfWork.Comments.GetByIdAsync(id);
-                if (response.Data == null)
-                {
-                    return NotFound(new WebResponse<Comment> { Data = null, Code = ResponseCode.Null, Message = "Comment not found." });
-                }
-                return Ok(new WebResponse<Comment> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
+                return NotFound("Comment not found.");
             }
-            catch (Exception ex)
+
+            var dto = new CommentResponseDTO
             {
-                return StatusCode(500, new WebResponse<Comment> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
-            }
+                CommentId = response.Data.CommentId,
+                Content = response.Data.Content,
+                CreatedDate = response.Data.CreatedDate,
+                UserName = response.Data.User?.UserName // Assuming User navigation property
+            };
+            return Ok(dto);
         }
 
         // POST api/comments
         [HttpPost]
-        public async Task<ActionResult<WebResponse<Comment>>> Post([FromBody] Comment comment)
+        public async Task<ActionResult<CommentResponseDTO>> Post([FromBody] CreateCommentDTO dto)
         {
-            try
+            var comment = new Comment
             {
-                if (comment == null)
-                {
-                    return BadRequest(new WebResponse<Comment> { Data = null, Code = ResponseCode.Null, Message = "Comment cannot be null." });
-                }
+                Content = dto.Content,
+                UserId = dto.UserId,
+                TicketId = dto.TicketId,
+                CreatedDate = DateTime.UtcNow
+            };
 
-                // Validate comment
-                ValidationResult result = _validator.Validate(comment);
-                if (!result.IsValid)
-                {
-                    return BadRequest(new WebResponse<Comment> { Data = null, Code = ResponseCode.Error, Message = result.Errors.ToString() });
-                }
-
-                var response = await _unitOfWork.Comments.AddAsync(comment);
-                return CreatedAtAction(nameof(Get), new { id = comment.CommentId }, new WebResponse<Comment> { Data = comment, Code = ResponseCode.Success, Message = "Success" });
-            }
-            catch (Exception ex)
+            var result = _validator.Validate(comment);
+            if (!result.IsValid)
             {
-                return StatusCode(500, new WebResponse<Comment> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
+                return BadRequest(result.Errors.Select(e => e.ErrorMessage));
             }
+
+            var response = await _unitOfWork.Comments.AddAsync(comment);
+            if (!response.Data)
+            {
+                return StatusCode(500, "Failed to add comment");
+            }
+
+            var responseDto = new CommentResponseDTO
+            {
+                CommentId = comment.CommentId,
+                Content = comment.Content,
+                CreatedDate = comment.CreatedDate,
+                UserName = comment.User?.UserName // Assuming User navigation property
+            };
+            return CreatedAtAction(nameof(Get), new { id = comment.CommentId }, responseDto);
         }
 
         // PUT api/comments/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<WebResponse<bool>>> Put(Guid id, [FromBody] Comment comment)
+        public async Task<ActionResult<bool>> Put(Guid id, [FromBody] UpdateCommentDTO dto)
         {
-            try
+            var existingComment = await _unitOfWork.Comments.GetByIdAsync(id);
+            if (existingComment.Data == null)
             {
-                if (comment == null || comment.CommentId != id)
-                {
-                    return BadRequest(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "Comment is null or ID mismatch." });
-                }
-
-                var existingComment = await _unitOfWork.Comments.GetByIdAsync(id);
-                if (existingComment.Data == null)
-                {
-                    return NotFound(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "Comment not found." });
-                }
-
-                // Validate comment
-                ValidationResult result = _validator.Validate(comment);
-                if (!result.IsValid)
-                {
-                    return BadRequest(new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = result.Errors.ToString() });
-                }
-
-                existingComment.Data.Content = comment.Content;
-                existingComment.Data.CreatedDate = comment.CreatedDate;
-                existingComment.Data.UserId = comment.UserId;
-                existingComment.Data.TicketId = comment.TicketId;
-
-                var response = await _unitOfWork.Comments.UpdateAsync(existingComment.Data);
-                return Ok(new WebResponse<bool> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
+                return NotFound("Comment not found.");
             }
-            catch (Exception ex)
+
+            existingComment.Data.Content = dto.Content;
+
+            var result = _validator.Validate(existingComment.Data);
+            if (!result.IsValid)
             {
-                return StatusCode(500, new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
+                return BadRequest(result.Errors.Select(e => e.ErrorMessage));
             }
+
+            var response = await _unitOfWork.Comments.UpdateAsync(existingComment.Data);
+            return Ok(response.Data);
         }
 
         // DELETE api/comments/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<WebResponse<bool>>> Delete(Guid id)
+        public async Task<ActionResult<bool>> Delete(Guid id)
         {
-            try
+            var response = await _unitOfWork.Comments.DeleteAsync(id);
+            if (!response.Data)
             {
-                var response = await _unitOfWork.Comments.DeleteAsync(id);
-                if (!response.Data)
-                {
-                    return NotFound(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "Comment not found." });
-                }
-
-                return Ok(new WebResponse<bool> { Data = response.Data, Code = ResponseCode.Success, Message = "Success" });
+                return NotFound("Comment not found.");
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
-            }
+            return Ok(true);
         }
     }
 }
