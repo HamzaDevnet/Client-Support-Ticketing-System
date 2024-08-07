@@ -24,6 +24,7 @@
               "src/favicon.ico"
             ],
             "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "node_modules/bootstrap/scss/bootstrap.scss",
               "src/assets/scss/paper-dashboard.scss",
               "node_modules/ngx-toastr/toastr.css",
@@ -99,12 +100,16 @@
               "node_modules/arrive/src/arrive.js",
               "node_modules/moment/moment.js",
               "node_modules/chartist/dist/chartist.js",
-              "node_modules/bootstrap-notify/bootstrap-notify.js"
+              "node_modules/bootstrap-notify/bootstrap-notify.js",
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
             ],
             "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.css",
               "src/assets/sass/paper-dashboard.scss",
-              "src/assets/css/demo.css"
+              "src/assets/css/demo.css",
+                "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "src/styles.css"
             ],
             "assets": [
               "src/assets",
@@ -152,7 +157,7 @@
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
-      "styleext": "scss"
+      "style": "scss"
     },
     "@schematics/angular:directive": {
       "prefix": "app"
