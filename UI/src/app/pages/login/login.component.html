@@ -1,0 +1,35 @@
+<div class="container mt-2">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="card-title text-center flex-grow-1">Login</h5>
+        </div>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group">
+                <label class="control-label required">Email or Username</label>
+                <input type="email" class="form-control" formControlName="email" placeholder="Uname@mail.com">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group">
+                <label class="control-label required">Password</label>
+                <input type="password" class="form-control" formControlName="password">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-dark rounded-5 me-2">Login</button>
+                <button type="reset" class="btn btn-dark rounded-5">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
