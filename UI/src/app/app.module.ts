@@ -40,6 +40,8 @@ import { MyopenticketComponent } from './pages/myopenticket/myopenticket.compone
 import { FormsModule } from '@angular/forms';
 import { ClientticketsComponent } from './pages/clienttickets/clienttickets.component';
 import { AddclientticketComponent } from './pages/addclientticket/addclientticket.component'; // Import FormsModule
+import { UsersService } from "./users.service";
+import { TicketService } from "./ticket.service";
 
 
 
@@ -91,7 +93,7 @@ import { AddclientticketComponent } from './pages/addclientticket/addclientticke
     FooterModule,
     FixedPluginModule
   ],
-  providers: [SupportTeamService],
+  providers: [SupportTeamService, UsersService , TicketService],
   bootstrap: [AppComponent],
 })
 export class AppModule { }
