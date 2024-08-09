@@ -11,7 +11,12 @@ export class TicketService {
   constructor(private http: HttpClient) { }
 
   getTickets(): Observable<Ticket[]> {
-    const URL ='https://localhost:7125/api/Tickets';
+    const URL = 'https://localhost:7125/api/Tickets/Summary';
     return this.http.get<Ticket[]>(URL);
+  }
+
+  getTicketById(id: string): Observable<Ticket> {
+    const URL = `https://localhost:7125/api/Tickets/${id}`;
+    return this.http.get<Ticket>(URL);
   }
 }
