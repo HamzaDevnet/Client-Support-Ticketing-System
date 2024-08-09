@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TicketService } from 'app/ticket.service';
 import { Users } from 'app/users';
 import { UsersService } from 'app/users.service';
-import { Chart } from 'chart.js'; // Use this import
+import { Chart } from 'chart.js'; 
 
 @Component({
   selector: 'dashboard-cmp',
