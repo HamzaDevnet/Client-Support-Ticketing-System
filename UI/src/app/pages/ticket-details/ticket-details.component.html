@@ -1,0 +1,15 @@
+<h2 mat-dialog-title>Ticket Details</h2>
+<mat-dialog-content *ngIf="ticket">
+  <p><strong>ID:</strong> {{ ticket.ticketId }}</p>
+  <p><strong>Title:</strong> {{ ticket.product }}</p>
+  <p><strong>Description:</strong> {{ ticket.problemDescription }}</p>
+  <p><strong>Status:</strong> {{ getStatusText(ticket.status) }}</p>
+  <p><strong>Created Date:</strong> {{ ticket.createdDate | date }}</p>
+  <p><strong>Assigned To:</strong> {{ ticket.assignedToUserName || 'N/A' }}</p>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onClose()">Close</button>
+</mat-dialog-actions>
+<mat-dialog-content *ngIf="!ticket">
+  <p>Loading...</p>
+</mat-dialog-content>

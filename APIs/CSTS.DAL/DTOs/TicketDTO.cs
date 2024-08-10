@@ -1,9 +1,6 @@
-﻿using CSTS.DAL.Enum;
+﻿// TicketDTO.cs
+using CSTS.DAL.Enum;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CSTS.DAL.DTOs
 {
@@ -23,6 +20,9 @@ namespace CSTS.DAL.DTOs
         public TicketStatus Status { get; set; }
         public DateTime CreatedDate { get; set; }
         public string AssignedToUserName { get; set; }
+        public string AssignedToFullName { get; set; }
+        public List<CommentResponseDTO> Comments { get; set; } // New property for comments
+        public List<AttachmentDTO> Attachments { get; set; }
     }
 
     public class UpdateTicketDTO
@@ -45,5 +45,19 @@ namespace CSTS.DAL.DTOs
         public Guid TicketId { get; set; }
         public string Product { get; set; }
         public TicketStatus Status { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public string AssignedToFullName { get; set; }
+    }
+
+    public class AttachmentDTO // New DTO for attachments
+    {
+        public Guid AttachmentId { get; set; }
+        public string FileName { get; set; }
+        public string FileUrl { get; set; }
+    }
+    public class AssignTicketDTO
+    {
+        public Guid TicketId { get; set; }
+        public Guid? AssignedTo { get; set; }
     }
 }
