@@ -40,7 +40,8 @@ import { MyopenticketComponent } from './pages/myopenticket/myopenticket.compone
 import { FormsModule } from '@angular/forms';
 import { ClientticketsComponent } from './pages/clienttickets/clienttickets.component';
 import { AddclientticketComponent } from './pages/addclientticket/addclientticket.component';
-import { TicketDetailsComponent } from './pages/ticket-details/ticket-details.component'; // Import TicketDetailsComponent
+import { TicketDetailsComponent } from './pages/ticket-details/ticket-details.component'; 
+import { AssignTicketComponent } from './pages/assign-ticket/assign-ticket.component'; // Import AssignTicketComponent
 
 @NgModule({
   declarations: [
@@ -56,7 +57,8 @@ import { TicketDetailsComponent } from './pages/ticket-details/ticket-details.co
     MyopenticketComponent,
     ClientticketsComponent,
     AddclientticketComponent,
-    TicketDetailsComponent, // Add this line
+    TicketDetailsComponent,
+    AssignTicketComponent // Add this line
   ],
   imports: [
     BrowserModule,
@@ -89,7 +91,7 @@ import { TicketDetailsComponent } from './pages/ticket-details/ticket-details.co
     FooterModule,
     FixedPluginModule
   ],
-  providers: [SupportTeamService],
+  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule { }

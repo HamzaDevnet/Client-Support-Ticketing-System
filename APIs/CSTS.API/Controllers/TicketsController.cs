@@ -37,7 +37,7 @@ namespace CSTS.API.Controllers
                     Product = t.Product,
                     Status = t.Status,
                     CreatedDate = t.CreatedDate,
-                    AssignedToUserName = t.AssignedTo != null ? t.AssignedTo.UserName : null
+                    AssignedToFullName = t.AssignedTo != null ? t.AssignedTo.FullName : null
                 }).ToList();
 
                 return Ok(ticketDtos);
@@ -166,6 +166,30 @@ namespace CSTS.API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        [HttpPut("Assign")]
+        public async Task<ActionResult<WebResponse<bool>>> AssignTicket([FromBody] AssignTicketDTO assignTicketDto)
+        {
+            try
+            {
+                var ticket = await _unitOfWork.Tickets.GetByIdAsync(assignTicketDto.TicketId);
+                if (ticket.Data == null)
+                    return NotFound(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "Ticket not found." });
+
+                ticket.Data.AssignedToId = assignTicketDto.AssignedTo;
+                ticket.Data.Status = TicketStatus.Assigned;
+
+                var response = await _unitOfWork.Tickets.UpdateAsync(ticket.Data);
+                if (response.Data)
+                    return Ok(new WebResponse<bool> { Data = true, Code = ResponseCode.Success, Message = "Ticket assigned successfully." });
+
+                return StatusCode(500, new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = "Failed to assign ticket." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
+            }
+        }
+
 
         // DELETE api/tickets/{id}
         [HttpDelete("{id}")]

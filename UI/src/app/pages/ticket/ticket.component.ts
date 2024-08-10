@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { Ticket } from 'app/ticket';
 import { TicketService } from 'app/ticket.service';
-import { AddTicketComponent } from '../add-ticket/add-ticket.component';
+import { AssignTicketComponent } from '../assign-ticket/assign-ticket.component';
 import { TicketDetailsComponent } from '../ticket-details/ticket-details.component';
 import { TicketStatus } from 'app/enums/ticket.enum';
 
@@ -14,9 +14,10 @@ import { TicketStatus } from 'app/enums/ticket.enum';
 })
 export class TicketComponent implements OnInit {
   tickets: Ticket[] = [];
+  filteredTickets: Ticket[] = [];
   displayedColumns: string[] = ['id', 'title', 'createdDate', 'assignedTo', 'status', 'action'];
   dataSource = new MatTableDataSource<Ticket>(this.tickets);
-  selectedFilter: string = 'Filter Tickets';
+  selectedFilter: string = 'All Tickets';
 
   constructor(private ticketService: TicketService, public dialog: MatDialog) {}
 
@@ -31,7 +32,7 @@ export class TicketComponent implements OnInit {
           ...ticket,
           sequentialId: index + 1
         }));
-        this.dataSource.data = this.tickets;
+        this.applyFilter(this.selectedFilter);
       },
       error: (error) => {
         console.error('Error fetching tickets', error);
@@ -54,27 +55,37 @@ export class TicketComponent implements OnInit {
     }
   }
 
-  allTickets(): void {
-    this.getTickets();
-    console.log('All tickets successfully displayed');
-  }
-
-  filterTickets(filter: string): void {
+  applyFilter(filter: string): void {
     this.selectedFilter = filter;
 
-    if (filter === 'All Tickets') {
-      this.getTickets();
+    switch (filter) {
+      case 'All Tickets':
+        this.filteredTickets = this.tickets;
+        break;
+      case 'Active Tickets':
+        this.filteredTickets = this.tickets.filter(ticket => ticket.status !== TicketStatus.Closed);
+        break;
+      case 'Assigned Tickets':
+        this.filteredTickets = this.tickets.filter(ticket => ticket.status === TicketStatus.Assigned);
+        break;
+      default:
+        this.filteredTickets = this.tickets;
+        break;
     }
+
+    this.dataSource.data = this.filteredTickets;
   }
 
   openAssignedDialog(ticket: Ticket): void {
-    const dialogRef = this.dialog.open(AddTicketComponent, {
+    const dialogRef = this.dialog.open(AssignTicketComponent, {
       width: '400px',
-      data: { ticket }
+      data: { ticketId: ticket.ticketId }
     });
     dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.getTickets();
+      }
       console.log('The dialog was closed');
-      // Handle result if needed
     });
   }
 
@@ -85,7 +96,6 @@ export class TicketComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed');
-      // Handle result if needed
     });
   }
 }
