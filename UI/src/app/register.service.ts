@@ -12,9 +12,8 @@ export class RegisterService {
   
   constructor(private http: HttpClient) { }
 
-  // Method to register a new user
-  postRegister(dto: Register): Observable<Register> {
-    return this.http.post<Register>(this.apiUrl, dto);
+  postRegister(dto: Register): Observable<any> {
+    return this.http.post(this.apiUrl, dto);
   }
   
 }
