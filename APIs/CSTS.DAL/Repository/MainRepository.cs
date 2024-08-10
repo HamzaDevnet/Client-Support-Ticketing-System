@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 public class Repository<T> : IRepository<T> where T : class
@@ -74,6 +75,8 @@ public class Repository<T> : IRepository<T> where T : class
         }
     }
 
+
+
     public async Task<WebResponse<bool>> UpdateAsync(T entity)
     {
         try
@@ -139,6 +142,48 @@ public class Repository<T> : IRepository<T> where T : class
         return new WebResponse<IEnumerable<T>>()
         {
             Data = data,
+            Code = ResponseCode.Success,
+            Message = ResponseCode.Success.ToString()
+        };
+    }
+
+    public async Task<WebResponse<IEnumerable<T>>> GetAllIncludingAsync(params Expression<Func<T, object>>[] includeProperties)
+    {
+        IQueryable<T> query = _dbSet;
+        foreach (var includeProperty in includeProperties)
+        {
+            query = query.Include(includeProperty);
+        }
+        var data = await query.ToListAsync();
+        return new WebResponse<IEnumerable<T>>()
+        {
+            Data = data,
+            Code = ResponseCode.Success,
+            Message = ResponseCode.Success.ToString()
+        };
+    }
+
+    public async Task<WebResponse<T>> GetIncludingAsync(Guid id, params Expression<Func<T, object>>[] includeProperties)
+    {
+        IQueryable<T> query = _dbSet;
+        foreach (var includeProperty in includeProperties)
+        {
+            query = query.Include(includeProperty);
+        }
+        var entity = await query.FirstOrDefaultAsync(e => EF.Property<Guid>(e, "TicketId") == id);
+        if (entity == null)
+        {
+            return new WebResponse<T>()
+            {
+                Data = null,
+                Code = ResponseCode.Null,
+                Message = "Entity not found."
+            };
+        }
+
+        return new WebResponse<T>()
+        {
+            Data = entity,
             Code = ResponseCode.Success,
             Message = ResponseCode.Success.ToString()
         };
