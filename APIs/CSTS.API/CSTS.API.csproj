@@ -7,13 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Mapping\**" />
     <Compile Remove="Models\**" />
-    <Content Remove="Mapping\**" />
     <Content Remove="Models\**" />
-    <EmbeddedResource Remove="Mapping\**" />
     <EmbeddedResource Remove="Models\**" />
-    <None Remove="Mapping\**" />
     <None Remove="Models\**" />
   </ItemGroup>
 
@@ -29,6 +25,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CSTS.DAL\CSTS.DAL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Mapping\" />
   </ItemGroup>
 
 </Project>

@@ -27,7 +27,7 @@ import { EditDialogComponent } from './pages/edit-dialog/edit-dialog.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from "@angular/forms";
-import { MatMenuModule } from '@angular/material/menu';
+import {MatMenuModule} from '@angular/material/menu';
 import { AddTicketComponent } from './pages/add-ticket/add-ticket.component';
 import { MatSelectModule } from "@angular/material/select";
 import { UserProfileComponent } from './user-profile/user-profile.component';
@@ -39,11 +39,9 @@ import { LoginComponent } from './pages/login/login.component';
 import { MyopenticketComponent } from './pages/myopenticket/myopenticket.component';
 import { FormsModule } from '@angular/forms';
 import { ClientticketsComponent } from './pages/clienttickets/clienttickets.component';
-import { AddclientticketComponent } from './pages/addclientticket/addclientticket.component';
-import { TicketDetailsComponent } from './pages/ticket-details/ticket-details.component'; 
-import { AssignTicketComponent } from './pages/assign-ticket/assign-ticket.component';
-import { UsersService } from "./users.service";
-import { TicketService } from "./ticket.service";
+import { AddclientticketComponent } from './pages/addclientticket/addclientticket.component'; // Import FormsModule
+
+
 
 @NgModule({
   declarations: [
@@ -59,8 +57,7 @@ import { TicketService } from "./ticket.service";
     MyopenticketComponent,
     ClientticketsComponent,
     AddclientticketComponent,
-    TicketDetailsComponent,
-    AssignTicketComponent
+
   ],
   imports: [
     BrowserModule,
@@ -83,6 +80,7 @@ import { TicketService } from "./ticket.service";
     MatCheckboxModule,
     MatNativeDateModule,
     RouterModule,
+  
 
     RouterModule.forRoot(AppRoutes, {
       useHash: true
@@ -93,7 +91,7 @@ import { TicketService } from "./ticket.service";
     FooterModule,
     FixedPluginModule
   ],
-  providers: [SupportTeamService, UsersService, TicketService],
+  providers: [SupportTeamService],
   bootstrap: [AppComponent],
 })
 export class AppModule { }
