@@ -75,8 +75,6 @@ public class Repository<T> : IRepository<T> where T : class
         }
     }
 
-
-
     public async Task<WebResponse<bool>> UpdateAsync(T entity)
     {
         try
