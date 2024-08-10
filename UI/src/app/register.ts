@@ -1,10 +1,9 @@
 export interface Register {
-    firstName: string , 
-    lastName: string , 
-    username: string , 
-    MobileNumber : string , 
-    email : string , 
-    password : string , 
-    DateOfBirth : Date 
+    firstName: String , 
+    lastName: String , 
+    username: String , 
+    phone : string , 
+    email : String , 
+    password : String , 
+    dob : Date , 
 }
-    
