@@ -41,7 +41,9 @@ import { FormsModule } from '@angular/forms';
 import { ClientticketsComponent } from './pages/clienttickets/clienttickets.component';
 import { AddclientticketComponent } from './pages/addclientticket/addclientticket.component';
 import { TicketDetailsComponent } from './pages/ticket-details/ticket-details.component'; 
-import { AssignTicketComponent } from './pages/assign-ticket/assign-ticket.component'; // Import AssignTicketComponent
+import { AssignTicketComponent } from './pages/assign-ticket/assign-ticket.component';
+import { UsersService } from "./users.service";
+import { TicketService } from "./ticket.service";
 
 @NgModule({
   declarations: [
@@ -58,7 +60,7 @@ import { AssignTicketComponent } from './pages/assign-ticket/assign-ticket.compo
     ClientticketsComponent,
     AddclientticketComponent,
     TicketDetailsComponent,
-    AssignTicketComponent // Add this line
+    AssignTicketComponent
   ],
   imports: [
     BrowserModule,
@@ -91,7 +93,7 @@ import { AssignTicketComponent } from './pages/assign-ticket/assign-ticket.compo
     FooterModule,
     FixedPluginModule
   ],
-  providers: [],
+  providers: [SupportTeamService, UsersService, TicketService],
   bootstrap: [AppComponent],
 })
 export class AppModule { }

@@ -8,10 +8,13 @@ import { Register } from './register';
 })
 export class RegisterService {
 
+  private apiUrl = 'https://localhost:7109/api/register';  // Adjust URL as necessary
+  
   constructor(private http: HttpClient) { }
 
-  postRegister(): Observable<Register[]> {
-    const URL = 'https://localhost:7109/api/register';
-    return this.http.get<Register[]>(URL);
+  // Method to register a new user
+  postRegister(dto: Register): Observable<Register> {
+    return this.http.post<Register>(this.apiUrl, dto);
   }
+  
 }
