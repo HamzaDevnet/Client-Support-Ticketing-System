@@ -7,7 +7,7 @@ import { TicketStatus } from 'app/enums/ticket.enum';
 @Component({
   selector: 'app-ticket-details',
   templateUrl: './ticket-details.component.html',
-  styleUrls: ['./ticket-details.component.css'] // Ensure this is correct
+  styleUrls: ['./ticket-details.component.scss'] // Ensure this references the SCSS file
 })
 export class TicketDetailsComponent implements OnInit {
   ticket: Ticket | undefined;
