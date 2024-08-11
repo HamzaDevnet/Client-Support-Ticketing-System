@@ -1,5 +1,6 @@
 using CSTS.API.Health;
 using CSTS.DAL.Repository.IRepository;
+using CSTS.DAL.Utilities;
 using CSTS.DAL.Validation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,8 @@ builder.Services.AddControllers()
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(Mapping).Assembly);
+
 // Unit of Work
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -26,6 +29,9 @@ builder.Services.AddHealthChecks()
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<FileService>(); // Add this line to register FileService
+
 
 // Add CORS policy
 builder.Services.AddCors(options =>
@@ -40,6 +46,9 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+
+app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

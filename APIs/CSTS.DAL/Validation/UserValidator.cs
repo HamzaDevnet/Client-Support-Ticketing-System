@@ -11,9 +11,12 @@ namespace CSTS.DAL.Validation
                 .NotEmpty().WithMessage("User name is required.")
                 .Length(3, 50).WithMessage("User name must be between 3 and 50 characters.");
 
-            RuleFor(x => x.FullName)
+            RuleFor(x => x.FirstName)
                 .NotEmpty().WithMessage("Please Enter your Name.")
-                .Length(3, 50).WithMessage("Full Name must be between 3 and 50 characters.");
+                .Length(3, 50).WithMessage("First Name must be between 3 and 50 characters.");
+            RuleFor(x => x.LastName)
+                .NotEmpty().WithMessage("Please Enter your Name.")
+                .Length(3, 50).WithMessage("Last Name must be between 3 and 50 characters.");
 
             RuleFor(x => x.MobileNumber)
                 .NotEmpty().WithMessage("Mobile number is required.")

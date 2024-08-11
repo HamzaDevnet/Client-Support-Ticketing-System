@@ -5,7 +5,6 @@ namespace CSTS.DAL.Models {
         public Guid TicketId { get; set; } // Primary Key
         public string Product { get; set; }
         public string ProblemDescription { get; set; }
-        public string Attachments { get; set; }
         public TicketStatus Status { get; set; } // Enum
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
@@ -17,5 +16,12 @@ namespace CSTS.DAL.Models {
         public User AssignedTo { get; set; }
 
         public ICollection<Comment> Comments { get; set; }
+        public ICollection<Attachment> Attachments { get; set; } // Updated
+
+        public Ticket()
+        {
+            Comments = new List<Comment>();
+            Attachments = new List<Attachment>(); // Initialize the Attachments collection
+        }
     }
 }

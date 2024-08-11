@@ -8,6 +8,8 @@ using CSTS.DAL.Repository.IRepository;
 using FluentValidation;
 using CSTS.DAL.Enum;
 using CSTS.DAL.DTOs;
+using CSTS.DAL.Utilities;
+using CSTS.DAL.AuttoMapper.DTOs;
 
 namespace CSTS.API.Controllers
 {
@@ -17,11 +19,13 @@ namespace CSTS.API.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<Ticket> _validator;
+        private readonly FileService _fileService;
 
-        public TicketsController(IUnitOfWork unitOfWork, IValidator<Ticket> validator)
+        public TicketsController(IUnitOfWork unitOfWork, IValidator<Ticket> validator, FileService fileService)
         {
             _unitOfWork = unitOfWork;
             _validator = validator;
+            _fileService = fileService;
         }
 
         // GET: api/tickets
@@ -37,7 +41,7 @@ namespace CSTS.API.Controllers
                     Product = t.Product,
                     Status = t.Status,
                     CreatedDate = t.CreatedDate,
-                    AssignedToFullName = t.AssignedTo != null ? t.AssignedTo.FullName : null
+                    AssignedToFullName = t.AssignedTo != null ? t.AssignedTo.FirstName : null
                 }).ToList();
 
                 return Ok(ticketDtos);
@@ -92,7 +96,7 @@ namespace CSTS.API.Controllers
 
         // POST api/tickets
         [HttpPost]
-        public async Task<ActionResult<TicketResponseDTO>> Post([FromBody] CreateTicketDTO createDto)
+        public async Task<ActionResult<TicketResponseDTO>> Post([FromForm] CreateTicketDTO createDto)
         {
             try
             {
@@ -100,17 +104,26 @@ namespace CSTS.API.Controllers
                 {
                     Product = createDto.Product,
                     ProblemDescription = createDto.ProblemDescription,
-                    //Attachments = createDto.Attachments,
-                    AssignedToId = createDto.AssignedToId,
                     CreatedDate = DateTime.UtcNow,
-                    Status = TicketStatus.New, // Assuming new tickets are always 'New'
-                    CreatedById = new Guid("ab1c2d34-5e6f-4b78-9c3d-1a2b3c4d5e6f")
-                    //ModifiedDate = DateTime.UtcNow
+                    Status = TicketStatus.New,
+                    CreatedById = new Guid("ab1c2d34-5e6f-4b78-9c3d-1a2b3c4d5e6f"),
+                    Attachments = new List<Attachment>() // Initialize Attachments
                 };
 
                 var result = _validator.Validate(ticket);
                 if (!result.IsValid)
                     return BadRequest(result.Errors.Select(e => e.ErrorMessage));
+
+                if (createDto.Attachments != null) // Check if Attachments are not null
+                {
+                    foreach (var file in createDto.Attachments)
+                    {
+                        using var memoryStream = new MemoryStream();
+                        await file.CopyToAsync(memoryStream);
+                        var filePath = await _fileService.SaveFileAsync(memoryStream.ToArray(), FolderType.Images, Path.GetExtension(file.FileName));
+                        ticket.Attachments.Add(new Attachment { FileName = file.FileName, FileUrl = filePath });
+                    }
+                }
 
                 var response = await _unitOfWork.Tickets.AddAsync(ticket);
                 if (!response.Data)
@@ -123,7 +136,8 @@ namespace CSTS.API.Controllers
                     ProblemDescription = ticket.ProblemDescription,
                     Status = ticket.Status,
                     CreatedDate = ticket.CreatedDate,
-                    AssignedToUserName = ticket.AssignedTo?.UserName
+                    AssignedToUserName = ticket.AssignedTo?.UserName,
+                    Attachments = ticket.Attachments.Select(a => new AttachmentDTO { AttachmentId = a.AttachmentId, FileName = a.FileName, FileUrl = a.FileUrl }).ToList()
                 };
 
                 return CreatedAtAction(nameof(Get), new { id = ticket.TicketId }, ticketDto);
@@ -135,7 +149,7 @@ namespace CSTS.API.Controllers
         }
 
 
-        // PUT api/tickets/{id}
+        //PUT api/tickets/{id}
         [HttpPut("{id}")]
         public async Task<ActionResult<UpdateResponseDTO>> Put(Guid id, [FromBody] UpdateTicketDTO updateDto)
         {
@@ -147,7 +161,7 @@ namespace CSTS.API.Controllers
 
                 ticket.Data.Product = updateDto.Product;
                 ticket.Data.ProblemDescription = updateDto.ProblemDescription;
-                ticket.Data.Attachments = updateDto.Attachments;
+                //ticket.Data.Attachments = updateDto.Attachments;
                 ticket.Data.Status = updateDto.Status;
                 ticket.Data.AssignedToId = updateDto.AssignedToId;
 
@@ -166,6 +180,7 @@ namespace CSTS.API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
         [HttpPut("Assign")]
         public async Task<ActionResult<WebResponse<bool>>> AssignTicket([FromBody] AssignTicketDTO assignTicketDto)
         {

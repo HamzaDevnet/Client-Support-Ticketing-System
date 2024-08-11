@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 public class Repository<T> : IRepository<T> where T : class
 {
+
     private readonly DbContext _context;
     private readonly DbSet<T> _dbSet;
 
@@ -160,6 +161,11 @@ public class Repository<T> : IRepository<T> where T : class
             Message = ResponseCode.Success.ToString()
         };
     }
+    public IEnumerable<T> GetAll()
+    {
+        return _dbSet.ToList();
+    }
+
 
     public async Task<WebResponse<T>> GetIncludingAsync(Guid id, params Expression<Func<T, object>>[] includeProperties)
     {
@@ -186,4 +192,30 @@ public class Repository<T> : IRepository<T> where T : class
             Message = ResponseCode.Success.ToString()
         };
     }
+    public async Task<WebResponse<User>> GetUserByEmailOrUserName(string emailOrUserName)
+    {
+        if (typeof(T) != typeof(User))
+        {
+            throw new InvalidOperationException("This method is only applicable to User entities.");
+        }
+
+        var user = await _context.Set<User>().FirstOrDefaultAsync(u => u.Email == emailOrUserName || u.UserName == emailOrUserName);
+        if (user == null)
+        {
+            return new WebResponse<User>()
+            {
+                Data = null,
+                Code = ResponseCode.Null,
+                Message = "User not found."
+            };
+        }
+
+        return new WebResponse<User>()
+        {
+            Data = user,
+            Code = ResponseCode.Success,
+            Message = ResponseCode.Success.ToString()
+        };
+    }
 }
+
