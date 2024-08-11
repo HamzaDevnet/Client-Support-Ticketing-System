@@ -52,18 +52,24 @@ export class ClientticketsComponent implements OnInit {
     const dialogRef = this.dialog.open(EditDialogComponent, {
       width: '600px',
       data: {
-        name: supportteam.name,
-        email: supportteam.email,
+        firstname: supportteam.firstName,
+        lastname: supportteam.lastName,
         username: supportteam.username,
-        address: supportteam.address
+        mobilephone: supportteam.MobileNumber,
+        email: supportteam.email ,
+        password: supportteam.password ,
+        dataofbirth: supportteam.DateOfBirth, 
       }
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        supportteam.name = result.name;
-        supportteam.email = result.email;
+        supportteam.firstName = result.name;
+        supportteam.lastName = result.email;
         supportteam.username = result.username;
-        supportteam.address = result.address;
+        supportteam.MobileNumber = result.mobilephone;
+        supportteam.email = result.email;
+        supportteam.password = result.password ;
+        supportteam.DateOfBirth = result.dataofbirth ;
         this.dataSource.data = [...this.supportTeam];
       }
     });

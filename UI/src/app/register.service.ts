@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Register } from './register';
+import { Register, RegisterResponse } from './register';
+import { Userdata } from './userdata';
 
 
 @Injectable({
@@ -11,8 +12,8 @@ export class RegisterService {
 
   constructor(private http: HttpClient) { }
 
-  postRegister(): Observable<Register[]> {
+  postRegister(userdata:Userdata): Observable<RegisterResponse> {
     const URL = 'https://localhost:7109/api/register';
-    return this.http.get<Register[]>(URL);
+    return this.http.post<RegisterResponse>(URL,userdata ); //return response token
   }
 }

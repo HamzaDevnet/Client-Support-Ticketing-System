@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Ticket } from 'app/ticket';
 import { TicketService } from 'app/ticket.service';
-import { Users } from 'app/users';
 import { UsersService } from 'app/users.service';
 import { Chart } from 'chart.js';
 
@@ -20,8 +19,9 @@ export class DashboardComponent implements OnInit {
   public chartEmail: any;
   public chartHours: any;
   chart: any;
-  userCount: number = 0;
+  supportCount: number = 0;
   ticketCount: number = 0;
+  clientCount:number = 0; 
 
   constructor(private ticketService: TicketService, private usersService: UsersService) {}
 
@@ -29,18 +29,38 @@ export class DashboardComponent implements OnInit {
     this.getTickets();
     this.createLineChart();
     this.getSupportMembersNum();
-
-    
+    this.getTicketCount();
+    this.getClientsNum();    
   }
 
   getSupportMembersNum(): void {
-    this.usersService.getUsers().subscribe( {
-      next: (userCount) => {
-      this.userCount = userCount.length;
-      console.log(userCount.length);
+    this.ticketService.getSupportTeamMembers().subscribe({
+      next: (support) => {
+        console.log('Support members:', support);
+        if (Array.isArray(support)) {
+          this.supportCount = support.length;
+        } else {
+          console.error('Response is not an array:', support);
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching support members', error);
       }
     });
-  } //need to be modified 
+  } 
+  
+  getClientsNum(): void {
+    this.ticketService.getClients().subscribe( {
+      next: (clients) => {
+        if(Array.isArray(clients)){
+          this.clientCount = clients.length;
+        }else{
+          console.error('Response is not an array:', clients);}
+      },
+      error: (error) => {
+        console.error('Error fetching clients ', error); }
+    });
+  }
 
   getTicketCount(): void {
     this.ticketService.getTickets().subscribe({

@@ -1,9 +1,9 @@
 export interface Userdata {
-    firstName: string , 
-    lastName: string , 
-    username: string , 
-    phone : string , 
-    email : string 
+    firstName: String , 
+    lastName: String , 
+    username: String , 
+    MobileNumber : string , 
+    email : String , 
+    password : String , 
+    DateOfBirth : Date  
 }
-
-//what they return from backend ? 

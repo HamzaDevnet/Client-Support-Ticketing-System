@@ -41,4 +41,10 @@ export class TicketService {
       map(response => response.data)
     );
   }
+
+  getClients(): Observable<User[]> {
+    return this.http.get<WebResponse<User[]>>(`${this.usersUrl}/external-clients`).pipe(
+      map(response => response.data)
+    );
+  }
 }
