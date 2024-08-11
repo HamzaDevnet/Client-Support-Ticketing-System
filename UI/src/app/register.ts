@@ -10,7 +10,4 @@ export interface Register {
     DateOfBirth: Date;
   }
   
-  export interface RegisterResponse {
-    token: string;
-    user: Userdata;
-  }
+  

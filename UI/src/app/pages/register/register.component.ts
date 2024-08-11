@@ -40,8 +40,6 @@ export class RegisterComponent implements OnInit {
       this.RegisterService.postRegister(userData).subscribe({
         next: (response) => {
           console.log('Registration successful:', response);
-          this.userLocalStorage.setUserData(userData); 
-          //token
           this.router.navigate(['/dashboard']);
         },
         error: (error) => {
@@ -52,4 +50,6 @@ export class RegisterComponent implements OnInit {
       console.log('Form is invalid');
     }
   }
+  
 }
+
