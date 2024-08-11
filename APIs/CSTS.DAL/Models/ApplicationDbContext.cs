@@ -4,9 +4,7 @@ using System.Reflection.Emit;
 using CSTS.DAL.Models;
 using Microsoft.AspNetCore.Identity.Data;
 using System.Runtime.Intrinsics.X86;
-using WebApplication1.Models;
-using SlackAPI;
-using LoginRequest = WebApplication1.Models.LoginRequest;
+
 using User = CSTS.DAL.Models.User;
 
 public class ApplicationDbContext : DbContext
@@ -20,11 +18,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<Comment> Comments { get; set; }
 
-    public DbSet<RegisterUser> RegisterUser { get; set; }
-    public DbSet<LoginRequest> loginRequests { get; set; }
-    public DbSet<LoginResponse> LoginResponse { get; set; }
-    public DbSet<User1> User1 { get; set; }
-    public DbSet<RegisterTeamMember> RegisterTeamMember { get; set; }
+ 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

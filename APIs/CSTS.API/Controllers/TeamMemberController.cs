@@ -1,8 +1,8 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.DTO;
-using WebApplication1.Models;
 using Microsoft.EntityFrameworkCore;
+using CSTS.DAL.Models;
 
 namespace WebApplication1.Controllers
 {
@@ -22,17 +22,17 @@ namespace WebApplication1.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (await _context.RegisterTeamMember.AnyAsync(u => u.Email == dto.Email))
+                if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
                 {
                     ModelState.AddModelError("Email", "Email is already in use.");
                 }
 
-                if (await _context.RegisterTeamMember.AnyAsync(u => u.MobileNumber == dto.MobileNumber))
+                if (await _context.Users.AnyAsync(u => u.MobileNumber == dto.MobileNumber))
                 {
                     ModelState.AddModelError("MobileNumber", "Mobile number is already in use.");
                 }
 
-                if (await _context.RegisterTeamMember.AnyAsync(u => u.UserName == dto.UserName))
+                if (await _context.Users.AnyAsync(u => u.UserName == dto.UserName))
                 {
                     ModelState.AddModelError("UserName", "UserName is already in use.");
                 }
@@ -42,20 +42,20 @@ namespace WebApplication1.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var teamMember = new RegisterTeamMember
+                var teamMember = new User
                 {
                     FirstName = dto.FirstName,
                     LastName = dto.LastName,
                     Email = dto.Email,
                     Password = dto.Password,
                     MobileNumber = dto.MobileNumber,
-                    UserImage = dto.UserImage,
+                    Image = dto.UserImage,
                     DateOfBirth = dto.DateOfBirth,
                     UserName = dto.UserName,
                 };
 
 
-                _context.RegisterTeamMember.Add(teamMember);
+                _context.Users.Add(teamMember);
                 await _context.SaveChangesAsync();
 
 

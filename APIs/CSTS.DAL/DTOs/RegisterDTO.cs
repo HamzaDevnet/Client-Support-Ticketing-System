@@ -30,7 +30,7 @@ namespace WebApplication1.DTO
         public string MobileNumber { get; set; }
 
         [Display(Name = "User Image")]
-        public string? UserImage { get; set; }
+        public byte[]? UserImage { get; set; }
 
         [Required]
         [DataType(DataType.Date)]

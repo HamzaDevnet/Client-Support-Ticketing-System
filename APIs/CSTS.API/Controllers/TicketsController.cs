@@ -37,7 +37,7 @@ namespace CSTS.API.Controllers
                     Product = t.Product,
                     Status = t.Status,
                     CreatedDate = t.CreatedDate,
-                    AssignedToFullName = t.AssignedTo != null ? t.AssignedTo.FullName : null
+                    AssignedToFullName = t.AssignedTo != null ? t.AssignedTo.FirstName : null
                 }).ToList();
 
                 return Ok(ticketDtos);
