@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CSTS.DAL.AuttoMapper.DTOs
+namespace CSTS.DAL.AutoMapper.DTOs
 {
     public class CreateCommentDTO
     {

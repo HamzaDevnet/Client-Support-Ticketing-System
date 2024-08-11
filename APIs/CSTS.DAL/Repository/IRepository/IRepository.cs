@@ -5,15 +5,24 @@ using System.Threading.Tasks;
 
 public interface IRepository<T> where T : class
 {
-    Task<WebResponse<IEnumerable<T>>> GetAllAsync();
-    Task<WebResponse<T>> GetByIdAsync(Guid id);
-    Task<WebResponse<bool>> AddAsync(T entity);
-    Task<WebResponse<bool>> UpdateAsync(T entity);
-    Task<WebResponse<bool>> DeleteAsync(Guid id);
-    Task<WebResponse<IEnumerable<T>>> FindAsync(Func<T, bool> predicate);
-    Task<WebResponse<IEnumerable<T>>> GetAllIncludingAsync(params Expression<Func<T, object>>[] includeProperties);
-    Task<WebResponse<T>> GetIncludingAsync(Guid id, params Expression<Func<T, object>>[] includeProperties);
-    Task<WebResponse<User>> GetUserByEmailOrUserName(string emailOrUserName);
+    IEnumerable<T> Get(int PageNumber = 1 , int PageSize = 100);
+    IEnumerable<T> Get(int PageNumber = 1 , int PageSize = 100, params Expression<Func<T, object>>[] includeProperties);
+    public IEnumerable<T> Get(out int count, int PageNumber = 1, int PageSize = 100);
+    public IEnumerable<T> Get(out int count, int PageNumber = 1, int PageSize = 100, params Expression<Func<T, object>>[] includeProperties);
 
-    IEnumerable<T> GetAll();
+
+    IEnumerable<T> Find(Func<T, bool> predicate, int PageNumber = 1 , int PageSize = 100);
+    IEnumerable<T> Find(Func<T, bool> predicate, int PageNumber = 1 , int PageSize = 100, params Expression<Func<T, object>>[] includeProperties);
+    public IEnumerable<T> Find(out int count, Func<T, bool> predicate, int PageNumber = 1, int PageSize = 100);
+    public IEnumerable<T> Find(out int count, Func<T, bool> predicate, int PageNumber = 1, int PageSize = 100, params Expression<Func<T, object>>[] includeProperties);
+
+    T GetById(Guid id);
+  
+    bool Add(T entity);
+    bool Update(T entity);
+    bool Delete(Guid id);
+
+    int Count(Func<T, bool> predicate);
+    IQueryable<T> GetQueryable();
+
 }

@@ -7,8 +7,12 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.DTO;
 
-using SlackAPI;
-
+using CSTS.DAL.AutoMapper.DTOs;
+using CSTS.DAL.Repository.IRepository;
+using CSTS.DAL.Enum;
+using CSTS.DAL.Migrations;
+using CSTS.DAL.Models;
+using System.Linq;
 
 
 
@@ -19,32 +23,37 @@ namespace CSTS.API.Controllers
     [Route("api/")]
     public class LoginController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IRepository<DAL.Models.User> _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
 
-        public LoginController(IRepository<DAL.Models.User> userRepository, IConfiguration configuration, ApplicationDbContext context)
+        public LoginController(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
-            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
             _configuration = configuration;
-            _context = context;
         }
 
         [HttpPost]
         [Route("login")]
 
-        public async Task<IActionResult> Login([FromBody] DAL.Models.User loginRequest)
+        public async Task<IActionResult> Login([FromBody] Login loginRequest)
         {
-            var response = await _userRepository.GetUserByEmailOrUserName(loginRequest.EmailOrUserName);
-            if (response == null || response.Data == null || response.Data.Password != loginRequest.Password)
+            var user = GetUser_ByUserName(loginRequest.Username);
+            if (user == null || user.Password != loginRequest.Password)
             {
-                return Unauthorized(new LoginResponse { });
+                return Unauthorized(false);
             }
-            var user = response.Data;
+
             var token = GenerateJwtToken(user);
 
-            return Ok(new { Success = true, Message = "Login successful", Token = token, RedirectUrl = "/main" });
-            //return RedirectToAction("Index", "Home"); 
+            LoginResponseDto response = new LoginResponseDto()
+            {
+                token = token,
+                email = user.Email,
+                fullName = user.FullName,
+                userType = (int)user.UserType
+            };
+
+            return Ok(new APIResponse<LoginResponseDto>(response));
 
         }
 
@@ -57,9 +66,11 @@ namespace CSTS.API.Controllers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
+                    new Claim(ClaimTypes.Upn, user.UserId.ToString()),
                     new Claim(ClaimTypes.Name, user.UserName),
-                     new Claim(ClaimTypes.Role, user.UserType.ToString())  // Using UserType enum
+                    new Claim(ClaimTypes.Role, ((int)user.UserType).ToString())  // Using UserType enum
                 }),
+
                 Expires = DateTime.UtcNow.AddHours(24),
                 Issuer = _configuration["Jwt:Issuer"],
                 Audience = _configuration["Jwt:Audience"],
@@ -67,34 +78,43 @@ namespace CSTS.API.Controllers
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            string tokenstr = token.ToString();
+
             return tokenHandler.WriteToken(token);
         }
 
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+        [HttpPost("RegisterClient")]
+        public async Task<IActionResult> RegisterClient([FromBody] RegisterDto dto)
         {
 
             if (ModelState.IsValid)
             {
-                if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
+
+                var users = _unitOfWork.Users.Find(u => string.Equals(u.UserName, dto.UserName, StringComparison.CurrentCultureIgnoreCase)
+                                                     || string.Equals(u.Email, dto.Email, StringComparison.CurrentCultureIgnoreCase)
+                                                     || string.Equals(u.MobileNumber, dto.MobileNumber, StringComparison.CurrentCultureIgnoreCase)
+                            );
+
+                if (users.Any(u => u.Email == dto.Email))
                 {
                     ModelState.AddModelError("Email", "Email is already in use.");
                 }
 
-                if (await _context.Users.AnyAsync(u => u.MobileNumber == dto.MobileNumber))
+                if (users.Any(u => u.MobileNumber == dto.MobileNumber))
                 {
                     ModelState.AddModelError("MobileNumber", "Mobile number is already in use.");
                 }
 
-                if (await _context.Users.AnyAsync(u => u.UserName == dto.UserName))
+                if (users.Any(u => u.UserName == dto.UserName))
                 {
                     ModelState.AddModelError("UserName", "UserName is already in use.");
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    return Ok(new APIResponse<bool>(false, string.Concat(" , ",ModelState.SelectMany(x => x.Value.Errors).SelectMany( e => e.ErrorMessage))));
                 }
 
                 var user = new CSTS.DAL.Models.User
@@ -107,19 +127,77 @@ namespace CSTS.API.Controllers
                     Image = dto.UserImage,
                     DateOfBirth = dto.DateOfBirth,
                     UserName = dto.UserName,
-                    // UserType = dto.UserType,
+                    UserType = UserType.ExternalClient,
                     //Address = dto.Address
                 };
 
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-
-
-                return Ok(new { Message = "Registration successful", User = user, RedirectUrl = "/login" });
-                //return RedirectToAction("Index", "Home");
+                _unitOfWork.Users.Add(user);
+                
+                return Ok(new APIResponse<bool>(true));
             }
 
-            return BadRequest(ModelState);
+            return Ok(new APIResponse<bool>(false, string.Concat(" , ",ModelState.SelectMany(x => x.Value.Errors).SelectMany( e => e.ErrorMessage))));
+        }
+
+
+        [HttpPost("RegisterSupportTeamMember")]
+        public async Task<IActionResult> RegisterSupportTeamMember([FromBody] RegisterDto dto)
+        {
+
+            if (ModelState.IsValid)
+            {
+
+                var users = _unitOfWork.Users.Find(u => string.Equals(u.UserName, dto.UserName, StringComparison.CurrentCultureIgnoreCase)
+                                                     || string.Equals(u.Email, dto.Email, StringComparison.CurrentCultureIgnoreCase)
+                                                     || string.Equals(u.MobileNumber, dto.MobileNumber, StringComparison.CurrentCultureIgnoreCase)
+                            );
+
+                if (users.Any(u => u.Email == dto.Email))
+                {
+                    ModelState.AddModelError("Email", "Email is already in use.");
+                }
+
+                if (users.Any(u => u.MobileNumber == dto.MobileNumber))
+                {
+                    ModelState.AddModelError("MobileNumber", "Mobile number is already in use.");
+                }
+
+                if (users.Any(u => u.UserName == dto.UserName))
+                {
+                    ModelState.AddModelError("UserName", "UserName is already in use.");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return Ok(new APIResponse<bool>(false, string.Concat(" , ", ModelState.SelectMany(x => x.Value.Errors).SelectMany(e => e.ErrorMessage))));
+                }
+
+                var user = new CSTS.DAL.Models.User
+                {
+                    FirstName = dto.FirstName,
+                    LastName = dto.LastName,
+                    Email = dto.Email,
+                    Password = dto.Password,
+                    MobileNumber = dto.MobileNumber,
+                    Image = dto.UserImage,
+                    DateOfBirth = dto.DateOfBirth,
+                    UserName = dto.UserName,
+                    UserType = UserType.SupportTeamMember,
+                    //Address = dto.Address
+                };
+
+                _unitOfWork.Users.Add(user);
+
+                return Ok(new APIResponse<bool>(true));
+            }
+
+            return Ok(new APIResponse<bool>(false, string.Concat(" , ", ModelState.SelectMany(x => x.Value.Errors).SelectMany(e => e.ErrorMessage))));
+        }
+
+
+        private CSTS.DAL.Models.User? GetUser_ByUserName(string UserName)
+        {
+            return _unitOfWork.Users.Find(u => string.Equals(u.UserName, UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
         }
 
     }

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSTS.DAL.AuttoMapper.DTOs
+namespace CSTS.DAL.AutoMapper.DTOs
 {
     public class CreateUserDTO
     {

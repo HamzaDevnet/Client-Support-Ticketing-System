@@ -52,9 +52,8 @@ export class SupportTeamMemberComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        supportteam.firstName = result.        firstname: supportteam.firstName,
-        ;
-        supportteam.lastName = result.email;
+        supportteam.firstName = result.firstname;
+        supportteam.lastName = result.lastName;
         supportteam.username = result.username;
         supportteam.MobileNumber = result.mobilephone;
         supportteam.email = result.email;

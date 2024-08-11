@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { SheardServiceService } from './sheard-service.service';
 import { Observable } from 'rxjs';
 import { Login, LoginResponse } from './login';
 
@@ -8,10 +9,13 @@ import { Login, LoginResponse } from './login';
 })
 export class LoginService {
 
-  constructor(private http: HttpClient) { }
+
+  constructor(private http: HttpClient, private SheardServiceService: SheardServiceService) {
+
+   }
 
   getLogin(loginData:Login): Observable<LoginResponse> {
-    const URL = 'https://localhost:7109/api/login';
+    const URL = this.SheardServiceService.getApiUrl() + '/login';
     return this.http.post<LoginResponse>(URL, loginData);
   }
 }

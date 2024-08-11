@@ -7,8 +7,9 @@ using CSTS.DAL.Models;
 using CSTS.DAL.Repository.IRepository;
 using FluentValidation;
 using CSTS.DAL.Enum;
-using CSTS.DAL.AuttoMapper.DTOs;
+using CSTS.DAL.AutoMapper.DTOs;
 using CSTS.DAL.Utilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace CSTS.API.Controllers
 {
@@ -28,19 +29,19 @@ namespace CSTS.API.Controllers
         }
 
         // GET: api/tickets
-        [HttpGet("Summary")]
-        public async Task<ActionResult<IEnumerable<TicketSummaryDTO>>> GetTicketSummary()
+        [HttpGet("tickets")]
+        public async Task<ActionResult<IEnumerable<TicketSummaryDTO>>> GetTickets([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
             try
             {
-                var tickets = await _unitOfWork.Tickets.GetAllIncludingAsync(t => t.AssignedTo);
-                var ticketDtos = tickets.Data.Select(t => new TicketSummaryDTO
+                var tickets = _unitOfWork.Tickets.Get(PageNumber, PageSize, t => t.AssignedTo);
+                var ticketDtos = tickets.Select(t => new TicketSummaryDTO
                 {
                     TicketId = t.TicketId,
                     Product = t.Product,
                     Status = t.Status,
                     CreatedDate = t.CreatedDate,
-                    AssignedToFullName = t.AssignedTo != null ? t.AssignedTo.FirstName : null
+                    AssignedToFullName = t.AssignedTo != null ? t.AssignedTo.FullName : "Not Assigned"
                 }).ToList();
 
                 return Ok(ticketDtos);
@@ -58,26 +59,26 @@ namespace CSTS.API.Controllers
         {
             try
             {
-                var ticket = await _unitOfWork.Tickets.GetIncludingAsync(id, t => t.AssignedTo, t => t.Comments/*, t => t.Attachments*/);
-                if (ticket.Data == null)
+                var ticket = _unitOfWork.Tickets.GetQueryable().Include(t => t.AssignedTo).FirstOrDefault(t => t.TicketId == id);
+                if (ticket == null)
                     return NotFound("Ticket not found.");
 
                 var ticketDto = new TicketResponseDTO
                 {
-                    TicketId = ticket.Data.TicketId,
-                    Product = ticket.Data.Product,
-                    ProblemDescription = ticket.Data.ProblemDescription,
-                    Status = ticket.Data.Status,
-                    CreatedDate = ticket.Data.CreatedDate,
-                    AssignedToUserName = ticket.Data.AssignedTo?.UserName,
-                    Comments = ticket.Data.Comments.Select(c => new CommentResponseDTO
+                    TicketId = ticket.TicketId,
+                    Product = ticket.Product,
+                    ProblemDescription = ticket.ProblemDescription,
+                    Status = ticket.Status,
+                    CreatedDate = ticket.CreatedDate,
+                    AssignedToUserName = ticket.AssignedTo?.FullName,
+                    Comments = ticket.Comments.Select(c => new CommentResponseDTO
                     {
                         CommentId = c.CommentId,
                         Content = c.Content,
                         CreatedDate = c.CreatedDate,
-                        UserName = c.User?.UserName // Updated to use User property
+                        UserName = c.User?.FullName // Updated to use User property
                     }).ToList(),
-                    //Attachments = ticket.Data.Attachments.Select(a => new AttachmentDTO
+                    //Attachments = ticket.Attachments.Select(a => new AttachmentDTO
                     //{
                     //    AttachmentId = a.AttachmentId,
                     //    FileName = a.FileName,
@@ -124,8 +125,8 @@ namespace CSTS.API.Controllers
                     }
                 }
 
-                var response = await _unitOfWork.Tickets.AddAsync(ticket);
-                if (!response.Data)
+                var response = _unitOfWork.Tickets.Add(ticket);
+                if (!response)
                     return StatusCode(500, "Failed to create ticket");
 
                 var ticketDto = new TicketResponseDTO
@@ -135,7 +136,7 @@ namespace CSTS.API.Controllers
                     ProblemDescription = ticket.ProblemDescription,
                     Status = ticket.Status,
                     CreatedDate = ticket.CreatedDate,
-                    AssignedToUserName = ticket.AssignedTo?.UserName,
+                    AssignedToUserName = ticket.AssignedTo?.FullName,
                     Attachments = ticket.Attachments.Select(a => new AttachmentDTO { AttachmentId = a.AttachmentId, FileName = a.FileName, FileUrl = a.FileUrl }).ToList()
                 };
 
@@ -154,22 +155,22 @@ namespace CSTS.API.Controllers
         {
             try
             {
-                var ticket = await _unitOfWork.Tickets.GetByIdAsync(id);
-                if (ticket.Data == null)
+                var ticket = _unitOfWork.Tickets.GetById(id);
+                if (ticket == null)
                     return NotFound("Ticket not found.");
 
-                ticket.Data.Product = updateDto.Product;
-                ticket.Data.ProblemDescription = updateDto.ProblemDescription;
-                //ticket.Data.Attachments = updateDto.Attachments;
-                ticket.Data.Status = updateDto.Status;
-                ticket.Data.AssignedToId = updateDto.AssignedToId;
+                ticket.Product = updateDto.Product;
+                ticket.ProblemDescription = updateDto.ProblemDescription;
+                //ticket.Attachments = updateDto.Attachments;
+                ticket.Status = updateDto.Status;
+                ticket.AssignedToId = updateDto.AssignedToId;
 
-                var result = _validator.Validate(ticket.Data);
+                var result = _validator.Validate(ticket);
                 if (!result.IsValid)
                     return BadRequest(new UpdateResponseDTO { Success = false, Message = string.Join("; ", result.Errors.Select(e => e.ErrorMessage)) });
 
-                var response = await _unitOfWork.Tickets.UpdateAsync(ticket.Data);
-                if (!response.Data)
+                var response = _unitOfWork.Tickets.Update(ticket);
+                if (!response)
                     return StatusCode(500, "Failed to update ticket");
 
                 return Ok(new UpdateResponseDTO { Success = true, Message = "Ticket updated successfully" });
@@ -181,26 +182,26 @@ namespace CSTS.API.Controllers
         }
 
         [HttpPut("Assign")]
-        public async Task<ActionResult<WebResponse<bool>>> AssignTicket([FromBody] AssignTicketDTO assignTicketDto)
+        public async Task<ActionResult<APIResponse<bool>>> AssignTicket([FromBody] AssignTicketDTO assignTicketDto)
         {
             try
             {
-                var ticket = await _unitOfWork.Tickets.GetByIdAsync(assignTicketDto.TicketId);
-                if (ticket.Data == null)
-                    return NotFound(new WebResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "Ticket not found." });
+                var ticket = _unitOfWork.Tickets.GetById(assignTicketDto.TicketId);
+                if (ticket == null)
+                    return NotFound(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "Ticket not found." });
 
-                ticket.Data.AssignedToId = assignTicketDto.AssignedTo;
-                ticket.Data.Status = TicketStatus.Assigned;
+                ticket.AssignedToId = assignTicketDto.AssignedTo;
+                ticket.Status = TicketStatus.Assigned;
 
-                var response = await _unitOfWork.Tickets.UpdateAsync(ticket.Data);
-                if (response.Data)
-                    return Ok(new WebResponse<bool> { Data = true, Code = ResponseCode.Success, Message = "Ticket assigned successfully." });
+                var response = _unitOfWork.Tickets.Update(ticket);
+                if (response)
+                    return Ok(new APIResponse<bool> { Data = true, Code = ResponseCode.Success, Message = "Ticket assigned successfully." });
 
-                return StatusCode(500, new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = "Failed to assign ticket." });
+                return StatusCode(500, new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = "Failed to assign ticket." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new WebResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
+                return StatusCode(500, new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
             }
         }
 
@@ -211,8 +212,8 @@ namespace CSTS.API.Controllers
         {
             try
             {
-                var response = await _unitOfWork.Tickets.DeleteAsync(id);
-                if (!response.Data)
+                var response = _unitOfWork.Tickets.Delete(id);
+                if (!response)
                     return NotFound("Ticket not found.");
 
                 return Ok(true);

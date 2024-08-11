@@ -28,8 +28,13 @@ export class LoginComponent implements OnInit {
       password: ['', Validators.required]
     });
   }
-  onSubmit(): void {
-    if (this.loginForm.valid) {
+
+  Login(): void {
+    
+    debugger;
+    
+    // if (this.loginForm.valid) {
+
       console.log('Form data:', this.loginForm.value);
       this.loginService.getLogin(this.loginForm.value).subscribe({
         next: (response) => { 
@@ -55,8 +60,8 @@ export class LoginComponent implements OnInit {
           console.error('Error logging in', error);
         }
       });
-    } else {
-      console.log('Form is invalid');
-    }
+    // } else {
+    //   console.log('Form is invalid');
+    // }
   }
 }

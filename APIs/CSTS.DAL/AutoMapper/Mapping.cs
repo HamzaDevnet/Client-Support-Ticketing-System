@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CSTS.DAL.AuttoMapper.DTOs;
+using CSTS.DAL.AutoMapper.DTOs;
 using CSTS.DAL.Models;// افترض أن الكائنات الفعلية موجودة في هذا النطاق
 
 public class Mapping : Profile

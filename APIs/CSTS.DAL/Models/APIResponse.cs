@@ -7,8 +7,23 @@ using System.Threading.Tasks;
 
 namespace CSTS.DAL.Models
 {
-    public class WebResponse<T>
+    public class APIResponse<T>
     {
+        public APIResponse() { }
+
+        public APIResponse( T response) 
+        { 
+            Code = ResponseCode.Success;
+            Message = "";
+            Data = response;
+        }
+        public APIResponse(T response,string errorMessage)
+        {
+            Code = ResponseCode.Error;
+            Message = errorMessage;
+            Data = response;
+        }
+
         public ResponseCode Code { get; set; }
         public T Data { get; set; }
         public string Message { get; set; }

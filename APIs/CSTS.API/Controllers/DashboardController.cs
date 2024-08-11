@@ -1,6 +1,7 @@
 ﻿using CSTS.DAL.Enum;
 using CSTS.DAL.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace CSTS.API.Controllers
@@ -20,7 +21,7 @@ namespace CSTS.API.Controllers
         [HttpGet("TicketsCountByState")]
         public IActionResult GetTicketsCountByState()
         {
-            var tickets = _unitOfWork.Tickets.GetAll().AsQueryable();
+            var tickets = _unitOfWork.Tickets.GetQueryable();
             if (!tickets.Any())
             {
                 return NotFound("No tickets found.");
@@ -42,17 +43,13 @@ namespace CSTS.API.Controllers
         [HttpGet("ClientTicketsCount")]
         public IActionResult GetClientTicketsCount()
         {
-            var clients = _unitOfWork.Users.GetAll().Where(u => u.UserType == UserType.ExternalClient).AsQueryable();
-            if (!clients.Any())
-            {
-                return NotFound("No clients found.");
-            }
-
+            var clients = _unitOfWork.Users.GetQueryable().Include(u => u.CreatedTickets).Where(u => u.UserType == UserType.ExternalClient);
+            
             var result = clients
                 .Select(client => new
                 {
                     ClientName = client.FullName,
-                    TicketsCount = client.CreatedTickets.Count()
+                    TicketsCount = client.CreatedTickets != null ? client.CreatedTickets.Count(): 0
                 })
                 .ToList();
 
@@ -63,7 +60,7 @@ namespace CSTS.API.Controllers
         [HttpGet("TeamMemberTicketsCount")]
         public IActionResult GetTeamMemberTicketsCount()
         {
-            var teamMembers = _unitOfWork.Users.GetAll().Where(u => u.UserType == UserType.SupportTeamMember).AsQueryable();
+            var teamMembers = _unitOfWork.Users.GetQueryable().Where(u => u.UserType == UserType.SupportTeamMember).AsQueryable();
             if (!teamMembers.Any())
             {
                 return NotFound("No team members found.");
@@ -73,7 +70,7 @@ namespace CSTS.API.Controllers
                 .Select(member => new
                 {
                     TeamMemberName = member.FullName,
-                    TicketsAssignedCount = member.AssignedTickets.Count()
+                    TicketsAssignedCount = member.AssignedTickets != null ? member.AssignedTickets.Count() : 0
                 })
                 .ToList();
 
@@ -84,7 +81,7 @@ namespace CSTS.API.Controllers
         [HttpGet("TeamMemberClosedTicketsCount")]
         public IActionResult GetTeamMemberClosedTicketsCount()
         {
-            var teamMembers = _unitOfWork.Users.GetAll().Where(u => u.UserType == UserType.SupportTeamMember).AsQueryable();
+            var teamMembers = _unitOfWork.Users.GetQueryable().Where(u => u.UserType == UserType.SupportTeamMember).AsQueryable();
             if (!teamMembers.Any())
             {
                 return NotFound("No team members found.");
@@ -94,8 +91,8 @@ namespace CSTS.API.Controllers
                 .Select(member => new
                 {
                     TeamMemberName = member.FullName,
-                    TicketsClosedCount = member.AssignedTickets
-                        .Count(t => t.Status == TicketStatus.Closed)
+                    TicketsClosedCount = member.AssignedTickets != null ? member.AssignedTickets.Count(t => t.Status == TicketStatus.Closed) : 0
+                        
                 })
                 .ToList();
 
