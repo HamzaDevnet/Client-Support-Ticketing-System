@@ -1,8 +1,11 @@
 export interface Users {
-    userId:string,
-      userName: string,
-      fullName: string,
-      mobileNumber: string,
-      email: string,
-      image: string
+  firstName: string;
+  lastName: string;
+  username: string;
+  MobileNumber: string;
+  email: string;
+  password: string;
+  DateOfBirth: Date;
 }
+
+

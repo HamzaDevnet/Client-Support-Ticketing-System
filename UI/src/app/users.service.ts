@@ -9,11 +9,26 @@ import { HttpClient } from '@angular/common/http';
 export class UsersService {
   constructor(private http: HttpClient) { }
 
+  private supportMember ='https://localhost:7125/api/Users/support-team-members';
+  private clients = 'https://localhost:7125/api/Users/external-clients';
 
-
-getUsers(): Observable<Users[]> {
-  const URL ='https://localhost:7125/api/Users/support-team-members';
-  return this.http.get<Users[]>(URL);
+getSupport(): Observable<Users[]> {
+  return this.http.get<Users[]>(this.supportMember);
 }
+
+getClients(): Observable<Users[]> {
+  return this.http.get<Users[]>(this.clients);
+}
+  // getSupportTeamMembers(): Observable<User[]> {
+  //   return this.http.get<WebResponse<User[]>>(`${this.usersUrl}/support-team-members`).pipe(
+  //     map(response => response.data)
+  //   );
+  // }
+
+  // getClients(): Observable<User[]> {
+  //   return this.http.get<WebResponse<User[]>>(`${this.usersUrl}/external-clients`).pipe(
+  //     map(response => response.data)
+  //   );
+  // }
 
 }

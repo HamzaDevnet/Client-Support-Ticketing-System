@@ -1,9 +1,13 @@
+import { Userdata } from "./userdata";
+
 export interface Register {
-    firstName: String , 
-    lastName: String , 
-    username: String , 
-    MobileNumber : string , 
-    email : String , 
-    password : String , 
-    DateOfBirth : Date , 
-}
+    firstName: string;
+    lastName: string;
+    username: string;
+    MobileNumber: string;
+    email: string;
+    password: string;
+    DateOfBirth: Date;
+  }
+  
+  

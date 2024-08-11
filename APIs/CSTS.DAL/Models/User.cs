@@ -1,6 +1,7 @@
 ﻿using CSTS.DAL.Enum;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CSTS.DAL.Models
 {
@@ -27,5 +28,15 @@ namespace CSTS.DAL.Models
         public ICollection<Ticket>? AssignedTickets { get; set; } // Tickets assigned to this user
 
         public ICollection<Comment>? Comments { get; set; }
+
+        [NotMapped]
+        public string FullName
+        {
+            get
+            {
+                return this.FirstName + " " + this.LastName;
+            }
+        }
+
     }
 }
