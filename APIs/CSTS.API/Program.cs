@@ -18,6 +18,8 @@ builder.Services.AddControllers()
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(Mapping).Assembly);
+
 // Unit of Work
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

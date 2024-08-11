@@ -7,7 +7,7 @@ using CSTS.DAL.Models;
 using CSTS.DAL.Repository.IRepository;
 using FluentValidation;
 using CSTS.DAL.Enum;
-using CSTS.DAL.DTOs;
+using CSTS.DAL.AuttoMapper.DTOs;
 
 namespace CSTS.API.Controllers
 {

@@ -2,7 +2,7 @@
 using CSTS.DAL.Enum;
 using System;
 
-namespace CSTS.DAL.DTOs
+namespace CSTS.DAL.AuttoMapper.DTOs
 {
     public class CreateTicketDTO
     {

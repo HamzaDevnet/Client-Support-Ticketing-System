@@ -12,7 +12,10 @@ namespace CSTS.DAL.Repository.IRepository
         IRepository<User> Users { get; }
         IRepository<Ticket> Tickets { get; }
         IRepository<Comment> Comments { get; }
+       
         Task<int> CompleteAsync();
         Task<bool> CanConnectAsync();
     }
+
+  
 }

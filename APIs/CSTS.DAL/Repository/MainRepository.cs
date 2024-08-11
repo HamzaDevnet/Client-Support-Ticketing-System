@@ -162,6 +162,11 @@ public class Repository<T> : IRepository<T> where T : class
             Message = ResponseCode.Success.ToString()
         };
     }
+    public IEnumerable<T> GetAll()
+    {
+        return _dbSet.ToList();
+    }
+
 
     public async Task<WebResponse<T>> GetIncludingAsync(Guid id, params Expression<Func<T, object>>[] includeProperties)
     {

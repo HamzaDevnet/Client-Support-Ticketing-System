@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSTS.DAL.DTOs
+namespace CSTS.DAL.AuttoMapper.DTOs
 {
     public class CreateUserDTO
     {
@@ -49,6 +49,47 @@ namespace CSTS.DAL.DTOs
         public string UserName { get; set; }
         public UserType UserType { get; set; }
     }
+    public class CreateSupportTeamMemberDTO
+    {
+        public string UserName { get; set; }
+        public string FullName { get; set; }
+        public string MobileNumber { get; set; }
+        public string Email { get; set; }
+        public DateTime DateOfBirth { get; set; }
+        public string Password { get; set; }
+        public string Address { get; set; }
+        public UserType UserType { get; set; } = UserType.SupportTeamMember;
+    }
+    public class SupportTeamMemberResponseDTO
+    {
+        public Guid MemberId { get; set; }
+        public string UserName { get; set; }
+        public string FullName { get; set; }
+        public string MobileNumber { get; set; }
+        public string Email { get; set; }
+        public UserStatus UserStatus { get; set; }
+    }
+    public class CreateClientDTO
+    {
+        public string UserName { get; set; }
+        public string FullName { get; set; }
+        public string MobileNumber { get; set; }
+        public string Email { get; set; }
+        public DateTime DateOfBirth { get; set; }
+        public string Password { get; set; }
+        public string Address { get; set; }
+        public UserType UserType { get; set; } = UserType.ExternalClient;
+    }
+    public class ClientResponseDTO
+    {
+        public Guid ClientId { get; set; }
+        public string UserName { get; set; }
+        public string FullName { get; set; }
+        public string MobileNumber { get; set; }
+        public string Email { get; set; }
+        public UserStatus UserStatus { get; set; }
+    }
+
     public class ActivationResponseDTO
     {
         public bool Success { get; set; }
