@@ -13,7 +13,7 @@ import { AddTicketComponent } from '../add-ticket/add-ticket.component';
 })
 export class SupportTeamMemberComponent implements OnInit {
   supportTeam: SupportTeam[] = [];
-  displayedColumns: string[] = ['id', 'name', 'username', 'email', 'edit'];
+  displayedColumns: string[] = ['firstName', 'lastName', 'username', 'MobileNumber', 'email','password', 'DateOfBirth' ,'edit'];
   dataSource = new MatTableDataSource<SupportTeam>(this.supportTeam);
 
   constructor(private supportTeamService: SupportTeamService, public dialog: MatDialog) {}
@@ -34,23 +34,32 @@ export class SupportTeamMemberComponent implements OnInit {
     });
   }
 
-  openEditDialog(supportteam: SupportTeam): void {
+
+  openEditSupportDialog(supportteam: SupportTeam): void {
     const dialogRef = this.dialog.open(EditDialogComponent, {
-      width: '600px', // Adjust the width as needed
+      width: '600px', 
       data: {
-        name: supportteam.name,
-        email: supportteam.email,
+        firstname: supportteam.firstName,
+        lastname: supportteam.lastName,
         username: supportteam.username,
-        address: supportteam.address
+        mobilephone: supportteam.MobileNumber,
+        email: supportteam.email ,
+        password: supportteam.password ,
+        dataofbirth: supportteam.DateOfBirth, 
+
       }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        supportteam.name = result.name;
-        supportteam.email = result.email;
+        supportteam.firstName = result.        firstname: supportteam.firstName,
+        ;
+        supportteam.lastName = result.email;
         supportteam.username = result.username;
-        supportteam.address = result.address;
+        supportteam.MobileNumber = result.mobilephone;
+        supportteam.email = result.email;
+        supportteam.password = result.password ;
+        supportteam.DateOfBirth = result.dataofbirth ;
         this.dataSource.data = [...this.supportTeam];
       }
     });
@@ -65,4 +74,10 @@ export class SupportTeamMemberComponent implements OnInit {
       // Handle result if needed
     });
   }
+
+  // openAddSupportDialog():void{
+  //   const dialogRef = this.dialog.open(AddSupportMember, {
+  //     width: '400px'
+  //   });
+  // }
 }
