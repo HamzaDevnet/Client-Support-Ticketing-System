@@ -13,11 +13,15 @@ public class UnitOfWork : IUnitOfWork
         Users = new Repository<User>(_context);
         Tickets = new Repository<Ticket>(_context);
         Comments = new Repository<Comment>(_context);
+        Attachments = new Repository<Attachment>(_context); // Added
+
     }
 
     public IRepository<User> Users { get; private set; }
     public IRepository<Ticket> Tickets { get; private set; }
     public IRepository<Comment> Comments { get; private set; }
+    public IRepository<Attachment> Attachments { get; private set; } // Added
+
 
     public async Task<int> CompleteAsync()
     {

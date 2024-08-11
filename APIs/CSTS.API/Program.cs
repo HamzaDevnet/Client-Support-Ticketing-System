@@ -1,5 +1,6 @@
 using CSTS.API.Health;
 using CSTS.DAL.Repository.IRepository;
+using CSTS.DAL.Utilities;
 using CSTS.DAL.Validation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,9 @@ builder.Services.AddHealthChecks()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<FileService>(); // Add this line to register FileService
+
+
 // Add CORS policy
 builder.Services.AddCors(options =>
 {
@@ -40,6 +44,9 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+
+app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
