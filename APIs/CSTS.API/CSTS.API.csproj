@@ -30,4 +30,8 @@
     <ProjectReference Include="..\CSTS.DAL\CSTS.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

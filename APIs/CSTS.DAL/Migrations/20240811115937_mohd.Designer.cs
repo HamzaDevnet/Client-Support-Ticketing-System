@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSTS.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240811115937_mohd")]
+    partial class mohd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -20,30 +23,6 @@ namespace CSTS.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("CSTS.DAL.Models.Attachment", b =>
-                {
-                    b.Property<Guid>("AttachmentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("TicketId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("AttachmentId");
-
-                    b.HasIndex("TicketId");
-
-                    b.ToTable("Attachment");
-                });
 
             modelBuilder.Entity("CSTS.DAL.Models.Comment", b =>
                 {
@@ -81,6 +60,10 @@ namespace CSTS.DAL.Migrations
 
                     b.Property<Guid?>("AssignedToId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Attachments")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CreatedById")
                         .HasColumnType("uniqueidentifier");
@@ -169,17 +152,6 @@ namespace CSTS.DAL.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("CSTS.DAL.Models.Attachment", b =>
-                {
-                    b.HasOne("CSTS.DAL.Models.Ticket", "Ticket")
-                        .WithMany("Attachments")
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Ticket");
-                });
-
             modelBuilder.Entity("CSTS.DAL.Models.Comment", b =>
                 {
                     b.HasOne("CSTS.DAL.Models.Ticket", "Ticket")
@@ -219,8 +191,6 @@ namespace CSTS.DAL.Migrations
 
             modelBuilder.Entity("CSTS.DAL.Models.Ticket", b =>
                 {
-                    b.Navigation("Attachments");
-
                     b.Navigation("Comments");
                 });
 

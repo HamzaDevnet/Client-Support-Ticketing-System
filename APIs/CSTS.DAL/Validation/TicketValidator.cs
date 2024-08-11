@@ -23,7 +23,7 @@ namespace CSTS.DAL.Validation
                 //.IsInEnum().WithMessage("Invalid ticket status.");
 
             //RuleFor(x => x.CreatedDate)
-              //  .LessThanOrEqualTo(DateTime.Now).WithMessage("Created date must be in the past or present.");
+                //.LessThanOrEqualTo(DateTime.Now).WithMessage("Created date must be in the past or present.");
 
             //RuleFor(x => x.ModifiedDate)
                 //.GreaterThanOrEqualTo(x => x.CreatedDate).WithMessage("Modified date must be greater than or equal to created date.");

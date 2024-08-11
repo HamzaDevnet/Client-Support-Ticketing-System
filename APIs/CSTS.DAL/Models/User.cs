@@ -8,7 +8,8 @@ namespace CSTS.DAL.Models
     {
         public Guid UserId { get; set; } // Primary Key
         public string UserName { get; set; }
-        public string FullName { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         public string MobileNumber { get; set; }
         public string Email { get; set; }
         //IFormFile
@@ -19,6 +20,8 @@ namespace CSTS.DAL.Models
         public string Password { get; set; }
         public string Address { get; set; }
         public DateTime RegistrationDate { get; set; }
+
+        public string EmailOrUserName { get; set; }
 
         public ICollection<Ticket>? CreatedTickets { get; set; } // Tickets created by this user
         public ICollection<Ticket>? AssignedTickets { get; set; } // Tickets assigned to this user

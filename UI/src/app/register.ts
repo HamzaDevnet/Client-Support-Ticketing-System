@@ -2,8 +2,8 @@ export interface Register {
     firstName: String , 
     lastName: String , 
     username: String , 
-    phone : string , 
+    MobileNumber : string , 
     email : String , 
     password : String , 
-    dob : Date , 
+    DateOfBirth : Date , 
 }

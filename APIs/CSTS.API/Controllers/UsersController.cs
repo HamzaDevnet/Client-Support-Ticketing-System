@@ -115,7 +115,7 @@ namespace CSTS.API.Controllers
                 }
 
                 existingUser.Data.UserName = user.UserName;
-                existingUser.Data.FullName = user.FullName;
+                existingUser.Data.FirstName = user.FirstName;
                 existingUser.Data.MobileNumber = user.MobileNumber;
                 existingUser.Data.Email = user.Email;
                 existingUser.Data.Image = user.Image;

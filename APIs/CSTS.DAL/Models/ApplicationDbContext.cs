@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using CSTS.DAL.Models;
+using Microsoft.AspNetCore.Identity.Data;
+using System.Runtime.Intrinsics.X86;
+
+using User = CSTS.DAL.Models.User;
 
 public class ApplicationDbContext : DbContext
 {
@@ -13,6 +17,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<Comment> Comments { get; set; }
+
+ 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -50,17 +56,5 @@ public class ApplicationDbContext : DbContext
             .WithOne(c => c.User)
             .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<Ticket>()
-            .HasOne(t => t.AssignedTo)
-            .WithMany(u => u.AssignedTickets)
-            .HasForeignKey(t => t.AssignedToId)
-            .OnDelete(DeleteBehavior.Restrict); // Prevent cascading deletes
-
-        modelBuilder.Entity<Ticket>()
-            .HasOne(t => t.CreatedBy)
-            .WithMany(u => u.CreatedTickets)
-            .HasForeignKey(t => t.CreatedById)
-            .OnDelete(DeleteBehavior.Restrict); // Prevent cascading deletes
     }
 }

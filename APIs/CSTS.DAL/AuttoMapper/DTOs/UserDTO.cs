@@ -1,6 +1,8 @@
 ﻿using CSTS.DAL.Enum;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +20,8 @@ namespace CSTS.DAL.AuttoMapper.DTOs
         public UserType UserType { get; set; }
         public string Password { get; set; }
         public string Address { get; set; }
+        public List<IFormFile> Attachments { get; set; } // Add this property
+
     }
 
     public class UserResponseDTO
@@ -94,5 +98,18 @@ namespace CSTS.DAL.AuttoMapper.DTOs
     {
         public bool Success { get; set; }
         public string Message { get; set; }
+    }
+    public class LoginRequest
+    {
+        [Key]
+        public int Id { get; set; }
+        public string EmailOrUserName { get; set; }
+        public string Password { get; set; }
+    }
+    public class AttachmentDTO // New DTO for attachments
+    {
+        public Guid AttachmentId { get; set; }
+        public string FileName { get; set; }
+        public string FileUrl { get; set; }
     }
 }

@@ -1,6 +1,11 @@
 ﻿// TicketDTO.cs
 using CSTS.DAL.Enum;
+using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CSTS.DAL.AuttoMapper.DTOs
 {
@@ -8,7 +13,7 @@ namespace CSTS.DAL.AuttoMapper.DTOs
     {
         public string Product { get; set; }
         public string ProblemDescription { get; set; }
-        public string Attachments { get; set; }
+        public List<IFormFile> Attachments { get; set; }
         public Guid? AssignedToId { get; set; }
     }
 
@@ -49,12 +54,7 @@ namespace CSTS.DAL.AuttoMapper.DTOs
         public string AssignedToFullName { get; set; }
     }
 
-    public class AttachmentDTO // New DTO for attachments
-    {
-        public Guid AttachmentId { get; set; }
-        public string FileName { get; set; }
-        public string FileUrl { get; set; }
-    }
+    
     public class AssignTicketDTO
     {
         public Guid TicketId { get; set; }
