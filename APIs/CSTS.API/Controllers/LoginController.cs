@@ -57,32 +57,53 @@ namespace CSTS.API.Controllers
 
         }
 
-
         private string GenerateJwtToken(CSTS.DAL.Models.User user)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
+            var secretKey = "your-32-characters-long-secret-key!";
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: "yourdomain.com",
+                audience: "yourdomain.com",
+                claims: new[]
                 {
-                    new Claim(ClaimTypes.Upn, user.UserId.ToString()),
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.Role, ((int)user.UserType).ToString())  // Using UserType enum
-                }),
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+                new Claim("Utype", user.UserType.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                },
+                expires: DateTime.Now.AddMinutes(30),
+                signingCredentials: creds
+            );
 
-                Expires = DateTime.UtcNow.AddHours(24),
-                Issuer = _configuration["Jwt:Issuer"],
-                Audience = _configuration["Jwt:Audience"],
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            string tokenstr = token.ToString();
-
-            return tokenHandler.WriteToken(token);
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        //private string GenerateJwtToken(CSTS.DAL.Models.User user)
+        //{
+        //    var tokenHandler = new JwtSecurityTokenHandler();
+        //    var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
+        //    var tokenDescriptor = new SecurityTokenDescriptor
+        //    {
+        //        Subject = new ClaimsIdentity(new Claim[]
+        //        {
+        //            new Claim(ClaimTypes.Upn, user.UserId.ToString()),
+        //            new Claim(ClaimTypes.Name, user.UserName),
+        //            new Claim(ClaimTypes.Role, ((int)user.UserType).ToString())  // Using UserType enum
+        //        }),
+
+        //        Expires = DateTime.UtcNow.AddHours(24),
+        //        Issuer = _configuration["Jwt:Issuer"],
+        //        Audience = _configuration["Jwt:Audience"],
+        //        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        //    };
+
+        //    var token = tokenHandler.CreateToken(tokenDescriptor);
+
+        //    string tokenstr = token.ToString();
+
+        //    return tokenHandler.WriteToken(token);
+        //}
 
 
         [HttpPost("RegisterClient")]
