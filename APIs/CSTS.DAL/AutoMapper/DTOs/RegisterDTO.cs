@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace WebApplication1.DTO
 {
@@ -30,7 +31,8 @@ namespace WebApplication1.DTO
         public string MobileNumber { get; set; }
 
         [Display(Name = "User Image")]
-        public byte[]? UserImage { get; set; }
+        [JsonIgnore]
+        public byte[]? UserImage { get; set; } = null;
 
         [Required]
         [DataType(DataType.Date)]
@@ -39,8 +41,8 @@ namespace WebApplication1.DTO
 
         //public string UserType { get; internal set; }
 
-        //[Required]
-        //public string Address { get; set; }
+        [Required]
+        public string Address { get; set; }
     }
 
 }
