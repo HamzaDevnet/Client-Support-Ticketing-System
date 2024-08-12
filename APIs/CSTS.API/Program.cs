@@ -1,9 +1,10 @@
 using CSTS.API.Health;
 using CSTS.DAL.Repository.IRepository;
-using CSTS.DAL.Utilities;
 using CSTS.DAL.Validation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using CSTS.API.ApiServices;
+
 
 var builder = WebApplication.CreateBuilder(args);
 

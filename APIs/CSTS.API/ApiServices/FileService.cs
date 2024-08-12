@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSTS.DAL.Utilities
+namespace CSTS.API.ApiServices
 {
     public enum FolderType
     {
@@ -23,7 +23,7 @@ namespace CSTS.DAL.Utilities
             _env = env;
         }
 
-        public async Task<string> SaveFileAsync(byte[] fileBytes, FolderType folder, string extension)
+        public string SaveFileAsync(byte[] fileBytes, FolderType folder, string extension)
         {
             string wwwRootPath = _env.WebRootPath;
             string folderPath = Path.Combine(wwwRootPath, folder.ToString());
@@ -36,9 +36,10 @@ namespace CSTS.DAL.Utilities
             string fileName = $"{Guid.NewGuid()}{extension}";
             string fullPath = Path.Combine(folderPath, fileName);
 
-            await File.WriteAllBytesAsync(fullPath, fileBytes);
+            File.WriteAllBytes(fullPath, fileBytes);
 
             return Path.Combine(folder.ToString(), fileName);
         }
     }
+
 }
