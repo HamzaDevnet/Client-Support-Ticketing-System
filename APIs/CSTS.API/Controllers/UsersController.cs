@@ -25,6 +25,7 @@ namespace CSTS.API.Controllers
 
         // GET: api/users
         [HttpGet]
+        [CSTS.API.ApiServices.CstsAuth(UserType.ExternalClient)]
         public async Task<ActionResult<APIResponse<IEnumerable<User>>>> Get([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
             try

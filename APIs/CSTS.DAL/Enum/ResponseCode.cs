@@ -11,6 +11,7 @@ namespace CSTS.DAL.Enum
         Success = 200,
         Warning = 300,
         Error = 400,
+        Unauthorized = 401,
         Null = 500
     }
 }

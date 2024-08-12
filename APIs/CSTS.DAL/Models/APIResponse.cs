@@ -23,6 +23,13 @@ namespace CSTS.DAL.Models
             Message = errorMessage;
             Data = response;
         }
+        public APIResponse(T response, ResponseCode responseCode , string errorMessage)
+        {
+            Code = responseCode;
+            Message = errorMessage;
+            Data = response;
+        }
+
 
         public ResponseCode Code { get; set; }
         public T Data { get; set; }

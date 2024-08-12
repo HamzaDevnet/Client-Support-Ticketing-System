@@ -69,7 +69,7 @@ namespace CSTS.API.Controllers
                 claims: new[]
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
-                    new Claim("Utype", user.UserType.ToString()),
+                    new Claim("UserType", user.UserType.ToString()),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 },
                 expires: DateTime.Now.AddMinutes(30),

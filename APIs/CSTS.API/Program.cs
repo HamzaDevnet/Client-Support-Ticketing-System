@@ -5,6 +5,10 @@ using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using CSTS.API.ApiServices;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +21,31 @@ builder.Services.AddControllers()
         fv.RegisterValidatorsFromAssemblyContaining<CommentValidator>();
         fv.RegisterValidatorsFromAssemblyContaining<TicketValidator>();
     });
+
+builder.Services.AddAuthentication(options => 
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+             {
+                 options.TokenValidationParameters.RoleClaimType = "roles";
+                 options.TokenValidationParameters.NameClaimType = "name";
+
+                 options.TokenValidationParameters = new TokenValidationParameters
+                 {
+                     ValidateIssuer = true,
+                     ValidateAudience = true,
+                     ValidateLifetime = true,
+                     ValidateIssuerSigningKey = true,
+                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                     ValidAudience = builder.Configuration["Jwt:Audience"],
+                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                 };
+             });
+
+builder.Services.AddAuthorization();
+
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -108,6 +137,9 @@ app.UseCors("AllowAllOrigins");
 
 app.MapControllers();
 app.UseRouting();
+
+app.UseAuthentication(); // This is important to ensure the use of JWT authentication
+app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
