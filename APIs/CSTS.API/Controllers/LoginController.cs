@@ -38,9 +38,10 @@ namespace CSTS.API.Controllers
         public async Task<IActionResult> Login([FromBody] Login loginRequest)
         {
             var user = GetUser_ByUserName(loginRequest.Username);
+            
             if (user == null || user.Password != loginRequest.Password)
             {
-                return Unauthorized(false);
+                return Ok(new APIResponse<bool>(false , "Username not found or Incorrect password"));
             }
 
             var token = GenerateJwtToken(user);
@@ -114,8 +115,10 @@ namespace CSTS.API.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    return Ok(new APIResponse<bool>(false, string.Concat(" , ",ModelState.SelectMany(x => x.Value.Errors).SelectMany( e => e.ErrorMessage))));
+                    return Ok(new APIResponse<bool>(false, string.Concat(" , ", ModelState.SelectMany(x => x.Value.Errors).SelectMany(e => e.ErrorMessage))));
                 }
+               
+
 
                 var user = new CSTS.DAL.Models.User
                 {
@@ -199,6 +202,7 @@ namespace CSTS.API.Controllers
         {
             return _unitOfWork.Users.Find(u => string.Equals(u.UserName, UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
         }
+
 
     }
 }
