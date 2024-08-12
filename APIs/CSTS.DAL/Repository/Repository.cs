@@ -56,19 +56,20 @@ public class Repository<T> : IRepository<T> where T : class
 
 
 
-    public IEnumerable<T> Find(Func<T, bool> predicate, int PageNumber = 1, int PageSize = 10)
+    public IEnumerable<T> Find(Expression<Func<T, bool>> predicate, int PageNumber = 1, int PageSize = 10)
     {
-        return _dbSet.Where((x) => predicate(x)).Skip((PageNumber - 1) * PageSize).Take(PageSize);
+        var result = _dbSet.Where(predicate).Skip((PageNumber - 1) * PageSize).Take(PageSize);
+        return result.ToList();
     }
 
-    public IEnumerable<T> Find(Func<T, bool> predicate, int PageNumber = 1, int PageSize = 100, params Expression<Func<T, object>>[] includeProperties)
+    public IEnumerable<T> Find(Expression<Func<T, bool>> predicate, int PageNumber = 1, int PageSize = 100, params Expression<Func<T, object>>[] includeProperties)
     {
         IQueryable<T> query = _dbSet.AsQueryable();
 
         foreach (var includeProperty in includeProperties)
             query = query.Include(includeProperty);
 
-        return query.Where((x) => predicate(x)).Skip((PageNumber - 1) * PageSize).Take(PageSize);
+        return query.Where(predicate).Skip((PageNumber - 1) * PageSize).Take(PageSize);
     }
 
 

@@ -11,8 +11,8 @@ public interface IRepository<T> where T : class
     public IEnumerable<T> Get(out int count, int PageNumber = 1, int PageSize = 100, params Expression<Func<T, object>>[] includeProperties);
 
 
-    IEnumerable<T> Find(Func<T, bool> predicate, int PageNumber = 1 , int PageSize = 100);
-    IEnumerable<T> Find(Func<T, bool> predicate, int PageNumber = 1 , int PageSize = 100, params Expression<Func<T, object>>[] includeProperties);
+    IEnumerable<T> Find(Expression<Func<T, bool>> predicate, int PageNumber = 1 , int PageSize = 100);
+    IEnumerable<T> Find(Expression<Func<T, bool>> predicate, int PageNumber = 1 , int PageSize = 100, params Expression<Func<T, object>>[] includeProperties);
     public IEnumerable<T> Find(out int count, Func<T, bool> predicate, int PageNumber = 1, int PageSize = 100);
     public IEnumerable<T> Find(out int count, Func<T, bool> predicate, int PageNumber = 1, int PageSize = 100, params Expression<Func<T, object>>[] includeProperties);
 

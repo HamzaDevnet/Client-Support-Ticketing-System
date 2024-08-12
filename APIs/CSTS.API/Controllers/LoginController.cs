@@ -40,7 +40,7 @@ namespace CSTS.API.Controllers
             var user = GetUser_ByUserName(loginRequest.Username);
             if (user == null || user.Password != loginRequest.Password)
             {
-                return Unauthorized(false);
+                return Ok(new APIResponse<bool>(false));
             }
 
             var token = GenerateJwtToken(user);
@@ -114,7 +114,7 @@ namespace CSTS.API.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    return Ok(new APIResponse<bool>(false, string.Concat(" , ",ModelState.SelectMany(x => x.Value.Errors).SelectMany( e => e.ErrorMessage))));
+                    return Ok(new APIResponse<bool>(false, string.Concat(" , ", ModelState.SelectMany(x => x.Value.Errors).SelectMany(e => e.ErrorMessage))));
                 }
 
                 var user = new CSTS.DAL.Models.User
@@ -132,11 +132,11 @@ namespace CSTS.API.Controllers
                 };
 
                 _unitOfWork.Users.Add(user);
-                
+
                 return Ok(new APIResponse<bool>(true));
             }
 
-            return Ok(new APIResponse<bool>(false, string.Concat(" , ",ModelState.SelectMany(x => x.Value.Errors).SelectMany( e => e.ErrorMessage))));
+            return Ok(new APIResponse<bool>(false, string.Concat(" , ", ModelState.SelectMany(x => x.Value.Errors).SelectMany(e => e.ErrorMessage))));
         }
 
 
@@ -197,7 +197,7 @@ namespace CSTS.API.Controllers
 
         private CSTS.DAL.Models.User? GetUser_ByUserName(string UserName)
         {
-            return _unitOfWork.Users.Find(u => string.Equals(u.UserName, UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            return _unitOfWork.Users.Find(u => u.UserName.ToLower() == UserName.ToLower()).FirstOrDefault();
         }
 
     }
