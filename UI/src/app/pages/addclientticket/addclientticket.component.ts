@@ -7,6 +7,7 @@ import { Ticket } from 'app/ticket';
   templateUrl: './addclientticket.component.html',
   styleUrls: ['./addclientticket.component.scss']
 })
+
 export class AddclientticketComponent {
   ticketData = {
     title: '',
@@ -29,5 +30,8 @@ export class AddclientticketComponent {
 
   onSubmit(): void {
     this.dialogRef.close(this.ticketData);
+
+    console.log('Ticket Data:', result);
+
   }
 }

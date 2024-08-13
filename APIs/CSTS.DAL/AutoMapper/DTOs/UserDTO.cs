@@ -11,16 +11,15 @@ namespace CSTS.DAL.AutoMapper.DTOs
 {
     public class UserDto
     {
-        public string UserName { get; set; }
+        public string UserName { get; set; } = string.Empty;
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string MobileNumber { get; set; }
         public string Email { get; set; }
-        //IFormFile
-        public IFormFile? UserImage { get; set; }
+        public IFormFile? UserImage { get; set; } = null;
         public DateTime DateOfBirth { get; set; }
-        public string Password { get; set; }
-        public string Address { get; set; }
+        public string Password { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
 
     }
 
