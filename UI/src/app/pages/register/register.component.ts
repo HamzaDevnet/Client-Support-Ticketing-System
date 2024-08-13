@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RegisterService } from 'app/register.service';
-import { UserLocalStorageService } from 'app/user-local-storage.service'; // Assuming this import is needed
-import { Userdata } from 'app/userdata'; // Adjust the path as needed
+import { UserLocalStorageService } from 'app/user-local-storage.service'; 
+import { Userdata } from 'app/userdata'; 
 
 @Component({
   selector: 'app-register',
@@ -29,6 +29,7 @@ export class RegisterComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       DateOfBirth: [''],
+      address:[''],
     });
   }
 
@@ -40,7 +41,7 @@ export class RegisterComponent implements OnInit {
       this.RegisterService.postRegister(userData).subscribe({
         next: (response) => {
           console.log('Registration successful:', response);
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/login']);
         },
         error: (error) => {
           console.error('Registration failed:', error);

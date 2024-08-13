@@ -1,13 +1,18 @@
 import { User } from "./ticket.service";
 import { Userdata } from "./userdata";
 import { Users } from "./users";
+import { UserType } from "./enums/user.enum";
 
 export interface Login {
-    EmailOrUserName: String ,
+    userName: String ,
     password: String 
 }
 
-export interface LoginResponse {
-    token: string;
-    user: Userdata;
+export interface LoginData{
+  token: string ;  
+  fullName: string ;
+  email: string ;
+  userType: UserType ; 
   }
+
+

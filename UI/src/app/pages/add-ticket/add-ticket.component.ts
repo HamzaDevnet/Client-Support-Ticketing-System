@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { SupportTeam } from 'app/support-team';
 import { SupportTeamService } from 'app/support-team.service';
+import { Users } from 'app/users';
 
 @Component({
   selector: 'app-add-ticket',
@@ -12,7 +13,7 @@ import { SupportTeamService } from 'app/support-team.service';
 export class AddTicketComponent implements OnInit {
   AssignedTo: FormGroup;
   TicketName: FormGroup;
-  supportTeam: SupportTeam[] = [];
+  supportTeam: Users[] = [];
 
   constructor(
     private supportTeamService: SupportTeamService,

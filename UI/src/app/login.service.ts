@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SheardServiceService } from './sheard-service.service';
 import { Observable } from 'rxjs';
-import { Login, LoginResponse } from './login';
+import { Login, LoginData } from './login';
+import { environment } from 'environments/environment';
+import { User, WebResponse } from './ticket.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,12 +11,11 @@ import { Login, LoginResponse } from './login';
 export class LoginService {
 
 
-  constructor(private http: HttpClient, private SheardServiceService: SheardServiceService) {
+  constructor(private http: HttpClient) {
 
    }
 
-  getLogin(loginData:Login): Observable<LoginResponse> {
-    const URL = this.SheardServiceService.getApiUrl() + '/login';
-    return this.http.post<LoginResponse>(URL, loginData);
+  getLogin(loginData:Login): Observable<WebResponse<LoginData>>{
+    return this.http.post<WebResponse<LoginData>>((`${environment.BaseURL}/login`), loginData);
   }
 }

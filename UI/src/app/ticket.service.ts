@@ -3,17 +3,18 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Ticket } from './ticket';
+import { environment } from 'environments/environment';
 
 export interface User {
   userId: string;
   fullName: string;
-}
+}//if it for members put in member interface 
 
 export interface WebResponse<T> {
   data: T;
   code: number;
   message: string;
-}
+} //seperate file because it's shareable 
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,7 @@ export class TicketService {
   constructor(private http: HttpClient) {}
 
   getTickets(): Observable<Ticket[]> {
-    return this.http.get<Ticket[]>(`${this.baseUrl}/Summary`);
+    return this.http.get<Ticket[]>(`${environment.BaseURL}/Tickets/tickets`);
   }
 
   getTicketById(id: string): Observable<Ticket> {
@@ -40,7 +41,7 @@ export class TicketService {
     return this.http.get<WebResponse<User[]>>(`${this.usersUrl}/support-team-members`).pipe(
       map(response => response.data)
     );
-  }
+  } //take it 
 
   getClients(): Observable<User[]> {
     return this.http.get<WebResponse<User[]>>(`${this.usersUrl}/external-clients`).pipe(

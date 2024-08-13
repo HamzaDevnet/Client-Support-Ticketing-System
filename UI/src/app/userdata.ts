@@ -1,9 +1,11 @@
 export interface Userdata {
+    // fullName:string ,
     firstName: String , 
     lastName: String , 
-    username: String , 
-    MobileNumber : string , 
+    userName: String , 
+    mobileNumber : string , 
     email : String , 
     password : String , 
-    DateOfBirth : Date  
+    dateOfBirth : Date  , 
+    address: string 
 }

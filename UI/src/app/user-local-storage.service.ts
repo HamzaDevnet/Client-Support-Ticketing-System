@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Userdata } from './userdata';
+import { User } from './ticket.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class UserLocalStorageService {
 
   constructor() { }
 
-  setUserData(userdata:Userdata):void{
+  setUserId(userdata:string):void{
     localStorage.setItem(this.userKey, JSON.stringify(userdata));
   }
 
@@ -28,5 +29,4 @@ export class UserLocalStorageService {
     return localStorage.getItem(this.tokenKey);
   }
 }
-
 

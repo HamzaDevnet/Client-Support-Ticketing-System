@@ -34,7 +34,7 @@ namespace WebApplication1.DTO
         [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; }
 
-        //[Required]
-        //public string Address { get; set; }
+        [Required]
+        public string Address { get; set; }
     }
 }

@@ -61,7 +61,7 @@ namespace WebApplication1.Controllers
                     DateOfBirth = dto.DateOfBirth,
                     UserName = dto.UserName,
                     UserType = UserType.SupportTeamMember,
-                    //Address = dto.Address
+                    Address = dto.Address
                 };
 
                 _unitOfWork.Users.Add(user);

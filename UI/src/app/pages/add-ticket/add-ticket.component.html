@@ -6,7 +6,7 @@
         <mat-label>User</mat-label>
         <mat-select formControlName="AssignedTo">
           <mat-option *ngFor="let supportteam of supportTeam" [value]="supportteam.id">
-            {{ supportteam.name }}
+            {{ supportteam.FirstName }}
           </mat-option>
         </mat-select>
       </mat-form-field>

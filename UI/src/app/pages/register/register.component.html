@@ -1,76 +1,75 @@
-<div class="container mt-2">
-  <div class="card">
-    <div class="row g-0">
-      <div class="col-md-8">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="card-title text-center flex-grow-1">Register</h5>
-            <h6 class="small">
-              <a routerLink="/login" style="color: rgb(0, 0, 0);">Already registered? Login</a>
-            </h6>
-          </div>
-          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-            <div class="row">
-              <div class="col-6">
-                <div class="form-group">
-                  <label class="control-label required">First Name</label>
-                  <input type="text" class="form-control" formControlName="firstName">
-                </div>
-              </div>
-              <div class="col-6">
-                <div class="form-group">
-                  <label class="control-label required">Last Name</label>
-                  <input type="text" class="form-control" formControlName="lastName">
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-12">
-                <div class="form-group">
-                  <label class="control-label required">Username</label>
-                  <input type="text" class="form-control" formControlName="username">
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-12">
-                <div class="form-group">
-                  <label class="control-label required">Phone Number</label>
-                  <input type="tel" class="form-control" formControlName="phone">
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-12">
-                <div class="form-group">
-                  <label class="control-label required">Email</label>
-                  <input type="email" class="form-control" formControlName="email" placeholder="example@mail.com">
-                </div>
-                <div class="form-group">
-                  <label class="control-label required">Password</label>
-                  <input type="password" class="form-control" formControlName="password">
-                </div>
-                <div class="form-group">
-                  <label class="control-label">Date of Birth</label>
-                  <input type="date" class="form-control" formControlName="dob">
-                </div>
-                <label>Upload Image</label>
-                <input type="file" class="form-control" accept=".jpg ,.png">
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <div class="d-flex justify-content-end mt-3">
-                  <button type="submit" class="btn btn-dark rounded-5 me-2">Register</button>
-                  <button type="reset" class="btn btn-dark rounded-5">Cancel</button>
-                </div>
-              </div>
-            </div>
-          </form>
+<div class="container-fluid vh-100">
+  <div class="row h-100">
+    <div class="col-md-6 p-0">
+      <div class="bg-image h-100"></div>
+    </div>
+    <div class="col-md-6 d-flex align-items-center">
+      <div class="card-body w-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="card-title text-center flex-grow-1">Register</h5>
         </div>
-      </div>
-      <div class="col-md-4">
-        <img src="" alt="Logo" class="img-fluid h-100">
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+          <div class="row">
+            <div class="col-6">
+              <div class="form-group">
+                <label class="control-label required">First Name</label>
+                <input type="text" class="form-control" formControlName="firstName">
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="form-group">
+                <label class="control-label required">Last Name</label>
+                <input type="text" class="form-control" formControlName="lastName">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group">
+                <label class="control-label required">Username</label>
+                <input type="text" class="form-control" formControlName="username">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group">
+                <label class="control-label required">Phone Number</label>
+                <input type="tel" class="form-control" formControlName="MobileNumber">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group">
+                <label class="control-label required">Email</label>
+                <input type="email" class="form-control" formControlName="email" placeholder="example@mail.com">
+              </div>
+              <div class="form-group">
+                <label class="control-label required">Password</label>
+                <input type="password" class="form-control" formControlName="password">
+              </div>
+              <div class="form-group">
+                <label class="control-label">Date of Birth</label>
+                <input type="date" class="form-control" formControlName="DateOfBirth">
+              </div>
+              <div class="form-group">
+                <label class="control-label">Address</label>
+                <input type="text" class="form-control" formControlName="address">
+              </div>
+              <label>Upload Image</label>
+              <input type="file" class="form-control" accept=".jpg ,.png">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <div class="d-flex justify-content-start mt-3">
+                <button type="submit" class="btn btn-success rounded-5 me-2">Register</button>
+                <button routerLinke="/landing" class="btn btn-dark rounded-5">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>
