@@ -7,6 +7,7 @@ import { SupportTeamService } from 'app/support-team.service';
 import { AddclientticketComponent } from '../addclientticket/addclientticket.component';
 import { Ticket } from 'app/ticket';
 import { TicketService } from 'app/ticket.service';
+import { UserLocalStorageService } from 'app/user-local-storage.service';
 
 @Component({
   selector: 'app-clienttickets',
@@ -19,7 +20,7 @@ export class ClientticketsComponent implements OnInit {
   dataSource = new MatTableDataSource<Ticket>(this.Tickets);
 
 
-  constructor(public dialog: MatDialog, private ticketService : TicketService){}
+  constructor(public dialog: MatDialog, private ticketService : TicketService , private UserLocalStorageService : UserLocalStorageService){}
 
   ngOnInit(): void {
     this.getTickets();
@@ -37,6 +38,7 @@ export class ClientticketsComponent implements OnInit {
   }
 
   addTicket(): void {
+    this.UserLocalStorageService.getCurrentUser();
     const dialogRef = this.dialog.open(AddclientticketComponent, {
       width: '400px'
     });
@@ -74,3 +76,5 @@ export class ClientticketsComponent implements OnInit {
     });
   }
 }
+
+

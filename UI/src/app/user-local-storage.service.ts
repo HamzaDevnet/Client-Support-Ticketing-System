@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Userdata } from './userdata';
 import { User } from './ticket.service';
+import { jwtDecode } from 'jwt-decode';
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -20,9 +23,23 @@ export class UserLocalStorageService {
    localStorage.setItem(this.tokenKey, token);
   }
 
+  
   getCurrentUser():Userdata | null {
+    debugger
     const user = localStorage.getItem(this.userKey);
-    return user ? JSON.parse(user) : null ;
+    const userCliams = this.getClaims(this.tokenKey);
+    console.log(userCliams);
+    return userCliams ? JSON.parse(user) : null ;
+  }
+
+  getClaims(token: string): any {
+    try {
+      const decodedToken: any = jwtDecode(token);
+      return decodedToken;
+    } catch (error) {
+      console.error('Invalid token', error);
+      return null;
+    }
   }
 
   getToken():string | null {
