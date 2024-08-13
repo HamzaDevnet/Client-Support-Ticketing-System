@@ -32,11 +32,7 @@ namespace CSTS.DAL.AutoMapper.DTOs
 
     public class UpdateTicketDTO
     {
-        public string Product { get; set; }
-        public string ProblemDescription { get; set; }
-        public string Attachments { get; set; }
         public TicketStatus Status { get; set; }
-        public Guid? AssignedToId { get; set; }
     }
 
     public class UpdateResponseDTO

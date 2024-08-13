@@ -15,8 +15,8 @@ namespace CSTS.DAL.Models {
         public Guid? AssignedToId { get; set; } // Foreign Key to User, Nullable
         public User AssignedTo { get; set; }
 
-        public ICollection<Comment> Comments { get; set; }
-        public ICollection<Attachment> Attachments { get; set; } // Updated
+        public ICollection<Comment>? Comments { get; set; }
+        public ICollection<Attachment>? Attachments { get; set; } // Updated
 
         public Ticket()
         {

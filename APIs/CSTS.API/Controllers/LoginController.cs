@@ -38,7 +38,6 @@ namespace CSTS.API.Controllers
         public async Task<IActionResult> Login([FromBody] Login loginRequest)
         {
             var user = GetUser_ByUserName(loginRequest.Username);
-            
             if (user == null || user.Password != loginRequest.Password)
             {
                 return Ok(new APIResponse<bool>(false , "Username not found or Incorrect password"));
@@ -72,17 +71,20 @@ namespace CSTS.API.Controllers
                     new Claim(ClaimTypes.Role, ((int)user.UserType).ToString())  // Using UserType enum
                 }),
 
-                Expires = DateTime.UtcNow.AddHours(24),
-                Issuer = _configuration["Jwt:Issuer"],
-                Audience = _configuration["Jwt:Audience"],
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: new[]
+                {
+                    new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+                    new Claim("Utype", user.UserType.ToString()),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                },
+                expires: DateTime.Now.AddMinutes(30),
+                signingCredentials: creds
+            );
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            string tokenstr = token.ToString();
-
-            return tokenHandler.WriteToken(token);
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
 
@@ -93,10 +95,9 @@ namespace CSTS.API.Controllers
             if (ModelState.IsValid)
             {
 
-                var users = _unitOfWork.Users.Find(u => string.Equals(u.UserName, dto.UserName, StringComparison.CurrentCultureIgnoreCase)
-                                                     || string.Equals(u.Email, dto.Email, StringComparison.CurrentCultureIgnoreCase)
-                                                     || string.Equals(u.MobileNumber, dto.MobileNumber, StringComparison.CurrentCultureIgnoreCase)
-                            );
+                var users = _unitOfWork.Users.Find(u => u.UserName == dto.UserName
+                                                     || u.Email == dto.Email
+                                                     || u.MobileNumber == dto.MobileNumber);
 
                 if (users.Any(u => u.Email == dto.Email))
                 {

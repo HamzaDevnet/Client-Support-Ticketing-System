@@ -1,24 +1,18 @@
 ﻿using FluentValidation;
-using CSTS.DAL.Models;
+using CSTS.DAL.AutoMapper.DTOs;
 
-namespace CSTS.DAL.Validation
+public class CreateCommentDTOValidator : AbstractValidator<CreateCommentDTO>
 {
-    public class CommentValidator : AbstractValidator<Comment>
+    public CreateCommentDTOValidator()
     {
-        public CommentValidator()
-        {
-            RuleFor(x => x.Content)
-                .NotEmpty().WithMessage("Content is required.")
-                .Length(1, 1000).WithMessage("Content must be between 1 and 1000 characters.");
+        RuleFor(x => x.Content)
+            .NotEmpty().WithMessage("Content cannot be empty.")
+            .Length(1, 1000).WithMessage("Content must be between 1 and 1000 characters.");
 
-            RuleFor(x => x.CreatedDate)
-                .LessThanOrEqualTo(DateTime.Now).WithMessage("Created date must be in the past or present.");
+        RuleFor(x => x.TicketId)
+            .NotEmpty().WithMessage("TicketId is required.");
 
-            RuleFor(x => x.TicketId)
-                .NotEmpty().WithMessage("TicketId is required.");
-
-            RuleFor(x => x.UserId)
-                .NotEmpty().WithMessage("UserId is required.");
-        }
+        RuleFor(x => x.UserId)
+            .NotEmpty().WithMessage("UserId is required.");
     }
 }
