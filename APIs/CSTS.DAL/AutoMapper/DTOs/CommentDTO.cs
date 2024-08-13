@@ -15,16 +15,6 @@ namespace CSTS.DAL.AutoMapper.DTOs
         public string Content { get; set; }
         public DateTime CreatedDate { get; set; }
         public string UserName { get; set; }
-    }
-
-    public class UpdateCommentDTO
-    {
-        public string Content { get; set; }
-    }
-
-    public class CommentSummaryDTO
-    {
-        public Guid CommentId { get; set; }
-        public string Content { get; set; }
+        public Guid TicketId { get; set; }
     }
 }

@@ -18,7 +18,7 @@ builder.Services.AddControllers()
     .AddFluentValidation(fv =>
     {
         fv.RegisterValidatorsFromAssemblyContaining<UserValidator>();
-        fv.RegisterValidatorsFromAssemblyContaining<CommentValidator>();
+        fv.RegisterValidatorsFromAssemblyContaining<CreateCommentDTOValidator>();
         fv.RegisterValidatorsFromAssemblyContaining<TicketValidator>();
     });
 

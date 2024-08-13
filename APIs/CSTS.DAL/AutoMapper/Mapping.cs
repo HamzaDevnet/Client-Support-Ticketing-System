@@ -9,8 +9,6 @@ public class Mapping : Profile
         // تحويل بين الكائنات الفعلية و DTOs الخاصة بالتعليقات
         CreateMap<Comment, CommentResponseDTO>();
         CreateMap<CreateCommentDTO, Comment>();
-        CreateMap<Comment, CommentSummaryDTO>();
-        CreateMap<UpdateCommentDTO, Comment>();
 
         // تحويل بين الكائنات الفعلية و DTOs الخاصة بالتذاكر
         CreateMap<Ticket, TicketResponseDTO>();

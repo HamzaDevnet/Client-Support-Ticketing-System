@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CSTS.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Inzlize : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,7 +17,8 @@ namespace CSTS.DAL.Migrations
                 {
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MobileNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Image = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
@@ -40,7 +41,6 @@ namespace CSTS.DAL.Migrations
                     TicketId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Product = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProblemDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Attachments = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -62,6 +62,26 @@ namespace CSTS.DAL.Migrations
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Attachment",
+                columns: table => new
+                {
+                    AttachmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FileUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TicketId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Attachment", x => x.AttachmentId);
+                    table.ForeignKey(
+                        name: "FK_Attachment_Tickets_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "Tickets",
+                        principalColumn: "TicketId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -92,6 +112,11 @@ namespace CSTS.DAL.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Attachment_TicketId",
+                table: "Attachment",
+                column: "TicketId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Comments_TicketId",
                 table: "Comments",
                 column: "TicketId");
@@ -115,6 +140,9 @@ namespace CSTS.DAL.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Attachment");
+
             migrationBuilder.DropTable(
                 name: "Comments");
 

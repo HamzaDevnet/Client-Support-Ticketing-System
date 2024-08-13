@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSTS.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240807223523_test")]
-    partial class test
+    [Migration("20240813010052_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,30 @@ namespace CSTS.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("CSTS.DAL.Models.Attachment", b =>
+                {
+                    b.Property<Guid>("AttachmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AttachmentId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("Attachment");
+                });
 
             modelBuilder.Entity("CSTS.DAL.Models.Comment", b =>
                 {
@@ -60,10 +84,6 @@ namespace CSTS.DAL.Migrations
 
                     b.Property<Guid?>("AssignedToId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Attachments")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CreatedById")
                         .HasColumnType("uniqueidentifier");
@@ -111,12 +131,16 @@ namespace CSTS.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FullName")
+                    b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<byte[]>("Image")
                         .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MobileNumber")
                         .IsRequired()
@@ -142,6 +166,17 @@ namespace CSTS.DAL.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("CSTS.DAL.Models.Attachment", b =>
+                {
+                    b.HasOne("CSTS.DAL.Models.Ticket", "Ticket")
+                        .WithMany("Attachments")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("CSTS.DAL.Models.Comment", b =>
@@ -183,6 +218,8 @@ namespace CSTS.DAL.Migrations
 
             modelBuilder.Entity("CSTS.DAL.Models.Ticket", b =>
                 {
+                    b.Navigation("Attachments");
+
                     b.Navigation("Comments");
                 });
 
