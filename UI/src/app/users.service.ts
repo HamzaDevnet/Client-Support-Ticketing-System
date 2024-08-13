@@ -22,6 +22,16 @@ getClientsbyManager(): Observable<Users[]> {
     map(response => response.data)
   );
 }
+
+editClient(id: string , userdata:Users): Observable<WebResponse<Users>> {
+  const headers = this.SheardServiceService.getToken();
+  return this.http.put<WebResponse<Users>>(`${environment.BaseURL}/users/${id}`,userdata,{headers})
+
+}
+
+deactivateClient(id: string , userdata: Users):Observable<WebResponse<User>>{
+  return this.http.patch<WebResponse<User>>(`${environment.BaseURL}/users/${id}/deactivate`, userdata);
+}
   // getSupportTeamMembers(): Observable<User[]> {
   //   return this.http.get<WebResponse<User[]>>(`${this.usersUrl}/support-team-members`).pipe(
   //     map(response => response.data)

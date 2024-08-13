@@ -4,5 +4,10 @@ enum UserType{
     Manager=2  ,
 }
 
-export{ UserType
+enum UserStatus{
+    activate = 0 ,
+    deactivate = 1
+}
+
+export{ UserType , UserStatus
 }
