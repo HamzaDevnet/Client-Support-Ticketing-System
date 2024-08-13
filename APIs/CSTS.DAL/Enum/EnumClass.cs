@@ -15,15 +15,15 @@ namespace CSTS.DAL.Enum
 
     public enum UserStatus
     {
-        Active,
-        Deactivated
+        Deactivated = 0,
+        Active = 1
     }
     public enum TicketStatus
     {
-        New,
-        Assigned,
-        InProgress,
-        Closed
+        New = 0,
+        Assigned = 1,
+        InProgress = 2,
+        Closed = 3
     }
 
 }
