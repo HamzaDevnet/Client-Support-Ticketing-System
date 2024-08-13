@@ -215,13 +215,13 @@ namespace CSTS.API.Controllers
             }
         }
 
-        // GET: api/users/external-clients
-        [HttpGet("external-clients")]
-        public async Task<ActionResult<APIResponse<IEnumerable<User>>>> GetExternalClients()
+        // GET Clients
+        [HttpGet("clients")]
+        public async Task<ActionResult<APIResponse<IEnumerable<User>>>> GetExternalClients([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
             try
             {
-                var response = _unitOfWork.Users.Find(u => u.UserType == UserType.ExternalClient);
+                var response = _unitOfWork.Users.Find(u => u.UserType == UserType.ExternalClient, PageNumber, PageSize);
                 return Ok(new APIResponse<IEnumerable<User>> { Data = response, Code = ResponseCode.Success, Message = "Success" });
             }
             catch (Exception ex)
