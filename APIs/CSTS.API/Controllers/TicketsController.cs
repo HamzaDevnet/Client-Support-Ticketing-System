@@ -29,15 +29,41 @@ namespace CSTS.API.Controllers
             _fileService = fileService;
         }
 
-        // GET: api/tickets (Client)
-        [HttpGet("tickets")]
-        [CstsAuth(UserType.ExternalClient)]
-        public async Task<ActionResult<APIResponse<IEnumerable<TicketSummaryDTO>>>> GetClientTickets([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
+        [HttpGet("")]
+        [CstsAuth(UserType.ExternalClient, UserType.SupportTeamMember, UserType.SupportManager)]
+        public async Task<ActionResult<APIResponse<IEnumerable<TicketSummaryDTO>>>> GetTickets([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; // Get user id from token
-                var tickets = _unitOfWork.Tickets.Get(PageNumber, PageSize, t => t.AssignedTo).Where(t => t.CreatedById == Guid.Parse(userId));
+
+                switch (this.GetCurrentUserType())
+                {
+                    case UserType.ExternalClient:
+                        return Ok(GetClientTickets());
+
+                    case UserType.SupportTeamMember:
+                        return Ok(GetSupportTickets());
+
+                    case UserType.SupportManager:
+                        return Ok(GetManagerTickets());
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Ok(new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}"));
+            }
+
+            return Ok(new APIResponse<IEnumerable<TicketSummaryDTO>>(new List<TicketSummaryDTO>()));
+
+        }
+
+        private async Task<APIResponse<IEnumerable<TicketSummaryDTO>>> GetClientTickets([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
+        {
+            try
+            {
+                var tickets = _unitOfWork.Tickets.Find(t => t.CreatedById == this.GetCurrentUserId(), PageNumber, PageSize, t => t.AssignedTo);
                 var ticketDtos = tickets.Select(t => new TicketSummaryDTO
                 {
                     TicketId = t.TicketId,
@@ -47,23 +73,19 @@ namespace CSTS.API.Controllers
                     AssignedToFullName = t.AssignedTo != null ? t.AssignedTo.FullName : "Not Assigned"
                 }).ToList();
 
-                return Ok(new APIResponse<IEnumerable<TicketSummaryDTO>>(ticketDtos) { Message = "Tickets retrieved successfully." });
+                return new APIResponse<IEnumerable<TicketSummaryDTO>>(ticketDtos);
             }
             catch (Exception ex)
             {
-                return Ok(new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}"));
+                return new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}");
             }
         }
 
-        // GET api/tickets/support-tickets
-        [HttpGet("support-tickets")]
-        [CstsAuth(UserType.SupportTeamMember)]
-        public async Task<ActionResult<APIResponse<IEnumerable<TicketSummaryDTO>>>> GetSupportTickets([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
+        private async Task<APIResponse<IEnumerable<TicketSummaryDTO>>> GetSupportTickets([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; // Get user id from token
-                var tickets = _unitOfWork.Tickets.Get(PageNumber, PageSize, t => t.AssignedTo).Where(t => t.AssignedToId == Guid.Parse(userId) && t.Status == TicketStatus.Assigned);
+                var tickets = _unitOfWork.Tickets.Find(t => t.AssignedToId == this.GetCurrentUserId() && t.Status == TicketStatus.Assigned, PageNumber, PageSize, t => t.AssignedTo);
                 var ticketDtos = tickets.Select(t => new TicketSummaryDTO
                 {
                     TicketId = t.TicketId,
@@ -73,18 +95,15 @@ namespace CSTS.API.Controllers
                     AssignedToFullName = t.AssignedTo != null ? t.AssignedTo.FullName : "Not Assigned"
                 }).ToList();
 
-                return Ok(new APIResponse<IEnumerable<TicketSummaryDTO>>(ticketDtos) { Message = "Assigned tickets retrieved successfully." });
+                return new APIResponse<IEnumerable<TicketSummaryDTO>>(ticketDtos) { Message = "Assigned tickets retrieved successfully." };
             }
             catch (Exception ex)
             {
-                return Ok(new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}"));
+                return new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}");
             }
         }
 
-        // GET api/tickets/manager-tickets
-        [HttpGet("manager-tickets")]
-        [CstsAuth(UserType.SupportManager)]
-        public async Task<ActionResult<APIResponse<IEnumerable<TicketSummaryDTO>>>> GetManagerTickets([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
+        private async Task<APIResponse<IEnumerable<TicketSummaryDTO>>> GetManagerTickets([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
             try
             {
@@ -98,11 +117,11 @@ namespace CSTS.API.Controllers
                     AssignedToFullName = t.AssignedTo != null ? t.AssignedTo.FullName : "Not Assigned"
                 }).ToList();
 
-                return Ok(new APIResponse<IEnumerable<TicketSummaryDTO>>(ticketDtos) { Message = "All tickets retrieved successfully." });
+                return new APIResponse<IEnumerable<TicketSummaryDTO>>(ticketDtos) { Message = "All tickets retrieved successfully." };
             }
             catch (Exception ex)
             {
-                return Ok(new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}"));
+                return new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -217,7 +236,7 @@ namespace CSTS.API.Controllers
         // PUT api/tickets/{id}
         [HttpPut("{id}")]
         [CstsAuth(UserType.SupportTeamMember)]
-        public async Task<ActionResult<APIResponse<UpdateResponseDTO>>> Put(Guid id, [FromBody] UpdateTicketDTO updateDto)
+        public async Task<ActionResult<APIResponse<UpdateResponseDTO>>> Put([FromRoute]Guid id, [FromBody] UpdateTicketDTO updateDto)
         {
             try
             {

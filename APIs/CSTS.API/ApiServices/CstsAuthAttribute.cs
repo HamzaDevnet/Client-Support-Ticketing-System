@@ -12,9 +12,9 @@ namespace CSTS.API.ApiServices
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
     public class CstsAuthAttribute : Attribute, IAuthorizationFilter
     {
-        private readonly UserType _requiredUserType;
+        private readonly UserType[] _requiredUserType;
 
-        public CstsAuthAttribute(UserType requiredUserType)
+        public CstsAuthAttribute(params UserType[] requiredUserType)
         {
             _requiredUserType = requiredUserType;
         }
@@ -30,7 +30,7 @@ namespace CSTS.API.ApiServices
                 return;
             }
 
-            if (userType != _requiredUserType)
+            if (!_requiredUserType.Contains(userType))
             {
                 context.Result = new UnauthorizedResult();
             }

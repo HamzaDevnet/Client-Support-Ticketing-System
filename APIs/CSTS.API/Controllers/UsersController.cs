@@ -7,6 +7,7 @@ using CSTS.DAL.Repository.IRepository;
 using FluentValidation;
 using FluentValidation.Results;
 using CSTS.DAL.Enum;
+using CSTS.API.ApiServices;
 
 namespace CSTS.API.Controllers
 {
@@ -158,6 +159,7 @@ namespace CSTS.API.Controllers
 
         // Activate a user
         [HttpPatch("{id}/activate")]
+        [CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<bool>>> Activate(Guid id)
         {
             try
@@ -180,6 +182,7 @@ namespace CSTS.API.Controllers
 
         // Deactivate a user
         [HttpPatch("{id}/deactivate")]
+        [CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<bool>>> Deactivate(Guid id)
         {
             try
@@ -217,7 +220,7 @@ namespace CSTS.API.Controllers
 
         // GET Clients
         [HttpGet("clients")]
-        [CSTS.API.ApiServices.CstsAuth(UserType.SupportManager)]
+        [CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<IEnumerable<User>>>> GetExternalClients([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
             try
