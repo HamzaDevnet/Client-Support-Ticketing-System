@@ -20,7 +20,7 @@ export class EditDialogComponent {
     this.editForm = this.fb.group({
       firstName: [data.firstName],
       lastName: [data.lastName],
-      username: [data.username],
+      username: [data.userName],
       email: [data.email],
       password: [data.password],
       mobileNumber: [data.mobileNumber],

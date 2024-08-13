@@ -46,7 +46,7 @@ export class SupportTeamMemberComponent implements OnInit {
       data: {
         firstName: supportteam.firstName,
         lastName: supportteam.lastName,
-        username: supportteam.username,
+        username: supportteam.userName,
         mobileNumber: supportteam.mobileNumber,
         email: supportteam.email,
         password: supportteam.password,
@@ -59,7 +59,7 @@ export class SupportTeamMemberComponent implements OnInit {
       if (result) {
         supportteam.firstName = result.firstName;
         supportteam.lastName = result.lastName;
-        supportteam.username = result.username;
+        supportteam.userName = result.username;
         supportteam.mobileNumber = result.mobileNumber;
         supportteam.email = result.email;
         supportteam.password = result.password;

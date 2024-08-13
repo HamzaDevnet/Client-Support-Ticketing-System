@@ -1,23 +1,26 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Users } from './users';
 import { HttpClient } from '@angular/common/http';
+import { User, WebResponse } from './ticket.service';
+import { environment } from 'environments/environment';
+import { SheardServiceService } from './sheard-service.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient , private SheardServiceService:SheardServiceService) { }
 
   private supportMember ='https://localhost:7125/api/Users/support-team-members';
   private clients = 'https://localhost:7125/api/Users/external-clients';
 
-getSupport(): Observable<Users[]> {
-  return this.http.get<Users[]>(this.supportMember);
-}
 
-getClients(): Observable<Users[]> {
-  return this.http.get<Users[]>(this.clients);
+getClientsbyManager(): Observable<Users[]> {
+  const headers = this.SheardServiceService.getToken();
+  return this.http.get<WebResponse<Users[]>>(`${environment.BaseURL}/Users/clients`,{headers}).pipe(
+    map(response => response.data)
+  );
 }
   // getSupportTeamMembers(): Observable<User[]> {
   //   return this.http.get<WebResponse<User[]>>(`${this.usersUrl}/support-team-members`).pipe(

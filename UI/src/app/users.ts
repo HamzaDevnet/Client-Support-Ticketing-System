@@ -1,14 +1,12 @@
-export interface Users {
+export class Users {
   firstName: string;
   lastName: string;
-  username: string;
+  userName: string;
   mobileNumber: string;
   email: string;
   password: string;
   dateOfBirth: Date;
   address: string ;
-
-
 }
 
   // img: string ;

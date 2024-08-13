@@ -2,7 +2,7 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="card-title">Manage clients</h5>
+        <h5 class="card-title">Manage client</h5>
 
       </div>
       <div class="card-body">
@@ -11,52 +11,57 @@
             <!-- firstname Column -->
             <ng-container matColumnDef="FirstName">
               <th mat-header-cell *matHeaderCellDef> firstName </th>
-              <td mat-cell *matCellDef="let clients"> {{clients.FirstName}} </td>
+              <td mat-cell *matCellDef="let client"> {{client.firstName}} </td>
             </ng-container>
 
             <!-- Name Column -->
             <ng-container matColumnDef="LastName">
               <th mat-header-cell *matHeaderCellDef> lastName </th>
-              <td mat-cell *matCellDef="let clients"> {{ clients.LastName }} </td>
+              <td mat-cell *matCellDef="let client"> {{ client.lastName }} </td>
             </ng-container>
 
             <!-- Username Column -->
             <ng-container matColumnDef="username">
               <th mat-header-cell *matHeaderCellDef> Username </th>
-              <td mat-cell *matCellDef="let clients"> {{ clients.username }} </td>
+              <td mat-cell *matCellDef="let client"> {{ client.userName }} </td>
             </ng-container>
 
             <!-- Username Column -->
             <ng-container matColumnDef="MobileNumber">
               <th mat-header-cell *matHeaderCellDef> MobileNumber </th>
-              <td mat-cell *matCellDef="let clients"> {{ clients.MobileNumber }} </td>
+              <td mat-cell *matCellDef="let client"> {{ client.mobileNumber }} </td>
             </ng-container>
 
             <!-- Email Column -->
             <ng-container matColumnDef="email">
               <th mat-header-cell *matHeaderCellDef> Email </th>
-              <td mat-cell *matCellDef="let clients"> {{ clients.email }} </td>
+              <td mat-cell *matCellDef="let client"> {{ client.email }} </td>
             </ng-container>
 
             <!-- Email Column -->
             <ng-container matColumnDef="DateOfBirth">
               <th mat-header-cell *matHeaderCellDef> DateOfBirth </th>
-              <td mat-cell *matCellDef="let clients"> {{ clients.DateOfBirth }} </td>
+              <td mat-cell *matCellDef="let client"> {{ client.dateOfBirth }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="address">
+              <th mat-header-cell *matHeaderCellDef> Address </th>
+              <td mat-cell *matCellDef="let client"> {{ client.address }} </td>
             </ng-container>
 
 
             <!-- Edit Column -->
             <ng-container matColumnDef="edit">
               <th mat-header-cell *matHeaderCellDef> Edit </th>
-              <td mat-cell *matCellDef="let clients">
-                <button mat-icon-button (click)="openEditSupportDialog(clients)">  
+              <td mat-cell *matCellDef="let client">
+                <button mat-icon-button (click)="openEditSupportDialog(client)">  
                   <mat-icon>edit</mat-icon>
                 </button>
               </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let clients; columns: displayedColumns;"></tr>
+            <tr mat-row *matRowDef="let client; columns: displayedColumns;"></tr>
           </table>
         </div>
       </div>
