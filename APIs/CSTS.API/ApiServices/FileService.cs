@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,8 +42,12 @@ namespace CSTS.API.ApiServices
             return Path.Combine(folder.ToString(), fileName);
         }
 
-        public string SaveFile(IFormFile file, FolderType folder, string extension)
+        public string SaveFile(IFormFile? file, FolderType folder )
         {
+            if (file == null)
+                return "";
+
+            string extension = Path.GetExtension(file.FileName);
             byte[] fileBytes = ConvertToByteArray(file);
 
             string wwwRootPath = _env.WebRootPath;

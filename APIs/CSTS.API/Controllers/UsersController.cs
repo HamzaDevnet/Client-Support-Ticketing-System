@@ -20,12 +20,14 @@ namespace CSTS.API.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<User> _validator;
         private readonly IMapper _mapper;
+        private readonly FileService _fileService;
 
-        public UsersController(IUnitOfWork unitOfWork, IValidator<User> validator, IMapper mapper)
+        public UsersController(IUnitOfWork unitOfWork, IValidator<User> validator, IMapper mapper, FileService fileService)
         {
             _unitOfWork = unitOfWork;
             _validator = validator;
             _mapper = mapper;
+            _fileService = fileService;
         }
 
         // GET: api/users
@@ -70,38 +72,34 @@ namespace CSTS.API.Controllers
         {
             try
             {
-                User user = _mapper.Map<User>(inputUser);
-
-                if (user == null)
-                {
-                    return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User is null or ID mismatch." });
-                }
+                //  User user = _mapper.Map<User>(inputUser);
+                // 
+                //  if (user == null)
+                //  {
+                //      return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User is null or ID mismatch." });
+                //  }
+                // 
+                //  if (existingUser == null)
+                //  {
+                //      return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
+                //  }
+                // 
+                //  // Validate user
+                //  ValidationResult result = _validator.Validate(user);
+                //  if (!result.IsValid)
+                //  {
+                //      return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = result.Errors.ToString() });
+                //  }
 
                 var existingUser = _unitOfWork.Users.GetById(id);
-                if (existingUser == null)
-                {
-                    return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
-                }
-
-                // Validate user
-                ValidationResult result = _validator.Validate(user);
-                if (!result.IsValid)
-                {
-                    return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = result.Errors.ToString() });
-                }
-
-                existingUser.UserName = user.UserName;
-                existingUser.FirstName = user.FirstName;
-                existingUser.MobileNumber = user.MobileNumber;
-                existingUser.Email = user.Email;
-                existingUser.Image = user.Image;
-                existingUser.DateOfBirth = user.DateOfBirth;
-                existingUser.UserType = user.UserType;
-                existingUser.Password = user.Password;
-                existingUser.Address = user.Address;
-                existingUser.RegistrationDate = user.RegistrationDate;
-                existingUser.UserStatus = user.UserStatus;
-
+                
+                existingUser.FirstName = inputUser.FirstName;
+                existingUser.MobileNumber = inputUser.MobileNumber;
+                existingUser.Email = inputUser.Email;
+                existingUser.Image = _fileService.SaveFile( inputUser.UserImage, FolderType.Images);
+                existingUser.DateOfBirth = inputUser.DateOfBirth;
+                existingUser.Address = inputUser.Address;
+                
                 var response = _unitOfWork.Users.Update(existingUser);
                 return Ok(new APIResponse<bool> { Data = response, Code = ResponseCode.Success, Message = "Success" });
             }

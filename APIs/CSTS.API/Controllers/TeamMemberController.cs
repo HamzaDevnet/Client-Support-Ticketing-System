@@ -58,7 +58,7 @@ namespace WebApplication1.Controllers
                     Email = dto.Email,
                     Password = dto.Password,
                     MobileNumber = dto.MobileNumber,
-                    Image = _fileService.SaveFile(dto.UserImage , FolderType.Images, Path.GetExtension(dto.UserImage.FileName)),
+                    Image = _fileService.SaveFile(dto.UserImage , FolderType.Images),
                     DateOfBirth = dto.DateOfBirth,
                     UserName = dto.UserName,
                     UserType = UserType.SupportTeamMember,
