@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CSTS.DAL.Enum
-{ 
+{
     public enum UserType
-        {
-            ExternalClient,
-            SupportTeamMember,
-            SupportManager
-        }
+    {
+        ExternalClient = 0,
+        SupportTeamMember = 1,
+        SupportManager = 2
+    }
+
     public enum UserStatus
     {
         Active,

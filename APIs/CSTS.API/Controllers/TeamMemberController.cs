@@ -8,6 +8,7 @@ using CSTS.DAL.Repository.IRepository;
 
 namespace WebApplication1.Controllers
 {
+    [Route("api/")]
     public class TeamMemberController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
