@@ -8,8 +8,8 @@ using CSTS.DAL.Repository.IRepository;
 using FluentValidation;
 using CSTS.DAL.Enum;
 using CSTS.DAL.AutoMapper.DTOs;
-using CSTS.DAL.Utilities;
 using Microsoft.EntityFrameworkCore;
+using CSTS.API.ApiServices;
 
 namespace CSTS.API.Controllers
 {
@@ -120,10 +120,11 @@ namespace CSTS.API.Controllers
                     {
                         using var memoryStream = new MemoryStream();
                         await file.CopyToAsync(memoryStream);
-                        var filePath = await _fileService.SaveFileAsync(memoryStream.ToArray(), FolderType.Images, Path.GetExtension(file.FileName));
+                        var filePath = _fileService.SaveFileAsync(memoryStream.ToArray(), FolderType.Images, Path.GetExtension(file.FileName));
                         ticket.Attachments.Add(new Attachment { FileName = file.FileName, FileUrl = filePath });
                     }
                 }
+
 
                 var response = _unitOfWork.Tickets.Add(ticket);
                 if (!response)
