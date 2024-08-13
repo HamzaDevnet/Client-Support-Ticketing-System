@@ -25,10 +25,9 @@ namespace WebApplication1.Controllers
             if (ModelState.IsValid)
             {
 
-                var users = _unitOfWork.Users.Find(u => string.Equals(u.UserName, dto.UserName, StringComparison.CurrentCultureIgnoreCase)
-                                                     || string.Equals(u.Email, dto.Email, StringComparison.CurrentCultureIgnoreCase)
-                                                     || string.Equals(u.MobileNumber, dto.MobileNumber, StringComparison.CurrentCultureIgnoreCase)
-                            );
+                var users = _unitOfWork.Users.Find(u => u.UserName == dto.UserName
+                                                     || u.Email == dto.Email
+                                                     || u.MobileNumber == dto.MobileNumber);
 
                 if (users.Any(u => u.Email == dto.Email))
                 {
@@ -61,7 +60,8 @@ namespace WebApplication1.Controllers
                     DateOfBirth = dto.DateOfBirth,
                     UserName = dto.UserName,
                     UserType = UserType.SupportTeamMember,
-                    //Address = dto.Address
+                    Address = dto.Address,
+
                 };
 
                 _unitOfWork.Users.Add(user);
