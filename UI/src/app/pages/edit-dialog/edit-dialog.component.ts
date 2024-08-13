@@ -2,6 +2,7 @@ import { Component, Inject,  } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Users } from 'app/users';
+import { UsersService } from 'app/users.service';
 
 
 
@@ -15,14 +16,14 @@ export class EditDialogComponent {
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<EditDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: Users
-  ) { 
+    @Inject(MAT_DIALOG_DATA) public data: Users ,
+    private UsersService : UsersService,
+  ) 
+  { 
     this.editForm = this.fb.group({
       firstName: [data.firstName],
       lastName: [data.lastName],
-      username: [data.userName],
       email: [data.email],
-      password: [data.password],
       mobileNumber: [data.mobileNumber],
       dateOfBirth: [data.dateOfBirth],
       address: [data.address] ,
@@ -34,22 +35,34 @@ export class EditDialogComponent {
   }
 
   onSave(): void {
-    const updatedData = {
+    const updatedData: Users = {
+      userId: this.editForm.value.userId,
       firstName: this.editForm.value.firstName,
       lastName: this.editForm.value.lastName,
-      username: this.editForm.value.username ,
+      userName: this.editForm.value.userName,
       email: this.editForm.value.email,
       password: this.editForm.value.password,
       mobileNumber: this.editForm.value.mobileNumber,
       dateOfBirth: this.editForm.value.dateOfBirth,
-      address:this.editForm.value.address ,
+      address: this.editForm.value.address,
+      userImage: this.editForm.value.userImage,
+      fullName: '',
+      strDateOfBirth: ''
     };
-    this.dialogRef.close(updatedData);
+  
+    console.log(this.data.userId, updatedData);
+    this.UsersService.editClient(this.data.userId ,updatedData).subscribe({
+      next: (response) => {
+        this.dialogRef.close(response.data);
+        
+      },
+      error: (error) => {
+        console.error('Error updating client:', error);
+      }
+    });
   }
 
-  deletesupport():void {
-    
-  }
+ 
 
 
   // onSubmit() {

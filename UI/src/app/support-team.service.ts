@@ -24,7 +24,7 @@ export class SupportTeamService {
     return this.http.post<WebResponse<Users>>(`${environment.BaseURL2}/RegisterSupportTeamMember`, data)
   }
 
-  deleteSupportMember(userid:number):Observable<WebResponse<boolean>> {
+  deactivateSupportMember(userid:number):Observable<WebResponse<boolean>> {
     return this.http.delete<WebResponse<boolean>>(`${environment.BaseURL}/users/${userid}`);
   }
 }
