@@ -94,12 +94,13 @@ namespace CSTS.API.Controllers
                 var existingUser = _unitOfWork.Users.GetById(id);
                 
                 existingUser.FirstName = inputUser.FirstName;
+                existingUser.LastName = inputUser.LastName;
                 existingUser.MobileNumber = inputUser.MobileNumber;
                 existingUser.Email = inputUser.Email;
                 existingUser.Image = _fileService.SaveFile( inputUser.UserImage, FolderType.Images);
                 existingUser.DateOfBirth = inputUser.DateOfBirth;
                 existingUser.Address = inputUser.Address;
-                
+
                 var response = _unitOfWork.Users.Update(existingUser);
                 return Ok(new APIResponse<bool> { Data = response, Code = ResponseCode.Success, Message = "Success" });
             }
