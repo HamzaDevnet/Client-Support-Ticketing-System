@@ -40,7 +40,7 @@ namespace CSTS.API.Controllers
             var user = GetUser_ByUserName(loginRequest.Username);
             if (user == null || user.Password != loginRequest.Password)
             {
-                return Ok(new APIResponse<bool>(false , "Username not found or Incorrect password"));
+                return Ok(new APIResponse<bool>(false));
             }
 
             var token = GenerateJwtToken(user);
@@ -57,19 +57,11 @@ namespace CSTS.API.Controllers
 
         }
 
-
         private string GenerateJwtToken(CSTS.DAL.Models.User user)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Upn, user.UserId.ToString()),
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.Role, ((int)user.UserType).ToString())  // Using UserType enum
-                }),
+            var secretKey = "your-32-characters-long-secret-key!";
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
@@ -77,7 +69,7 @@ namespace CSTS.API.Controllers
                 claims: new[]
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
-                    new Claim("Utype", user.UserType.ToString()),
+                    new Claim("UserType", user.UserType.ToString()),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 },
                 expires: DateTime.Now.AddMinutes(30),
@@ -118,8 +110,6 @@ namespace CSTS.API.Controllers
                 {
                     return Ok(new APIResponse<bool>(false, string.Concat(" , ", ModelState.SelectMany(x => x.Value.Errors).SelectMany(e => e.ErrorMessage))));
                 }
-               
-
 
                 var user = new CSTS.DAL.Models.User
                 {
@@ -132,15 +122,16 @@ namespace CSTS.API.Controllers
                     DateOfBirth = dto.DateOfBirth,
                     UserName = dto.UserName,
                     UserType = UserType.ExternalClient,
-                    //Address = dto.Address
+                    Address = dto.Address,
+
                 };
 
                 _unitOfWork.Users.Add(user);
-                
+
                 return Ok(new APIResponse<bool>(true));
             }
 
-            return Ok(new APIResponse<bool>(false, string.Concat(" , ",ModelState.SelectMany(x => x.Value.Errors).SelectMany( e => e.ErrorMessage))));
+            return Ok(new APIResponse<bool>(false, string.Concat(" , ", ModelState.SelectMany(x => x.Value.Errors).SelectMany(e => e.ErrorMessage))));
         }
 
 
@@ -201,9 +192,8 @@ namespace CSTS.API.Controllers
 
         private CSTS.DAL.Models.User? GetUser_ByUserName(string UserName)
         {
-            return _unitOfWork.Users.Find(u => string.Equals(u.UserName, UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            return _unitOfWork.Users.Find(u => u.UserName.ToLower() == UserName.ToLower()).FirstOrDefault();
         }
-
 
     }
 }
