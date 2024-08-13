@@ -28,8 +28,9 @@ export class ClientticketsComponent implements OnInit {
 
   getTickets():void{
     this.ticketService.getTickets().subscribe({
-      next:(Tickets)=> {
-        this.Tickets =Tickets ;
+      next: (Tickets) => {
+
+        this.Tickets = Tickets ;
       },
       error: (error) => {
         console.error('Error listing Tickets', error);

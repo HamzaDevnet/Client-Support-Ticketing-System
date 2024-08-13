@@ -156,7 +156,7 @@ namespace CSTS.API.Controllers
                         CreatedDate = c.CreatedDate,
                         UserName = c.User?.FullName
                     }).ToList(),
-                    Attachments = ticket.Attachments.Select(a => new AttachmentDTO
+                    Attachments = ticket.Attachments.Select(a => new AttachmentDto
                     {
                         AttachmentId = a.AttachmentId,
                         FileName = a.FileName,
@@ -222,7 +222,7 @@ namespace CSTS.API.Controllers
                     CreatedDate = ticket.CreatedDate,
                     AssignedToUserName = ticket.AssignedTo?.UserName,
                     AssignedToFullName = ticket.AssignedTo?.FullName,
-                    Attachments = ticket.Attachments.Select(a => new AttachmentDTO { AttachmentId = a.AttachmentId, FileName = a.FileName, FileUrl = a.FileUrl }).ToList()
+                    Attachments = ticket.Attachments.Select(a => new AttachmentDto { AttachmentId = a.AttachmentId, FileName = a.FileName, FileUrl = a.FileUrl }).ToList()
                 };
 
                 return CreatedAtAction(nameof(Get), new { id = ticket.TicketId }, new APIResponse<TicketResponseDTO>(ticketDto) { Message = "Ticket created successfully." });
@@ -262,6 +262,31 @@ namespace CSTS.API.Controllers
             }
         }
 
+        // PUT api/tickets/Assign
+        [HttpPut("Close/{ticketId}")]
+        [CstsAuth(UserType.SupportTeamMember)]
+        public async Task<ActionResult<APIResponse<bool>>> CloseTicket([FromRoute] Guid ticketId)
+        {
+            try
+            {
+                var ticket = _unitOfWork.Tickets.GetById(ticketId);
+                if (ticket == null || ticket.AssignedToId != this.GetCurrentUserId())
+                    return NotFound(new APIResponse<bool>(false, "Ticket not found."));
+
+                ticket.Status = TicketStatus.Closed;
+
+                var response = _unitOfWork.Tickets.Update(ticket);
+                if (response)
+                    return Ok(new APIResponse<bool>(true) { Message = "Ticket closed successfully." });
+
+                return Ok(new APIResponse<bool>(false, "Failed to close ticket."));
+            }
+            catch (Exception ex)
+            {
+                return Ok(new APIResponse<bool>(false, $"Internal server error: {ex.Message}"));
+            }
+        }
+        
         // PUT api/tickets/Assign
         [HttpPut("Assign")]
         [CstsAuth(UserType.SupportManager)]

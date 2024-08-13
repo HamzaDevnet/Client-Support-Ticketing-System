@@ -18,16 +18,7 @@ public class Mapping : Profile
 
         // تحويل بين الكائنات الفعلية و DTOs الخاصة بالمستخدمين
         CreateMap<User, UserResponseDTO>();
-        CreateMap<CreateUserDTO, User>();
-        CreateMap<User, UserSummaryDTO>();
-        CreateMap<UpdateUserDTO, User>();
+        CreateMap<UserDto, User>();
 
-        // تحويل بين الكائنات الفعلية و DTOs الخاصة بعضو فريق الدعم
-        CreateMap<User, SupportTeamMemberResponseDTO>();
-        CreateMap<CreateSupportTeamMemberDTO, User>();
-
-        // تحويل بين الكائنات الفعلية و DTOs الخاصة بالعملاء
-        CreateMap<User, ClientResponseDTO>();
-        CreateMap<CreateClientDTO, User>();
     }
 }

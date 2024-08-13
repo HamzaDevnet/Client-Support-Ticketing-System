@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Ticket } from './ticket';
 import { environment } from 'environments/environment';
+import { SheardServiceService } from './sheard-service.service';
 
 export interface User {
   userId: string;
@@ -23,27 +24,37 @@ export class TicketService {
   private baseUrl = 'https://localhost:7125/api/Tickets';
   private usersUrl = 'https://localhost:7125/api/Users';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private SheardServiceService: SheardServiceService) {}
 
   getTickets(): Observable<Ticket[]> {
-    return this.http.get<Ticket[]>(`${environment.BaseURL}/Tickets/tickets`);
+    const headers = this.SheardServiceService.Header_Get();
+    return this.http.get<Ticket[]>(`${environment.BaseURL}/Tickets`, { headers });
   }
 
   getTicketById(id: string): Observable<Ticket> {
+    const headers = this.SheardServiceService.Header_Get();
     return this.http.get<Ticket>(`${this.baseUrl}/${id}`);
   }
 
   assignTicket(ticketId: string, assignedTo: string): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/Assign`, { ticketId, assignedTo });
+    const headers = this.SheardServiceService.Header_Post();
+    return this.http.put<void>(`${this.baseUrl}/Assign`, { ticketId, assignedTo }, { headers });
+  }
+
+  closeTicket(ticketId: string): Observable<void> {
+    const headers = this.SheardServiceService.Header_Post();
+    return this.http.put<void>(`${this.baseUrl}/Close/${ticketId}`, { }, { headers });
   }
 
   getSupportTeamMembers(): Observable<User[]> {
+    const headers = this.SheardServiceService.Header_Get();
     return this.http.get<WebResponse<User[]>>(`${this.usersUrl}/support-team-members`).pipe(
       map(response => response.data)
     );
   } //take it 
 
   getClients(): Observable<User[]> {
+    const headers = this.SheardServiceService.Header_Get();
     return this.http.get<WebResponse<User[]>>(`${this.usersUrl}/external-clients`).pipe(
       map(response => response.data)
     );

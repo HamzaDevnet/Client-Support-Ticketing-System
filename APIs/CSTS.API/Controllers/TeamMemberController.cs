@@ -1,10 +1,9 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
-using WebApplication1.DTO;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using CSTS.DAL.Models;
 using CSTS.DAL.Enum;
 using CSTS.DAL.Repository.IRepository;
+using CSTS.DAL.AutoMapper.DTOs;
+
 
 namespace WebApplication1.Controllers
 {
@@ -21,7 +20,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost("RegisterSupportTeamMember")]
-        public async Task<IActionResult> RegisterSupportTeamMember([FromBody] RegisterDto dto)
+        public async Task<IActionResult> RegisterSupportTeamMember([FromBody] UserDto dto)
         {
             if (ModelState.IsValid)
             {

@@ -27,7 +27,7 @@ namespace CSTS.DAL.AutoMapper.DTOs
         public string AssignedToUserName { get; set; }
         public string AssignedToFullName { get; set; }
         public List<CommentResponseDTO> Comments { get; set; } // New property for comments
-        public List<AttachmentDTO> Attachments { get; set; }
+        public List<AttachmentDto> Attachments { get; set; }
     }
 
     public class UpdateTicketDTO
@@ -56,4 +56,5 @@ namespace CSTS.DAL.AutoMapper.DTOs
         public Guid TicketId { get; set; }
         public Guid? AssignedTo { get; set; }
     }
+
 }

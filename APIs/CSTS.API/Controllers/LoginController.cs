@@ -2,18 +2,10 @@
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
-
-using Microsoft.EntityFrameworkCore;
-using WebApplication1.DTO;
-
 using CSTS.DAL.AutoMapper.DTOs;
 using CSTS.DAL.Repository.IRepository;
 using CSTS.DAL.Enum;
-using CSTS.DAL.Migrations;
 using CSTS.DAL.Models;
-using System.Linq;
-
 
 
 
@@ -87,7 +79,7 @@ namespace CSTS.API.Controllers
 
 
         [HttpPost("RegisterClient")]
-        public async Task<IActionResult> RegisterClient([FromBody] RegisterDto dto)
+        public async Task<IActionResult> RegisterClient([FromBody] UserDto dto)
         {
 
             if (ModelState.IsValid)

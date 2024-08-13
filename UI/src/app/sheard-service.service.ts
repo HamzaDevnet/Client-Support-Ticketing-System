@@ -10,10 +10,25 @@ export class SheardServiceService {
 
   constructor() { }
 
-  getToken():HttpHeaders{
+  getToken(): HttpHeaders {
     return new HttpHeaders({
       'Authorization': `Bearer ${localStorage.getItem(this.tokenKey)}`
     });
   }
+
+  Header_Get(): HttpHeaders {
+    return new HttpHeaders({
+      'Authorization': `Bearer ${localStorage.getItem(this.tokenKey)}`
+    });
+  }
+
+  Header_Post(): HttpHeaders {
+    return new HttpHeaders({
+      'Authorization': `Bearer ${localStorage.getItem(this.tokenKey)}`,
+      'Content-Type': 'application/json'
+    });
+  }
+  
 }
+
 
