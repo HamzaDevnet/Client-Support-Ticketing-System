@@ -11,6 +11,7 @@ using CSTS.DAL.Enum;
 using CSTS.DAL.AutoMapper.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
+using CSTS.API.ApiServices;
 
 namespace CSTS.API.Controllers
 {
@@ -31,7 +32,7 @@ namespace CSTS.API.Controllers
 
         // GET: api/comments/client
         [HttpGet("client")]
-        [Authorize(Roles = "ExternalClient")]
+        [CstsAuth(UserType.ExternalClient)]
         public async Task<ActionResult<APIResponse<IEnumerable<CommentResponseDTO>>>> GetClientComments([FromQuery] Guid ticketId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
         {
             try
@@ -49,7 +50,7 @@ namespace CSTS.API.Controllers
 
         // GET: api/comments/support
         [HttpGet("support")]
-        [Authorize(Roles = "SupportTeamMember")]
+        [CstsAuth(UserType.SupportTeamMember)]
         public async Task<ActionResult<APIResponse<IEnumerable<CommentResponseDTO>>>> GetSupportComments([FromQuery] Guid ticketId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
         {
             try
