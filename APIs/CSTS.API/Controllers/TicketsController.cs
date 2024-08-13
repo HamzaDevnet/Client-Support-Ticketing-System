@@ -51,7 +51,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}"));
+                return Ok(new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}"));
             }
         }
 
@@ -77,7 +77,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}"));
+                return Ok(new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}"));
             }
         }
 
@@ -102,7 +102,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}"));
+                return Ok(new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}"));
             }
         }
 
@@ -149,7 +149,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<TicketResponseDTO>(null, $"Internal server error: {ex.Message}"));
+                return Ok(new APIResponse<TicketResponseDTO>(null, $"Internal server error: {ex.Message}"));
             }
         }
 
@@ -192,7 +192,7 @@ namespace CSTS.API.Controllers
 
                 var response = _unitOfWork.Tickets.Add(ticket);
                 if (!response)
-                    return StatusCode(500, new APIResponse<TicketResponseDTO>(null, "Failed to create ticket"));
+                    return Ok(new APIResponse<TicketResponseDTO>(null, "Failed to create ticket"));
 
                 var ticketDto = new TicketResponseDTO
                 {
@@ -210,7 +210,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<TicketResponseDTO>(null, $"Internal server error: {ex.Message} - {ex.StackTrace}"));
+                return Ok(new APIResponse<TicketResponseDTO>(null, $"Internal server error: {ex.Message} - {ex.StackTrace}"));
             }
         }
 
@@ -233,13 +233,13 @@ namespace CSTS.API.Controllers
 
                 var response = _unitOfWork.Tickets.Update(ticket);
                 if (!response)
-                    return StatusCode(500, new APIResponse<UpdateResponseDTO>(null, "Failed to update ticket status"));
+                    return Ok(new APIResponse<UpdateResponseDTO>(null, "Failed to update ticket status"));
 
                 return Ok(new APIResponse<UpdateResponseDTO>(new UpdateResponseDTO { Success = true, Message = "Ticket status updated successfully" }) { Message = "Ticket status updated successfully." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<UpdateResponseDTO>(null, $"Internal server error: {ex.Message}"));
+                return Ok(new APIResponse<UpdateResponseDTO>(null, $"Internal server error: {ex.Message}"));
             }
         }
 
@@ -261,11 +261,11 @@ namespace CSTS.API.Controllers
                 if (response)
                     return Ok(new APIResponse<bool>(true) { Message = "Ticket assigned successfully." });
 
-                return StatusCode(500, new APIResponse<bool>(false, "Failed to assign ticket."));
+                return Ok(new APIResponse<bool>(false, "Failed to assign ticket."));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<bool>(false, $"Internal server error: {ex.Message}"));
+                return Ok(new APIResponse<bool>(false, $"Internal server error: {ex.Message}"));
             }
         }
 
@@ -284,7 +284,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<bool>(false, $"Internal server error: {ex.Message}"));
+                return Ok(new APIResponse<bool>(false, $"Internal server error: {ex.Message}"));
             }
         }
 
@@ -294,7 +294,7 @@ namespace CSTS.API.Controllers
         {
             var canConnect = await _unitOfWork.CanConnectAsync();
             if (!canConnect)
-                return StatusCode(500, new APIResponse<string>(null, "Database connection failed."));
+                return Ok(new APIResponse<string>(null, "Database connection failed."));
 
             return Ok(new APIResponse<string>("Healthy") { Message = "Database connection successful." });
         }

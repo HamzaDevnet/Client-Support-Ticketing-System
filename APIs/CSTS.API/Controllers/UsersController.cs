@@ -35,7 +35,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<IEnumerable<User>> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
+                return Ok(new APIResponse<IEnumerable<User>> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
             }
         }
 
@@ -54,7 +54,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<User> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
+                return Ok(new APIResponse<User> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
             }
         }
 
@@ -87,7 +87,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<User> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
+                return Ok(new APIResponse<User> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
             }
         }
 
@@ -132,7 +132,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
+                return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
             }
         }
 
@@ -152,7 +152,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
+                return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
             }
         }
 
@@ -174,7 +174,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
+                return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
             }
         }
 
@@ -196,7 +196,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
+                return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
             }
         }
 
@@ -211,12 +211,13 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<IEnumerable<User>> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
+                return Ok(new APIResponse<IEnumerable<User>> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
             }
         }
 
         // GET Clients
         [HttpGet("clients")]
+        [CSTS.API.ApiServices.CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<IEnumerable<User>>>> GetExternalClients([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
             try
@@ -226,7 +227,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<IEnumerable<User>> { Data = null, Code = ResponseCode.Error, Message = ex.Message });
+                return Ok(new APIResponse<IEnumerable<User>>(new List<User>() , ex.Message));
             }
         }
     }

@@ -43,7 +43,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<IEnumerable<CommentResponseDTO>>(null, ResponseCode.Error, ex.Message));
+                return Ok(new APIResponse<IEnumerable<CommentResponseDTO>>(null, ResponseCode.Error, ex.Message));
             }
         }
 
@@ -61,7 +61,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<IEnumerable<CommentResponseDTO>>(null, ResponseCode.Error, ex.Message));
+                return Ok(new APIResponse<IEnumerable<CommentResponseDTO>>(null, ResponseCode.Error, ex.Message));
             }
         }
 
@@ -83,7 +83,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<CommentResponseDTO>(null, ResponseCode.Error, ex.Message));
+                return Ok(new APIResponse<CommentResponseDTO>(null, ResponseCode.Error, ex.Message));
             }
         }
 
@@ -119,7 +119,7 @@ namespace CSTS.API.Controllers
                 var response = _unitOfWork.Comments.Add(comment);
                 if (!response)
                 {
-                    return StatusCode(500, new APIResponse<CommentResponseDTO>(null, ResponseCode.Error, "Failed to add comment."));
+                    return Ok(new APIResponse<CommentResponseDTO>(null, ResponseCode.Error, "Failed to add comment."));
                 }
 
                 var commentResponseDto = _mapper.Map<CommentResponseDTO>(comment);
@@ -128,7 +128,7 @@ namespace CSTS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new APIResponse<CommentResponseDTO>(null, ResponseCode.Error, ex.Message));
+                return Ok(new APIResponse<CommentResponseDTO>(null, ResponseCode.Error, ex.Message));
             }
         }
     }
