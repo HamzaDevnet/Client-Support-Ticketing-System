@@ -1,6 +1,8 @@
 import { Component, Inject,  } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Users } from 'app/users';
+
 
 
 @Component({
@@ -13,16 +15,17 @@ export class EditDialogComponent {
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<EditDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: {name: string, email: string, username: string, address: any}
+    @Inject(MAT_DIALOG_DATA) public data: Users
   ) { 
     this.editForm = this.fb.group({
-      name: [data.name],
+      firstName: [data.firstName],
+      lastName: [data.lastName],
       username: [data.username],
       email: [data.email],
-      street: [data.address.street],
-      city: [data.address.city],
-      state: [data.address.state],
-      zipcode: [data.address.zipcode]
+      password: [data.password],
+      mobileNumber: [data.mobileNumber],
+      dateOfBirth: [data.dateOfBirth],
+      address: [data.address] ,
     });
   }
 
@@ -32,17 +35,34 @@ export class EditDialogComponent {
 
   onSave(): void {
     const updatedData = {
-      name: this.editForm.value.name,
-      username: this.editForm.value.username,
+      firstName: this.editForm.value.firstName,
+      lastName: this.editForm.value.lastName,
+      username: this.editForm.value.username ,
       email: this.editForm.value.email,
-      address: {
-        street: this.editForm.value.street,
-        city: this.editForm.value.city,
-        state: this.editForm.value.state,
-        zipcode: this.editForm.value.zipcode
-      }
+      password: this.editForm.value.password,
+      mobileNumber: this.editForm.value.mobileNumber,
+      dateOfBirth: this.editForm.value.dateOfBirth,
+      address:this.editForm.value.address ,
     };
     this.dialogRef.close(updatedData);
   }
 
+  deletesupport():void {
+    
+  }
+
+
+  // onSubmit() {
+  //   if (this.supportForm.valid) {
+  //     this.SupportTeamService.addSupportMember(this.supportForm.value).subscribe({
+  //       next:(response)=>{
+  //         this.dialogRef.close({
+  //           isdone:true
+  //         });
+
+  //       }  
+  //     })
+      
+  //   }
+  // }
 }

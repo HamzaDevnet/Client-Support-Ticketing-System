@@ -5,6 +5,8 @@ import { SupportTeam } from 'app/support-team';
 import { EditDialogComponent } from '../edit-dialog/edit-dialog.component';
 import { SupportTeamService } from 'app/support-team.service';
 import { AddclientticketComponent } from '../addclientticket/addclientticket.component';
+import { Ticket } from 'app/ticket';
+import { TicketService } from 'app/ticket.service';
 
 @Component({
   selector: 'app-clienttickets',
@@ -12,28 +14,26 @@ import { AddclientticketComponent } from '../addclientticket/addclientticket.com
   styleUrls: ['./clienttickets.component.scss']
 })
 export class ClientticketsComponent implements OnInit {
-  supportTeam: SupportTeam[] = [];
-  displayedColumns: string[] = ['id', 'name', 'username', 'email', 'edit'];
-  dataSource = new MatTableDataSource<SupportTeam>(this.supportTeam);
+  Tickets: Ticket[] = [];
+  displayedColumns: string[] = ['ticketId', 'product', 'createdDate', 'status', 'action'];
+  dataSource = new MatTableDataSource<Ticket>(this.Tickets);
 
 
-  constructor(private supportTeamService: SupportTeamService, public dialog: MatDialog){}
+  constructor(public dialog: MatDialog, private ticketService : TicketService){}
 
   ngOnInit(): void {
-    this.getSupportTeam();
+    this.getTickets();
   }
 
-  getSupportTeam(): void {
-    this.supportTeamService.getSupportTeam().subscribe({
-      next: (supportTeam) => {
-        this.supportTeam = supportTeam;
-        this.dataSource.data = supportTeam;
-        console.log('succuessful fetching support teams information');
+  getTickets():void{
+    this.ticketService.getTickets().subscribe({
+      next:(Tickets)=> {
+        this.Tickets =Tickets ;
       },
       error: (error) => {
-        console.error('Error fetching support teams information', error);
-      },
-    });
+        console.error('Error listing Tickets', error);
+      }
+    })
   }
 
   addTicket(): void {
@@ -48,29 +48,28 @@ export class ClientticketsComponent implements OnInit {
     });
   }
 
-  openVewiDialog(supportteam: SupportTeam): void {
+  openVewiDialog(ticket: Ticket): void {
     const dialogRef = this.dialog.open(EditDialogComponent, {
       width: '600px',
       data: {
-        firstname: supportteam.firstName,
-        lastname: supportteam.lastName,
-        username: supportteam.username,
-        mobilephone: supportteam.MobileNumber,
-        email: supportteam.email ,
-        password: supportteam.password ,
-        dataofbirth: supportteam.DateOfBirth, 
+        ticketId: ticket.ticketId ,
+        product:ticket.product , 
+        status: ticket.status ,
+        createDate: ticket.createdDate ,
+        assignedToUserName: ticket.assignedToUserName ,
+        problemDescription :ticket.problemDescription 
+
       }
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        supportteam.firstName = result.name;
-        supportteam.lastName = result.email;
-        supportteam.username = result.username;
-        supportteam.MobileNumber = result.mobilephone;
-        supportteam.email = result.email;
-        supportteam.password = result.password ;
-        supportteam.DateOfBirth = result.dataofbirth ;
-        this.dataSource.data = [...this.supportTeam];
+      ticket.ticketId = result.ticketId ,
+      ticket.product = result.product ,
+      ticket.status = result.status, 
+      ticket.createdDate = result.createDate ,
+      ticket.assignedToUserName = result.assignedToUserName
+      ticket.problemDescription = result.problemDescription , 
+        this.dataSource.data = [...this.Tickets];
       }
     });
   }

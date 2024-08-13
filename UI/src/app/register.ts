@@ -1,6 +1,6 @@
 import { Userdata } from "./userdata";
 
-export interface Register {
+export interface RegisterData {
     firstName: string;
     lastName: string;
     username: string;
@@ -8,6 +8,7 @@ export interface Register {
     email: string;
     password: string;
     DateOfBirth: Date;
+    address:string ,
   }
   
   

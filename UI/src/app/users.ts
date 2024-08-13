@@ -2,10 +2,13 @@ export interface Users {
   firstName: string;
   lastName: string;
   username: string;
-  MobileNumber: string;
+  mobileNumber: string;
   email: string;
   password: string;
-  DateOfBirth: Date;
+  dateOfBirth: Date;
+  address: string ;
+
+
 }
 
-
+  // img: string ;

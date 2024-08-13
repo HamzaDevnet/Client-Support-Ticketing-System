@@ -1,28 +1,24 @@
 
-@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css");
-
-
-.card{
-    box-shadow: 1px 1px 50px #000000;
-    width: 600px;
-    margin: auto;
+.bg-light-green {
+background-image: url("https://img.freepik.com/free-vector/dark-background-with-dynamic-shapes_361591-3135.jpg?t=st=1723405532~exp=1723409132~hmac=9bfe1425fa91f2bf26004679865824ae012d10d02dc4ac660411dbc58d981c55&w=1380");
+background-repeat: no-repeat;
+background-size: cover;
 }
 
-textarea {
-    resize: none;
-  } 
-
-  label{
-    font-weight: bold;
-  }
-
-  .form-group .control-label.required:after {
-    content:"*";
-    color:red;
+.card-custom {
+  height: 60vh; 
+  width: 100%;
+  max-width: 400px; 
+  border: none;
+  box-shadow: none;
+  background-color: rgba(255, 255, 255, 0.81); 
 }
 
-@media(max-width: 800px) {
-    .card{
-        width: 100%;
-    }
-  }
+.logo {
+  max-width: 65px; 
+}
+
+label{
+  font-weight: bold;
+  color: black;
+}

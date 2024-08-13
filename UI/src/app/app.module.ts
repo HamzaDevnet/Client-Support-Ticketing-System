@@ -44,6 +44,11 @@ import { TicketDetailsComponent } from './pages/ticket-details/ticket-details.co
 import { AssignTicketComponent } from './pages/assign-ticket/assign-ticket.component';
 import { UsersService } from "./users.service";
 import { TicketService } from "./ticket.service";
+import { LandingComponent } from './pages/landing/landing.component';
+import { ClientComponent } from './pages/client/client.component';
+import { AddSupportComponent } from './pages/add-support/add-support.component';
+import { ClienttickectdetailsComponent } from './pages/clienttickectdetails/clienttickectdetails.component';
+
 
 @NgModule({
   declarations: [
@@ -60,7 +65,12 @@ import { TicketService } from "./ticket.service";
     ClientticketsComponent,
     AddclientticketComponent,
     TicketDetailsComponent,
-    AssignTicketComponent
+    AssignTicketComponent,
+    LandingComponent,
+    ClientComponent,
+    AddSupportComponent,
+    ClienttickectdetailsComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -82,11 +92,7 @@ import { TicketService } from "./ticket.service";
     MatCardModule,
     MatCheckboxModule,
     MatNativeDateModule,
-    RouterModule,
-
-    RouterModule.forRoot(AppRoutes, {
-      useHash: true
-    }),
+    RouterModule.forRoot(AppRoutes),
     SidebarModule,
     NavbarModule,
     ToastrModule.forRoot(),

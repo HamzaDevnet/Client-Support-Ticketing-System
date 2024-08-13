@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
-import { SupportTeam } from 'app/support-team';
 import { SupportTeamService } from 'app/support-team.service';
 import { EditDialogComponent } from '../edit-dialog/edit-dialog.component';
 import { AddTicketComponent } from '../add-ticket/add-ticket.component';
+import { Users } from 'app/users';
+import { AddSupportComponent } from '../add-support/add-support.component';
+
+
+
 
 @Component({
   selector: 'app-support-team-member',
@@ -12,9 +16,9 @@ import { AddTicketComponent } from '../add-ticket/add-ticket.component';
   templateUrl: './support-team-member.component.html',
 })
 export class SupportTeamMemberComponent implements OnInit {
-  supportTeam: SupportTeam[] = [];
-  displayedColumns: string[] = ['firstName', 'lastName', 'username', 'MobileNumber', 'email','password', 'DateOfBirth' ,'edit'];
-  dataSource = new MatTableDataSource<SupportTeam>(this.supportTeam);
+  supportTeam: Users[] = [];
+  displayedColumns: string[] = ['firstName', 'lastName', 'username', 'mobileNumber', 'email', 'dateOfBirth' ,'edit'];
+  dataSource = new MatTableDataSource<Users>(this.supportTeam);
 
   constructor(private supportTeamService: SupportTeamService, public dialog: MatDialog) {}
 
@@ -27,6 +31,7 @@ export class SupportTeamMemberComponent implements OnInit {
       next: (supportTeam) => {
         this.supportTeam = supportTeam;
         this.dataSource.data = supportTeam;
+        console.log(supportTeam);
       },
       error: (error) => {
         console.error('Error fetching support teams information', error);
@@ -35,48 +40,47 @@ export class SupportTeamMemberComponent implements OnInit {
   }
 
 
-  openEditSupportDialog(supportteam: SupportTeam): void {
+  openEditSupportDialog(supportteam: Users): void {
     const dialogRef = this.dialog.open(EditDialogComponent, {
-      width: '600px', 
+      width: '600px',
       data: {
-        firstname: supportteam.firstName,
-        lastname: supportteam.lastName,
+        firstName: supportteam.firstName,
+        lastName: supportteam.lastName,
         username: supportteam.username,
-        mobilephone: supportteam.MobileNumber,
-        email: supportteam.email ,
-        password: supportteam.password ,
-        dataofbirth: supportteam.DateOfBirth, 
-
+        mobileNumber: supportteam.mobileNumber,
+        email: supportteam.email,
+        password: supportteam.password,
+        dateOfBirth: supportteam.dateOfBirth,
+        address: supportteam.address
       }
     });
-
+  
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        supportteam.firstName = result.firstname;
+        supportteam.firstName = result.firstName;
         supportteam.lastName = result.lastName;
         supportteam.username = result.username;
-        supportteam.MobileNumber = result.mobilephone;
+        supportteam.mobileNumber = result.mobileNumber;
         supportteam.email = result.email;
-        supportteam.password = result.password ;
-        supportteam.DateOfBirth = result.dataofbirth ;
+        supportteam.password = result.password;
+        supportteam.dateOfBirth = result.dateOfBirth;
+        supportteam.address = result.address;
         this.dataSource.data = [...this.supportTeam];
       }
     });
   }
 
-  openAddTicketDialog(): void {
-    const dialogRef = this.dialog.open(AddTicketComponent, {
-      width: '400px'
+  openAddSupportDialog(): void {
+    const dialogRef = this.dialog.open(AddSupportComponent, {
+      width: '500px'
     });
+    
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
-      // Handle result if needed
+      if (result && result.isdone) {
+        this.getSupportTeam();
+      }
     });
   }
 
-  // openAddSupportDialog():void{
-  //   const dialogRef = this.dialog.open(AddSupportMember, {
-  //     width: '400px'
-  //   });
-  // }
 }

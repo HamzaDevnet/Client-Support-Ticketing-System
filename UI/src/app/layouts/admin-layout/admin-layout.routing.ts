@@ -7,16 +7,19 @@ import { TicketComponent } from 'app/pages/ticket/ticket.component';
 import { RegisterComponent } from 'app/pages/register/register.component';
 import { MyopenticketComponent } from 'app/pages/myopenticket/myopenticket.component';
 import { ClientticketsComponent } from 'app/pages/clienttickets/clienttickets.component';
+import { ClientComponent } from 'app/pages/client/client.component';
+import { ClienttickectdetailsComponent } from 'app/pages/clienttickectdetails/clienttickectdetails.component';
 
 
 export const AdminLayoutRoutes: Routes = [
-    {path:'register',         component:RegisterComponent},
     { path: 'dashboard',      component: DashboardComponent },
-    { path: 'user',           component: UserComponent },
     { path: 'tickets',        component: TicketComponent },
     { path: 'support',        component: SupportTeamMemberComponent },
-    { path: 'openticket',        component: MyopenticketComponent },
-    { path: 'myTickets',        component: ClientticketsComponent },
+    {path:'client',          component:ClientComponent},
+    { path: 'openticket',     component: MyopenticketComponent },
+    { path: 'myTickets',      component: ClientticketsComponent },
+    { path: 'account',         component: UserComponent },
+    {path: 'ticketdetails',  component:ClienttickectdetailsComponent}
 
 
 ];

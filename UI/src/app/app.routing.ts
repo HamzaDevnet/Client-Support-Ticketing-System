@@ -5,19 +5,30 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { LoginComponent } from './pages/login/login.component';
+import { LandingComponent } from './pages/landing/landing.component';
+import { TicketDetailsComponent } from './pages/ticket-details/ticket-details.component';
+import { ClienttickectdetailsComponent } from './pages/clienttickectdetails/clienttickectdetails.component';
 
 export const AppRoutes: Routes = [
   {
     path: '',
-    redirectTo: 'register',
+    redirectTo: 'landing',
     pathMatch: 'full',
   },
   {
-    path:'register',
-    component: RegisterComponent
+    path:'landing',
+    component: LandingComponent
   },
   {path:'login',         
     component:LoginComponent},
+    {
+      path:'register',
+      component: RegisterComponent
+    },
+    {
+      path:'register',
+      component: RegisterComponent
+    },
    {
     path: '',
     component: AdminLayoutComponent,
@@ -30,10 +41,9 @@ export const AppRoutes: Routes = [
     path: 'userprofile', 
     component: UserProfileComponent
   },
-
-]},
   {
-    path: '**',
-    redirectTo: 'register'
-  }
+    path: 'ticketdetails', 
+    component: ClienttickectdetailsComponent
+  },
+]},
 ];
