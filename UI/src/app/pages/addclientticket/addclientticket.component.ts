@@ -30,8 +30,5 @@ export class AddclientticketComponent {
 
   onSubmit(): void {
     this.dialogRef.close(this.ticketData);
-
-    console.log('Ticket Data:', result);
-
   }
 }
