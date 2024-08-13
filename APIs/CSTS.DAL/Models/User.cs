@@ -14,7 +14,7 @@ namespace CSTS.DAL.Models
         public string MobileNumber { get; set; }
         public string Email { get; set; }
         //IFormFile
-        public byte[]? Image { get; set; }
+        public string? Image { get; set; }
         public DateTime DateOfBirth { get; set; }
         public UserStatus UserStatus { get; set; } // Enum
         public UserType UserType { get; set; } // Enum

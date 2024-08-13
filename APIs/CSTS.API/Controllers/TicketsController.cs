@@ -138,7 +138,7 @@ namespace CSTS.API.Controllers
                     .FirstOrDefault(t => t.TicketId == id);
 
                 if (ticket == null)
-                    return NotFound(new APIResponse<TicketResponseDTO>(null, "Ticket not found."));
+                    return Ok(new APIResponse<TicketResponseDTO>(null, "Ticket not found."));
 
                 var ticketDto = new TicketResponseDTO
                 {
@@ -182,7 +182,7 @@ namespace CSTS.API.Controllers
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var user = _unitOfWork.Users.GetById(Guid.Parse(userId));
                 if (user == null || user.UserStatus != UserStatus.Active)
-                    return BadRequest(new APIResponse<TicketResponseDTO>(null, "User is not active."));
+                    return Ok(new APIResponse<TicketResponseDTO>(null, "User is not active."));
 
                 var ticket = new Ticket
                 {
@@ -196,7 +196,7 @@ namespace CSTS.API.Controllers
 
                 var result = _validator.Validate(ticket);
                 if (!result.IsValid)
-                    return BadRequest(new APIResponse<TicketResponseDTO>(null, string.Join("; ", result.Errors.Select(e => e.ErrorMessage))));
+                    return Ok(new APIResponse<TicketResponseDTO>(null, string.Join("; ", result.Errors.Select(e => e.ErrorMessage))));
 
                 if (createDto.Attachments != null)
                 {
@@ -204,7 +204,7 @@ namespace CSTS.API.Controllers
                     {
                         using var memoryStream = new MemoryStream();
                         await file.CopyToAsync(memoryStream);
-                        var filePath = _fileService.SaveFileAsync(memoryStream.ToArray(), FolderType.Images, Path.GetExtension(file.FileName));
+                        var filePath = _fileService.SaveFile(memoryStream.ToArray(), FolderType.Images, Path.GetExtension(file.FileName));
                         ticket.Attachments.Add(new Attachment { FileName = file.FileName, FileUrl = filePath });
                     }
                 }
@@ -242,13 +242,13 @@ namespace CSTS.API.Controllers
             {
                 var ticket = _unitOfWork.Tickets.GetById(id);
                 if (ticket == null)
-                    return NotFound(new APIResponse<UpdateResponseDTO>(null, "Ticket not found."));
+                    return Ok(new APIResponse<UpdateResponseDTO>(null, "Ticket not found."));
 
                 ticket.Status = updateDto.Status;
 
                 var result = _validator.Validate(ticket);
                 if (!result.IsValid)
-                    return BadRequest(new APIResponse<UpdateResponseDTO>(null, string.Join("; ", result.Errors.Select(e => e.ErrorMessage))));
+                    return Ok(new APIResponse<UpdateResponseDTO>(null, string.Join("; ", result.Errors.Select(e => e.ErrorMessage))));
 
                 var response = _unitOfWork.Tickets.Update(ticket);
                 if (!response)
@@ -271,7 +271,7 @@ namespace CSTS.API.Controllers
             {
                 var ticket = _unitOfWork.Tickets.GetById(ticketId);
                 if (ticket == null || ticket.AssignedToId != this.GetCurrentUserId())
-                    return NotFound(new APIResponse<bool>(false, "Ticket not found."));
+                    return Ok(new APIResponse<bool>(false, "Ticket not found."));
 
                 ticket.Status = TicketStatus.Closed;
 
@@ -296,7 +296,7 @@ namespace CSTS.API.Controllers
             {
                 var ticket = _unitOfWork.Tickets.GetById(assignTicketDto.TicketId);
                 if (ticket == null)
-                    return NotFound(new APIResponse<bool>(false, "Ticket not found."));
+                    return Ok(new APIResponse<bool>(false, "Ticket not found."));
 
                 ticket.AssignedToId = assignTicketDto.AssignedTo;
                 ticket.Status = TicketStatus.Assigned;
@@ -322,7 +322,7 @@ namespace CSTS.API.Controllers
             {
                 var response = _unitOfWork.Tickets.Delete(id);
                 if (!response)
-                    return NotFound(new APIResponse<bool>(false, "Ticket not found."));
+                    return Ok(new APIResponse<bool>(false, "Ticket not found."));
 
                 return Ok(new APIResponse<bool>(true) { Message = "Ticket deleted successfully." });
             }

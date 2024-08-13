@@ -3,6 +3,7 @@ using CSTS.DAL.Models;
 using CSTS.DAL.Enum;
 using CSTS.DAL.Repository.IRepository;
 using CSTS.DAL.AutoMapper.DTOs;
+using CSTS.API.ApiServices;
 
 
 namespace WebApplication1.Controllers
@@ -11,12 +12,13 @@ namespace WebApplication1.Controllers
     public class TeamMemberController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly FileService _fileService;
 
 
-        public TeamMemberController(IUnitOfWork unitOfWork)
+        public TeamMemberController(IUnitOfWork unitOfWork, FileService fileService)
         {
             _unitOfWork = unitOfWork;
-
+            _fileService = fileService; 
         }
 
         [HttpPost("RegisterSupportTeamMember")]
@@ -56,7 +58,7 @@ namespace WebApplication1.Controllers
                     Email = dto.Email,
                     Password = dto.Password,
                     MobileNumber = dto.MobileNumber,
-                    Image = dto.UserImage,
+                    Image = _fileService.SaveFile(dto.UserImage , FolderType.Images, Path.GetExtension(dto.UserImage.FileName)),
                     DateOfBirth = dto.DateOfBirth,
                     UserName = dto.UserName,
                     UserType = UserType.SupportTeamMember,

@@ -24,7 +24,7 @@ namespace CSTS.API.Controllers
             var tickets = _unitOfWork.Tickets.GetQueryable();
             if (!tickets.Any())
             {
-                return NotFound("No tickets found.");
+                return Ok("No tickets found.");
             }
 
             var result = tickets
@@ -63,7 +63,7 @@ namespace CSTS.API.Controllers
             var teamMembers = _unitOfWork.Users.GetQueryable().Where(u => u.UserType == UserType.SupportTeamMember).AsQueryable();
             if (!teamMembers.Any())
             {
-                return NotFound("No team members found.");
+                return Ok("No team members found.");
             }
 
             var result = teamMembers
@@ -84,7 +84,7 @@ namespace CSTS.API.Controllers
             var teamMembers = _unitOfWork.Users.GetQueryable().Where(u => u.UserType == UserType.SupportTeamMember).AsQueryable();
             if (!teamMembers.Any())
             {
-                return NotFound("No team members found.");
+                return Ok("No team members found.");
             }
 
             var result = teamMembers

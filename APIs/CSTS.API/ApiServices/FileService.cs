@@ -23,7 +23,7 @@ namespace CSTS.API.ApiServices
             _env = env;
         }
 
-        public string SaveFileAsync(byte[] fileBytes, FolderType folder, string extension)
+        public string SaveFile(byte[] fileBytes, FolderType folder, string extension)
         {
             string wwwRootPath = _env.WebRootPath;
             string folderPath = Path.Combine(wwwRootPath, folder.ToString());
@@ -40,6 +40,40 @@ namespace CSTS.API.ApiServices
 
             return Path.Combine(folder.ToString(), fileName);
         }
+
+        public string SaveFile(IFormFile file, FolderType folder, string extension)
+        {
+            byte[] fileBytes = ConvertToByteArray(file);
+
+            string wwwRootPath = _env.WebRootPath;
+            string folderPath = Path.Combine(wwwRootPath, folder.ToString());
+
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            string fileName = $"{Guid.NewGuid()}{extension}";
+            string fullPath = Path.Combine(folderPath, fileName);
+
+            File.WriteAllBytes(fullPath, fileBytes);
+
+            return Path.Combine(folder.ToString(), fileName);
+        }
+
+
+        public byte[] ConvertToByteArray(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return null;
+
+            using (var memoryStream = new MemoryStream())
+            {
+                file.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
+        }
+
     }
 
 }

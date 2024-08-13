@@ -75,7 +75,7 @@ namespace CSTS.API.Controllers
                 var comment = _unitOfWork.Comments.GetById(id);
                 if (comment == null)
                 {
-                    return NotFound(new APIResponse<CommentResponseDTO>(null, ResponseCode.Null, "Comment not found."));
+                    return Ok(new APIResponse<CommentResponseDTO>(null, ResponseCode.Null, "Comment not found."));
                 }
 
                 var commentDto = _mapper.Map<CommentResponseDTO>(comment);
@@ -96,20 +96,20 @@ namespace CSTS.API.Controllers
             {
                 if (createCommentDto == null)
                 {
-                    return BadRequest(new APIResponse<CommentResponseDTO>(null, ResponseCode.Null, "Comment cannot be null."));
+                    return Ok(new APIResponse<CommentResponseDTO>(null, ResponseCode.Null, "Comment cannot be null."));
                 }
 
                 // Validate comment DTO
                 ValidationResult result = _validator.Validate(createCommentDto);
                 if (!result.IsValid)
                 {
-                    return BadRequest(new APIResponse<CommentResponseDTO>(null, ResponseCode.Error, string.Join(", ", result.Errors.Select(e => e.ErrorMessage))));
+                    return Ok(new APIResponse<CommentResponseDTO>(null, ResponseCode.Error, string.Join(", ", result.Errors.Select(e => e.ErrorMessage))));
                 }
 
                 var ticket = _unitOfWork.Tickets.GetById(createCommentDto.TicketId);
                 if (ticket == null)
                 {
-                    return NotFound(new APIResponse<CommentResponseDTO>(null, ResponseCode.Null, "Ticket not found."));
+                    return Ok(new APIResponse<CommentResponseDTO>(null, ResponseCode.Null, "Ticket not found."));
                 }
 
                 var comment = _mapper.Map<Comment>(createCommentDto);

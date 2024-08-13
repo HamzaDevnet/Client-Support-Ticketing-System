@@ -30,7 +30,7 @@ namespace CSTS.API.Controllers
 
         // GET: api/users
         [HttpGet]
-        [CSTS.API.ApiServices.CstsAuth(UserType.ExternalClient)]
+        //[CstsAuth(UserType.ExternalClient)]
         public async Task<ActionResult<APIResponse<IEnumerable<UserResponseDTO>>>> Get([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
             try
@@ -54,7 +54,7 @@ namespace CSTS.API.Controllers
 
                 if (response == null)
                 {
-                    return NotFound(new APIResponse<UserResponseDTO> { Data = null, Code = ResponseCode.Null, Message = "User not found." });
+                    return Ok(new APIResponse<UserResponseDTO> { Data = null, Code = ResponseCode.Null, Message = "User not found." });
                 }
                 return Ok(new APIResponse<UserResponseDTO> { Data = response, Code = ResponseCode.Success, Message = "Success" });
             }
@@ -72,22 +72,22 @@ namespace CSTS.API.Controllers
             {
                 User user = _mapper.Map<User>(inputUser);
 
-                if (user == null || user.UserId != id)
+                if (user == null)
                 {
-                    return BadRequest(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User is null or ID mismatch." });
+                    return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User is null or ID mismatch." });
                 }
 
                 var existingUser = _unitOfWork.Users.GetById(id);
                 if (existingUser == null)
                 {
-                    return NotFound(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
+                    return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
                 }
 
                 // Validate user
                 ValidationResult result = _validator.Validate(user);
                 if (!result.IsValid)
                 {
-                    return BadRequest(new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = result.Errors.ToString() });
+                    return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = result.Errors.ToString() });
                 }
 
                 existingUser.UserName = user.UserName;
@@ -120,7 +120,7 @@ namespace CSTS.API.Controllers
                 var response = _unitOfWork.Users.Delete(id);
                 if (!response)
                 {
-                    return NotFound(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
+                    return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
                 }
 
                 return Ok(new APIResponse<bool> { Data = response, Code = ResponseCode.Success, Message = "Success" });
@@ -133,7 +133,7 @@ namespace CSTS.API.Controllers
 
         // Activate a user
         [HttpPatch("{id}/activate")]
-        [CstsAuth(UserType.SupportManager)]
+        //[CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<bool>>> Activate(Guid id)
         {
             try
@@ -141,7 +141,7 @@ namespace CSTS.API.Controllers
                 var response = _unitOfWork.Users.GetById(id);
                 if (response == null)
                 {
-                    return NotFound(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
+                    return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
                 }
 
                 response.UserStatus = UserStatus.Active;
@@ -156,7 +156,7 @@ namespace CSTS.API.Controllers
 
         // Deactivate a user
         [HttpPatch("{id}/deactivate")]
-        [CstsAuth(UserType.SupportManager)]
+        //[CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<bool>>> Deactivate(Guid id)
         {
             try
@@ -164,7 +164,7 @@ namespace CSTS.API.Controllers
                 var response = _unitOfWork.Users.GetById(id);
                 if (response == null)
                 {
-                    return NotFound(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
+                    return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
                 }
 
                 response.UserStatus = UserStatus.Deactivated;
@@ -194,7 +194,7 @@ namespace CSTS.API.Controllers
 
         // GET Clients
         [HttpGet("clients")]
-        [CstsAuth(UserType.SupportManager)]
+        //[CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<IEnumerable<UserResponseDTO>>>> GetExternalClients([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
             try
