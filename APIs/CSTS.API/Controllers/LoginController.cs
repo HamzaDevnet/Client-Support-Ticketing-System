@@ -25,11 +25,12 @@ namespace CSTS.API.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
-
+        
         public LoginController(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
+            
         }
 
         [HttpPost]
@@ -38,9 +39,14 @@ namespace CSTS.API.Controllers
         public async Task<IActionResult> Login([FromBody] Login loginRequest)
         {
             var user = GetUser_ByUserName(loginRequest.Username);
-            if (user == null || user.Password != loginRequest.Password)
+            if (user == null)
             {
                 return Ok(new APIResponse<bool>(false,(user == null? "Invalid Username" : "Invalid Password")));
+            }
+
+            if (user.Password != loginRequest.Password)
+            {
+                return Ok(new APIResponse<bool>(false, "Incorrect password."));
             }
 
             var token = GenerateJwtToken(user);
@@ -188,7 +194,6 @@ namespace CSTS.API.Controllers
 
         //    return Ok(new APIResponse<bool>(false, string.Concat(" , ", ModelState.SelectMany(x => x.Value.Errors).SelectMany(e => e.ErrorMessage))));
         //}
-
 
         private CSTS.DAL.Models.User? GetUser_ByUserName(string UserName)
         {
