@@ -34,6 +34,7 @@ namespace CSTS.DAL.AutoMapper.DTOs
         public string MobileNumber { get; set; }
         public string Email { get; set; }
         public UserStatus UserStatus { get; set; }
+        public DateTime DateOfBirth { get; set; }
         public DateTime RegistrationDate { get; set; }
         public string Address { get; set; }
     }
