@@ -1,13 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { SupportTeam } from 'app/support-team';
-import { EditDialogComponent } from '../edit-dialog/edit-dialog.component';
-import { SupportTeamService } from 'app/support-team.service';
-import { AddclientticketComponent } from '../addclientticket/addclientticket.component';
+import { TicketService, Comment, CreateCommentDTO } from 'app/ticket.service';
 import { Ticket } from 'app/ticket';
-import { TicketService } from 'app/ticket.service';
-import { UserLocalStorageService } from 'app/user-local-storage.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AddclientticketComponent } from '../addclientticket/addclientticket.component';
+import { SheardServiceService } from 'app/sheard-service.service';
 
 @Component({
   selector: 'app-clienttickets',
@@ -15,67 +12,81 @@ import { UserLocalStorageService } from 'app/user-local-storage.service';
   styleUrls: ['./clienttickets.component.scss']
 })
 export class ClientticketsComponent implements OnInit {
-  Tickets: Ticket[] = [];
+  tickets: Ticket[] = [];
   displayedColumns: string[] = ['ticketId', 'product', 'createdDate', 'status', 'action'];
-  dataSource = new MatTableDataSource<Ticket>(this.Tickets);
+  dataSource = new MatTableDataSource<Ticket>(this.tickets);
+  selectedTicket: Ticket | undefined;
+  comments: Comment[] = [];
+  newComment: string = '';
+  userId: string | undefined;
 
-
-  constructor(public dialog: MatDialog, private ticketService : TicketService , private UserLocalStorageService : UserLocalStorageService){}
+  constructor(public dialog: MatDialog, private ticketService: TicketService, private sheardService: SheardServiceService) {}
 
   ngOnInit(): void {
-    this.getTickets();
+    const userClaims = this.sheardService.getUserClaims();
+    if (userClaims && userClaims.UserId) {
+      this.userId = userClaims.UserId;
+      this.getTickets(this.userId);
+    } else {
+      console.error('User ID not found in token');
+    }
   }
 
-  getTickets():void{
-    this.ticketService.getTickets().subscribe({
-      next: (Tickets) => {
-
-        this.Tickets = Tickets ;
+  getTickets(userId: string): void {
+    this.ticketService.getTickets(userId).subscribe({
+      next: (tickets) => {
+        this.tickets = tickets;
+        this.dataSource.data = tickets;
       },
       error: (error) => {
-        console.error('Error listing Tickets', error);
+        console.error('Error listing tickets', error);
       }
-    })
+    });
   }
 
   addTicket(): void {
-    this.UserLocalStorageService.getCurrentUser();
     const dialogRef = this.dialog.open(AddclientticketComponent, {
       width: '400px'
     });
-  
+
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('Ticket Data:', result);
+        this.getTickets(this.userId); // Refresh the ticket list after adding a new ticket
       }
     });
   }
 
-  openVewiDialog(ticket: Ticket): void {
-    const dialogRef = this.dialog.open(EditDialogComponent, {
-      width: '600px',
-      data: {
-        ticketId: ticket.ticketId ,
-        product:ticket.product , 
-        status: ticket.status ,
-        createDate: ticket.createdDate ,
-        assignedToUserName: ticket.assignedToUserName ,
-        problemDescription :ticket.problemDescription 
+  selectTicket(ticket: Ticket): void {
+    this.selectedTicket = ticket;
+    this.loadComments(ticket.ticketId);
+  }
 
+  loadComments(ticketId: string): void {
+    this.ticketService.getComments(ticketId).subscribe({
+      next: (comments) => {
+        this.comments = comments;
+      },
+      error: (error) => {
+        console.error('Error loading comments', error);
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-      ticket.ticketId = result.ticketId ,
-      ticket.product = result.product ,
-      ticket.status = result.status, 
-      ticket.createdDate = result.createDate ,
-      ticket.assignedToUserName = result.assignedToUserName
-      ticket.problemDescription = result.problemDescription , 
-        this.dataSource.data = [...this.Tickets];
-      }
-    });
+  }
+
+  postComment() {
+    if (this.newComment.trim() && this.selectedTicket) {
+      const newComment: CreateCommentDTO = {
+        ticketId: this.selectedTicket.ticketId,
+        content: this.newComment
+      };
+      this.ticketService.addComment(newComment).subscribe({
+        next: (comment) => {
+          this.comments.push(comment);
+          this.newComment = '';
+        },
+        error: (error) => {
+          console.error('Error posting comment', error);
+        }
+      });
+    }
   }
 }
-
-

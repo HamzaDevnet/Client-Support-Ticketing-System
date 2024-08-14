@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { TicketService } from 'app/ticket.service';
-import { Ticket } from 'app/ticket'; 
+import { TicketService, Comment, CreateCommentDTO } from 'app/ticket.service';
+import { Ticket } from 'app/ticket';
 import { TicketStatus } from '../../enums/ticket.enum';
+import { SheardServiceService } from 'app/sheard-service.service';
 
 @Component({
   selector: 'app-myopenticket',
@@ -11,22 +12,30 @@ import { TicketStatus } from '../../enums/ticket.enum';
 })
 export class MyopenticketComponent implements OnInit {
   tickets: Ticket[] = [];
-  displayedColumns: string[] = ['TicketID'];
+  displayedColumns: string[] = ['product'];
   dataSource = new MatTableDataSource<Ticket>(this.tickets);
   selectedFilter: string = 'Status';
-  ccomments: { user: string, text: string }[] = [];
+  ccomments: Comment[] = [];
   newComment: string = '';
   statuses = Object.values(TicketStatus);
-  ticket: Ticket | undefined;
+  selectedTicket: Ticket | undefined;
+  userId: string | undefined;
 
-  constructor(private ticketService: TicketService) {}
+  constructor(private ticketService: TicketService, private sheardService: SheardServiceService) {}
 
   ngOnInit(): void {
-    this.getTickets();
+    const userClaims = this.sheardService.getUserClaims();
+    if (userClaims && userClaims.UserId) {
+      this.userId = userClaims.UserId;
+      this.getTickets(this.userId);
+    } else {
+      console.error('User ID not found in token');
+      this.getTickets(); // Call without userId if not found
+    }
   }
 
-  getTickets(): void {
-    this.ticketService.getTickets().subscribe({
+  getTickets(userId?: string): void {
+    this.ticketService.getTickets(userId).subscribe({
       next: (tickets) => {
         this.tickets = tickets;
         this.dataSource.data = tickets;
@@ -53,13 +62,25 @@ export class MyopenticketComponent implements OnInit {
   }
 
   selectTicket(ticket: Ticket): void {
-    this.ticket = ticket;
+    this.selectedTicket = ticket;
+    this.loadComments(ticket.ticketId);
+  }
+
+  loadComments(ticketId: string): void {
+    this.ticketService.getComments(ticketId).subscribe({
+      next: (comments) => {
+        this.ccomments = comments;
+      },
+      error: (error) => {
+        console.error('Error loading comments', error);
+      },
+    });
   }
 
   updateStatus(status: TicketStatus): void {
-    if (this.ticket) {
-      this.ticket.status = status;
-      this.ticketService.updateTicketStatus(this.ticket.ticketId, status).subscribe({
+    if (this.selectedTicket) {
+      this.selectedTicket.status = status;
+      this.ticketService.updateTicketStatus(this.selectedTicket.ticketId, status).subscribe({
         next: () => {
           console.log('Ticket status updated successfully');
         },
@@ -75,9 +96,20 @@ export class MyopenticketComponent implements OnInit {
   }
 
   postComment() {
-    if (this.newComment.trim()) {
-      this.ccomments.push({ user: 'You', text: this.newComment });
-      this.newComment = '';
+    if (this.newComment.trim() && this.selectedTicket) {
+      const newComment: CreateCommentDTO = {
+        ticketId: this.selectedTicket.ticketId,
+        content: this.newComment
+      };
+      this.ticketService.addComment(newComment).subscribe({
+        next: (comment) => {
+          this.ccomments.push(comment);
+          this.newComment = '';
+        },
+        error: (error) => {
+          console.error('Error posting comment', error);
+        },
+      });
     }
   }
 }
