@@ -14,12 +14,13 @@ import { UserLocalStorageService } from 'app/user-local-storage.service'; // Ass
 export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
+  errorMessage: string;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private loginService: LoginService, 
-    private userLocalStorage: UserLocalStorageService 
+    private loginService: LoginService,
+    private userLocalStorage: UserLocalStorageService
   ) { }
 
   ngOnInit(): void {
@@ -33,13 +34,20 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.valid) {
       console.log('Form data:', this.loginForm.value);
       this.loginService.getLogin(this.loginForm.value).subscribe({
-        next: (response) => { 
-          console.log('API response:', response);
-          const token = response.data.token;
-  
-             //check for password "if statment"
-          this.userLocalStorage.setToken(token); 
-          this.router.navigate(['/dashboard']);
+        next: (response) => {
+
+          if (response.code != 200) {
+            this.errorMessage = "* " + response.message;
+          }
+          else {
+            console.log('API response:', response);
+            const token = response.data.token;
+
+            //check for password "if statment"
+            this.userLocalStorage.setToken(token);
+            this.router.navigate(['/dashboard']);
+
+          }
         },
         error: (error) => {
           console.error('Error logging in', error);
