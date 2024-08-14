@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /UI/package-lock.json
+/APIs/CSTS.API/wwwroot/Images
