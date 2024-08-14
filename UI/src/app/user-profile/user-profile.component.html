@@ -3,9 +3,8 @@
         <div class="card card-user">
             <div class="image m-4">
                 <a href="#">
-                    <img class="avatar border-gray" src="../../assets/img/default-avatar.png" alt="...">
+                    <img class="avatar border-gray" src="../../assets/default-avatar.png" alt="...">
                 </a>
-
             </div>
             <div class="row">
                 <div class="card-body">
@@ -14,13 +13,13 @@
                         <div class="col-md-6">
                             <div>
                                 <label class="ml-5">First name</label>
-                                <p class="firstname ml-5"> Chet </p>
+                                <p class="firstname ml-5"> {{userProfile.firstName}} </p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div>
                                 <label class="ml-5">Last name</label>
-                                <p class="lastname ml-5"> Faker </p>
+                                <p class="lastname ml-5"> {{userProfile.lastName}} </p>
                             </div>
                         </div>
                     </div>
@@ -29,13 +28,22 @@
                         <div class="col-md-6">
                             <div>
                                 <label class="ml-5">Phone number</label>
-                                <p class="phone ml-5"> +9655555555 </p>
+                                <p class="phone ml-5"> {{ userProfile.mobileNumber }} </p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div>
                                 <label class="ml-5">Date of birth</label>
-                                <p class="dob ml-5"> 01/01/1990 </p>
+                                <p class="dob ml-5"> {{ userProfile.dateOfBirth}} </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div>
+                                <label class="ml-5">Email</label>
+                                <p class="phone ml-5"> {{ userProfile.email }} </p>
                             </div>
                         </div>
                     </div>
@@ -58,7 +66,8 @@
     <div class="col-md-9 m-auto">
         <div class="card">
             <div class="card-header">
-                <h6 class="card-title">Address</h6>
+                <h6 class="ml-5">Address</h6>
+                <p class="ml-5"> {{ userProfile.address }} </p>
             </div>
             <div class="card-body">
 

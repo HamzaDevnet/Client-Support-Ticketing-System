@@ -25,10 +25,6 @@ export const AppRoutes: Routes = [
       path:'register',
       component: RegisterComponent
     },
-    {
-      path:'register',
-      component: RegisterComponent
-    },
    {
     path: '',
     component: AdminLayoutComponent,

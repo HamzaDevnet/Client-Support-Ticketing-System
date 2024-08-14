@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { UserType } from 'app/enums/user.enum';
+import { SheardServiceService } from 'app/sheard-service.service';
 
 
 export interface RouteInfo {
@@ -6,15 +8,16 @@ export interface RouteInfo {
     title: string;
     icon: string;
     class: string;
+    userType: UserType ;
 }
 
 export const ROUTES: RouteInfo[] = [
-    { path: '/dashboard',     title: 'Dashboard',         icon:'nc-bank',       class: '' },
-    { path: '/support',         title: 'Support Members',      icon:'nc-single-02',    class: '' },
-    { path: '/tickets',          title: 'Tickets',           icon:'nc-paper',      class: '' },
-    { path: '/client',          title: 'Clients',           icon:'nc-single-02',      class: '' },
-    { path: '/openticket',          title: 'Assigned Tickets',           icon:'nc-paper',      class: '' },
-    { path: '/myTickets',          title: 'My Tickets',           icon:'nc-paper',      class: '' },
+    { path: '/dashboard',     title: 'Dashboard',         icon:'nc-bank',       class: '' , userType: UserType.Manager },
+    { path: '/support',         title: 'Support Members',      icon:'nc-single-02',    class: '' ,  userType: UserType.Manager},
+    { path: '/tickets',          title: 'Tickets',           icon:'nc-paper',      class: '' ,  userType: UserType.Manager},
+    { path: '/client',          title: 'Clients',           icon:'nc-single-02',      class: '' ,  userType: UserType.Manager},
+    { path: '/openticket',          title: 'Assigned Tickets',           icon:'nc-paper',      class: '',  userType: UserType.Support },
+    { path: '/myTickets',          title: 'My Tickets',           icon:'nc-paper',      class: '' ,  userType: UserType.Client},
 
     
   
@@ -28,7 +31,16 @@ export const ROUTES: RouteInfo[] = [
 
 export class SidebarComponent implements OnInit {
     public menuItems: any[];
+    public userType : UserType ;
+
+    constructor(private SheardServiceService : SheardServiceService){
+        this.userType = this.SheardServiceService.getUserType();
+        
+    }
+
     ngOnInit() {
         this.menuItems = ROUTES.filter(menuItem => menuItem);
     }
+
+
 }

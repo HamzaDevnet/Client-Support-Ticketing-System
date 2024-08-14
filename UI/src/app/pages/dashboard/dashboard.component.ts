@@ -29,13 +29,7 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const userClaims = this.sheardService.getUserClaims();
-    if (userClaims && userClaims.UserId) {
-      this.userId = userClaims.UserId;
-      this.getTickets(this.userId);
-    } else {
-      console.error('User ID not found in token');
-    }
+    this.getTickets();
     this.createLineChart();
     this.getSupportMembersNum();
     this.getTicketCount();
@@ -158,10 +152,11 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  getTickets(userId: string): void {
-    this.ticketService.getTickets(userId).subscribe({
+  getTickets(): void {
+    this.ticketService.getTickets().subscribe({
       next: (tickets) => {
         const statusCounts = this.countStatuses(tickets);
+
         this.createPieChart(statusCounts);
       },
       error: (error) => {
@@ -201,7 +196,12 @@ export class DashboardComponent implements OnInit {
   createPieChart(statusCounts: { new: number, assigned: number, inProgress: number, closed: number }): void {
     const canvas = document.getElementById('chartEmail') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d');
-
+  
+    if (!ctx) {
+      console.error('Could not get canvas context for pie chart');
+      return;
+    }
+  
     this.chart = new Chart(ctx, {
       type: 'pie',
       data: {

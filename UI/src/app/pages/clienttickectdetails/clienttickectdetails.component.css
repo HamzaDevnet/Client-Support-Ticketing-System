@@ -1,0 +1,58 @@
+::ng-deep .mat-dialog-container {
+  padding: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
+.card {
+  border: none;
+  border-radius: 0;
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+.card-footer {
+  padding: 1rem 2rem;
+}
+
+.chat-messages {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 1rem;
+}
+
+.chat-message-card {
+  margin-bottom: 1rem;
+}
+
+.chat-message-profile {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.profile-icon {
+  margin-right: 0.5rem;
+}
+
+.chat-message-time {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.chat-message-content {
+  flex-grow: 1;
+}
+
+.client-icon {
+  color: #007bff;
+}
+
+.support-icon {
+  color: #28a745;
+}/*# sourceMappingURL=clienttickectdetails.component.css.map */

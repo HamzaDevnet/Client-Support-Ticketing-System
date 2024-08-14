@@ -15,6 +15,10 @@ export class UsersService {
   private supportMemberUrl = `${environment.BaseURL}/Users/support-team-members`;
   private clientsUrl = `${environment.BaseURL}/Users/external-clients`;
 
+  getUserInfo(id: string):Observable<WebResponse<Users>>{
+    return this.http.get<WebResponse<Users>>(`${environment.BaseURL}/users/${id}`);
+  }
+
   getSupportTeamMembers(): Observable<User[]> {
     const headers = this.sheardService.getToken();
     return this.http.get<WebResponse<User[]>>(this.supportMemberUrl, { headers }).pipe(
@@ -36,12 +40,16 @@ export class UsersService {
     );
   }
 
-  editClient(id: string, userdata: Users): Observable<WebResponse<Users>> {
+  editUser(id: string, userdata: Users): Observable<WebResponse<Users>> {
     const headers = this.sheardService.getToken();
     return this.http.put<WebResponse<Users>>(`${environment.BaseURL}/users/${id}`, userdata, { headers });
   }
 
-  deactivateClient(id: string, userdata: Users): Observable<WebResponse<User>> {
-    return this.http.patch<WebResponse<User>>(`${environment.BaseURL}/users/${id}/deactivate`, userdata);
+  deactivatecUser(id: string): Observable<WebResponse<boolean>> {
+    return this.http.patch<WebResponse<boolean>>(`${environment.BaseURL}/users/${id}/deactivate`, null);
   }
+
+  activateUser(id: string): Observable<WebResponse<boolean>> {
+    return this.http.patch<WebResponse<boolean>>(`${environment.BaseURL}/users/${id}/activate`, null);
+}
 }

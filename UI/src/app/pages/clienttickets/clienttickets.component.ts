@@ -76,7 +76,8 @@ export class ClientticketsComponent implements OnInit {
     if (this.newComment.trim() && this.selectedTicket) {
       const newComment: CreateCommentDTO = {
         ticketId: this.selectedTicket.ticketId,
-        content: this.newComment
+        content: this.newComment , 
+        userId : ""
       };
       this.ticketService.addComment(newComment).subscribe({
         next: (comment) => {

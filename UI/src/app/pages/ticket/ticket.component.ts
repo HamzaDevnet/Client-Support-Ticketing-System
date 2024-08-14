@@ -14,6 +14,7 @@ import { TicketStatus } from 'app/enums/ticket.enum';
 })
 export class TicketComponent implements OnInit {
   tickets: Ticket[] = [];
+  TicketStatus = TicketStatus ;
   filteredTickets: Ticket[] = [];
   displayedColumns: string[] = ['id', 'title', 'createdDate', 'assignedTo', 'status', 'action'];
   dataSource = new MatTableDataSource<Ticket>(this.tickets);

@@ -28,6 +28,7 @@ export interface Comment {
 export interface CreateCommentDTO {
   ticketId: string;
   content: string;
+  userId : string ;
 }
 
 @Injectable({
@@ -47,6 +48,8 @@ export class TicketService {
       map(response => response.result.data)
     );
   }
+
+ 
 
   getTicketById(id: string): Observable<Ticket> {
     const headers = this.sheardService.Header_Get();
@@ -91,7 +94,7 @@ export class TicketService {
 
   getComments(ticketId: string): Observable<Comment[]> {
     const headers = this.sheardService.Header_Get();
-    return this.http.get<WebResponse<Comment[]>>(`${this.commentsUrl}/support?ticketId=${ticketId}`, { headers })
+    return this.http.get<WebResponse<Comment[]>>(`${this.commentsUrl}/${ticketId}`, { headers })
       .pipe(map(response => response.data));
   }
 

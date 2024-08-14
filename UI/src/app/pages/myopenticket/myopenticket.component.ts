@@ -17,11 +17,19 @@ export class MyopenticketComponent implements OnInit {
   selectedFilter: string = 'Status';
   ccomments: Comment[] = [];
   newComment: string = '';
-  statuses = Object.values(TicketStatus);
+  statuses : TicketStatus[]; 
   selectedTicket: Ticket | undefined;
   userId: string | undefined;
 
-  constructor(private ticketService: TicketService, private sheardService: SheardServiceService) {}
+  constructor(private ticketService: TicketService, private sheardService: SheardServiceService) {
+   
+    this.statuses = [ 
+      TicketStatus.Assigned ,
+      TicketStatus.InProgress , 
+      TicketStatus.Closed 
+    ]
+    console.log(this.statuses);
+  }
 
   ngOnInit(): void {
     const userClaims = this.sheardService.getUserClaims();
@@ -48,8 +56,6 @@ export class MyopenticketComponent implements OnInit {
 
   getStatusText(status: TicketStatus): string {
     switch (status) {
-      case TicketStatus.New:
-        return 'New';
       case TicketStatus.Assigned:
         return 'Assigned';
       case TicketStatus.InProgress:
@@ -97,9 +103,10 @@ export class MyopenticketComponent implements OnInit {
 
   postComment() {
     if (this.newComment.trim() && this.selectedTicket) {
-      const newComment: CreateCommentDTO = {
+      const newComment: CreateCommentDTO  = {
         ticketId: this.selectedTicket.ticketId,
-        content: this.newComment
+        content: this.newComment,
+        userId : "db79c212-b2af-43d3-b13c-854dfc9b9c6a",
       };
       this.ticketService.addComment(newComment).subscribe({
         next: (comment) => {

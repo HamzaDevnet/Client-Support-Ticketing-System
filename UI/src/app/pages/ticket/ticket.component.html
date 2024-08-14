@@ -44,7 +44,7 @@
             <ng-container matColumnDef="action">
               <th mat-header-cell *matHeaderCellDef> Action </th>
               <td mat-cell *matCellDef="let ticket">
-                <button mat-button *ngIf="ticket.status === 'New' && !ticket.assignedToFullName" (click)="openAssignedDialog(ticket)">
+                <button mat-button *ngIf="ticket.status === TicketStatus.New" (click)="openAssignedDialog(ticket)">
                   Assign To
                 </button>
               </td>

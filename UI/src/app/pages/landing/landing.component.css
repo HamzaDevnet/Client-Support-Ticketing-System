@@ -1,0 +1,34 @@
+.left {
+  width: 900px;
+  background-image: url("https://img.freepik.com/free-vector/dark-background-with-dynamic-shapes_361591-3135.jpg?t=st=1723405532~exp=1723409132~hmac=9bfe1425fa91f2bf26004679865824ae012d10d02dc4ac660411dbc58d981c55&w=1380");
+  background-size: cover;
+  background-position: center;
+}
+
+.bg-image {
+  height: 100%;
+}
+
+.card {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.button-container {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+h4 {
+  font-size: xx-large;
+}
+
+p {
+  font-size: 17px;
+}
+
+.logo {
+  margin-top: 50px;
+  margin-left: 50px;
+}/*# sourceMappingURL=landing.component.css.map */

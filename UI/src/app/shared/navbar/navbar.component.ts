@@ -3,6 +3,8 @@ import { ROUTES } from '../../sidebar/sidebar.component';
 import { Router } from '@angular/router';
 import { Location} from '@angular/common';
 
+import { UserLocalStorageService } from 'app/user-local-storage.service';
+
 @Component({
     moduleId: module.id,
     selector: 'navbar-cmp',
@@ -19,7 +21,12 @@ export class NavbarComponent implements OnInit{
     public isCollapsed = true;
     @ViewChild("navbar-cmp", {static: false}) button;
 
-    constructor(location:Location, private renderer : Renderer2, private element : ElementRef, private router: Router) {
+    constructor(location:Location, private renderer : Renderer2, 
+      private element : ElementRef,
+       private router: Router,
+       private UserLocalStorageService : UserLocalStorageService,
+      
+      ) {
         this.location = location;
         this.nativeElement = element.nativeElement;
         this.sidebarVisible = false;
@@ -94,6 +101,11 @@ export class NavbarComponent implements OnInit{
 
       UserProfile():void{
         this.router.navigate(['/userprofile']);
+      }
+
+      logout():void{
+        this.UserLocalStorageService.clearToken();
+        this.router.navigate(['/login']);
       }
 
 }

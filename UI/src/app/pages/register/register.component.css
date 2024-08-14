@@ -1,0 +1,14 @@
+label {
+  font-weight: bold;
+}
+
+.form-group .control-label.required:after {
+  content: "*";
+  color: red;
+}
+
+.bg-image {
+  background-image: url("../../../assets/background.svg");
+  background-size: cover;
+  height: 100%;
+}/*# sourceMappingURL=register.component.css.map */
