@@ -15,12 +15,13 @@ import { UserType } from 'app/enums/user.enum';
 export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
+  errorMessage: string;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private loginService: LoginService, 
-    private userLocalStorage: UserLocalStorageService 
+    private loginService: LoginService,
+    private userLocalStorage: UserLocalStorageService
   ) { }
 
   ngOnInit(): void {
