@@ -43,8 +43,11 @@ namespace CSTS.API.ApiServices
             return Path.Combine(folder.ToString(), fileName);
         }
 
-        public string SaveFile(RequestAttachment file, FolderType folder)
+        public string SaveFile(RequestAttachment? file, FolderType folder)
         {
+            if(file == null)
+                return string.Empty;
+
             return SaveFile(file.File, folder, file.Extension);
         }
 

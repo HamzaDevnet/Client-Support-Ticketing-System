@@ -151,6 +151,8 @@ namespace CSTS.API.Controllers
                     AssignedToFullName = ticket.AssignedTo?.FullName,
                     Comments = ticket.Comments.Select(c => new CommentResponseDTO
                     {
+                        UserId = c.UserId,
+                        UserImage = c.User.Image,
                         CommentId = c.CommentId,
                         Content = c.Content,
                         CreatedDate = c.CreatedDate,
