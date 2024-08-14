@@ -2,17 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { Ticket } from 'app/ticket';
 import { TicketService } from 'app/ticket.service';
 import { UsersService } from 'app/users.service';
+import { SheardServiceService } from 'app/sheard-service.service';
 import { Chart } from 'chart.js';
-
 
 @Component({
   selector: 'dashboard-cmp',
   moduleId: module.id,
   templateUrl: 'dashboard.component.html'
 })
-
 export class DashboardComponent implements OnInit {
-
   public canvas: any;
   public ctx: any;
   public chartColor: string;
@@ -21,20 +19,31 @@ export class DashboardComponent implements OnInit {
   chart: any;
   supportCount: number = 0;
   ticketCount: number = 0;
-  clientCount:number = 0; 
+  clientCount: number = 0;
+  userId: string | undefined;
 
-  constructor(private ticketService: TicketService, private usersService: UsersService) {}
+  constructor(
+    private ticketService: TicketService,
+    private usersService: UsersService,
+    private sheardService: SheardServiceService
+  ) {}
 
   ngOnInit() {
-    this.getTickets();
+    const userClaims = this.sheardService.getUserClaims();
+    if (userClaims && userClaims.UserId) {
+      this.userId = userClaims.UserId;
+      this.getTickets(this.userId);
+    } else {
+      console.error('User ID not found in token');
+    }
     this.createLineChart();
     this.getSupportMembersNum();
     this.getTicketCount();
-    this.getClientsNum();    
+    this.getClientsNum();
   }
 
   getSupportMembersNum(): void {
-    this.ticketService.getSupportTeamMembers().subscribe({
+    this.usersService.getSupportTeamMembers().subscribe({
       next: (support) => {
         console.log('Support members:', support);
         if (Array.isArray(support)) {
@@ -47,23 +56,25 @@ export class DashboardComponent implements OnInit {
         console.error('Error fetching support members', error);
       }
     });
-  } 
-  
+  }
+
   getClientsNum(): void {
-    this.ticketService.getClients().subscribe( {
+    this.usersService.getClients().subscribe({
       next: (clients) => {
-        if(Array.isArray(clients)){
+        if (Array.isArray(clients)) {
           this.clientCount = clients.length;
-        }else{
-          console.error('Response is not an array:', clients);}
+        } else {
+          console.error('Response is not an array:', clients);
+        }
       },
       error: (error) => {
-        console.error('Error fetching clients ', error); }
+        console.error('Error fetching clients', error);
+      }
     });
   }
 
   getTicketCount(): void {
-    this.ticketService.getTickets().subscribe({
+    this.ticketService.getTickets(this.userId!).subscribe({
       next: (tickets) => {
         if (Array.isArray(tickets)) {
           this.ticketCount = tickets.length;
@@ -76,7 +87,6 @@ export class DashboardComponent implements OnInit {
       }
     });
   }
-
 
   createLineChart() {
     const canvas = document.getElementById("chartHours") as HTMLCanvasElement;
@@ -148,8 +158,8 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  getTickets(): void {
-    this.ticketService.getTickets().subscribe({
+  getTickets(userId: string): void {
+    this.ticketService.getTickets(userId).subscribe({
       next: (tickets) => {
         const statusCounts = this.countStatuses(tickets);
         this.createPieChart(statusCounts);
@@ -160,49 +170,49 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  countStatuses(tickets: Ticket[]): { new: number , Assigned: number , InProgress: number, closed: number } {
+  countStatuses(tickets: Ticket[]): { new: number, assigned: number, inProgress: number, closed: number } {
     const statusCounts = {
       new: 0,
-      Assigned: 0 ,
-      InProgress: 0,
+      assigned: 0,
+      inProgress: 0,
       closed: 0
     };
-  
+
     tickets.forEach(ticket => {
       switch (ticket.status) {
-        case 0: 
+        case 0:
           statusCounts.new++;
           break;
-        case 1: 
-          statusCounts.Assigned++;
+        case 1:
+          statusCounts.assigned++;
           break;
-        case 2: 
-          statusCounts.InProgress++;
+        case 2:
+          statusCounts.inProgress++;
           break;
-        case 3: 
+        case 3:
           statusCounts.closed++;
           break;
       }
     });
-  
+
     return statusCounts;
   }
-  createPieChart(statusCounts: { new: number, Assigned: number ,InProgress: number, closed: number}): void {
+
+  createPieChart(statusCounts: { new: number, assigned: number, inProgress: number, closed: number }): void {
     const canvas = document.getElementById('chartEmail') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d');
 
     this.chart = new Chart(ctx, {
       type: 'pie',
       data: {
-        labels: ['New',  'Assigned','In Progress', 'Closed'],
+        labels: ['New', 'Assigned', 'In Progress', 'Closed'],
         datasets: [{
           backgroundColor: ['#4acccd', '#fcc468', '#ef8157', '#e3e3e3'],
           data: [
             statusCounts.new,
-            statusCounts.Assigned ,
-            statusCounts.InProgress,
-            statusCounts.closed,
-           
+            statusCounts.assigned,
+            statusCounts.inProgress,
+            statusCounts.closed
           ]
         }]
       },
@@ -217,4 +227,3 @@ export class DashboardComponent implements OnInit {
     });
   }
 }
-

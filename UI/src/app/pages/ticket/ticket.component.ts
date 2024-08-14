@@ -66,7 +66,7 @@ export class TicketComponent implements OnInit {
         this.filteredTickets = this.tickets.filter(ticket => ticket.status !== TicketStatus.Closed);
         break;
       case 'Assigned Tickets':
-        this.filteredTickets = this.tickets.filter(ticket => ticket.status === TicketStatus.Assigned);
+        this.filteredTickets = this.tickets.filter(ticket => ticket.status !== TicketStatus.New,ticket => ticket.status !== TicketStatus.Closed);
         break;
       default:
         this.filteredTickets = this.tickets;
@@ -90,6 +90,7 @@ export class TicketComponent implements OnInit {
   }
 
   openTicketDetails(ticketId: string): void {
+    console.log('Opening ticket details for ticketId:', ticketId);
     const dialogRef = this.dialog.open(TicketDetailsComponent, {
       width: '600px',
       data: { id: ticketId }
@@ -97,5 +98,5 @@ export class TicketComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed');
     });
-  }
+  }  
 }

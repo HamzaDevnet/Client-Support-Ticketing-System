@@ -7,7 +7,7 @@ import { TicketStatus } from 'app/enums/ticket.enum';
 @Component({
   selector: 'app-ticket-details',
   templateUrl: './ticket-details.component.html',
-  styleUrls: ['./ticket-details.component.scss'] // Ensure this references the SCSS file
+  styleUrls: ['./ticket-details.component.scss']
 })
 export class TicketDetailsComponent implements OnInit {
   ticket: Ticket | undefined;
@@ -19,8 +19,10 @@ export class TicketDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log('Fetching details for ticket id:', this.data.id);
     this.ticketService.getTicketById(this.data.id).subscribe({
       next: (ticket) => {
+        console.log('Fetched ticket details:', ticket);
         this.ticket = ticket;
       },
       error: (error) => {
@@ -28,7 +30,7 @@ export class TicketDetailsComponent implements OnInit {
       },
     });
   }
-
+  
   onClose(): void {
     this.dialogRef.close();
   }
