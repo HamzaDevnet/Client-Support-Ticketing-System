@@ -13,8 +13,8 @@ namespace CSTS.DAL.AutoMapper.DTOs
     {
         public string Product { get; set; }
         public string ProblemDescription { get; set; }
-        public List<IFormFile> Attachments { get; set; }
-        public Guid? AssignedToId { get; set; }
+        public RequestAttachment[]? Attachments { get; set; }
+        // public Guid? AssignedToId { get; set; }
     }
 
     public class TicketResponseDTO

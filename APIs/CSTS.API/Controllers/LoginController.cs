@@ -36,7 +36,12 @@ namespace CSTS.API.Controllers
             var user = GetUser_ByUserName(loginRequest.Username);
             if (user == null)
             {
-                return Ok(new APIResponse<bool>(false, (user == null ? "Invalid Username" : "Invalid Password")));
+                return Ok(new APIResponse<bool>(false, "Invalid Username"));
+            }
+
+            if (user.UserStatus == UserStatus.Deactivated)
+            {
+                return Ok(new APIResponse<bool>(false, "User is Deactivated."));
             }
 
             if (user.Password != loginRequest.Password)
@@ -124,6 +129,8 @@ namespace CSTS.API.Controllers
                     UserName = dto.UserName,
                     UserType = UserType.ExternalClient,
                     Address = dto.Address,
+                    UserStatus = UserStatus.Active,
+                    RegistrationDate = DateTime.Now,
 
                 };
 

@@ -16,7 +16,7 @@ namespace CSTS.DAL.AutoMapper.DTOs
         public string LastName { get; set; }
         public string MobileNumber { get; set; }
         public string Email { get; set; }
-        public IFormFile? UserImage { get; set; } = null;
+        public RequestAttachment? UserImage { get; set; } = null;
         public DateTime DateOfBirth { get; set; }
         public string Password { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;

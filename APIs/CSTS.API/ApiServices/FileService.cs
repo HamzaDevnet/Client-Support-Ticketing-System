@@ -1,4 +1,5 @@
-﻿using Humanizer;
+﻿using CSTS.DAL.AutoMapper.DTOs;
+using Humanizer;
 using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,11 @@ namespace CSTS.API.ApiServices
             File.WriteAllBytes(fullPath, fileBytes);
 
             return Path.Combine(folder.ToString(), fileName);
+        }
+
+        public string SaveFile(RequestAttachment file, FolderType folder)
+        {
+            return SaveFile(file.File, folder, file.Extension);
         }
 
         public string SaveFile(IFormFile? file, FolderType folder )

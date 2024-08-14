@@ -48,7 +48,7 @@ namespace WebApplication1.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    return Ok(new APIResponse<bool>(false, string.Concat(" , ", ModelState.SelectMany(x => x.Value.Errors).SelectMany(e => e.ErrorMessage))));
+                    return Ok(new APIResponse<bool>(false, string.Join(" , ", ModelState.SelectMany(x => x.Value.Errors).Select(e => e.ErrorMessage))));
                 }
 
                 var user = new CSTS.DAL.Models.User

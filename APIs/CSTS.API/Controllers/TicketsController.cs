@@ -175,7 +175,7 @@ namespace CSTS.API.Controllers
         // POST api/tickets
         [HttpPost]
         [CstsAuth(UserType.ExternalClient)]
-        public async Task<ActionResult<APIResponse<TicketResponseDTO>>> Post([FromForm] CreateTicketDTO createDto)
+        public async Task<ActionResult<APIResponse<TicketResponseDTO>>> Post([FromBody] CreateTicketDTO createDto)
         {
             try
             {
@@ -200,12 +200,12 @@ namespace CSTS.API.Controllers
 
                 if (createDto.Attachments != null)
                 {
-                    foreach (var file in createDto.Attachments)
+                    foreach (RequestAttachment file in createDto.Attachments)
                     {
-                        using var memoryStream = new MemoryStream();
-                        await file.CopyToAsync(memoryStream);
-                        var filePath = _fileService.SaveFile(memoryStream.ToArray(), FolderType.Images, Path.GetExtension(file.FileName));
-                        ticket.Attachments.Add(new Attachment { FileName = file.FileName, FileUrl = filePath });
+                        //using var memoryStream = new MemoryStream();
+                        // await file.CopyToAsync(memoryStream);
+                        var filePath = _fileService.SaveFile(file, FolderType.Images);
+                        ticket.Attachments.Add(new Attachment { FileName = " ", FileUrl = filePath });
                     }
                 }
 
@@ -314,17 +314,21 @@ namespace CSTS.API.Controllers
         }
 
         // DELETE api/tickets/{id}
-        [HttpDelete("{id}")]
+        [HttpPut("Remove/{id}")]
         [CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<bool>>> Delete(Guid id)
         {
             try
             {
-                var response = _unitOfWork.Tickets.Delete(id);
-                if (!response)
+                var ticket = _unitOfWork.Tickets.GetById(id);
+                if (ticket == null)
                     return Ok(new APIResponse<bool>(false, "Ticket not found."));
+        
+                ticket.AssignedToId = null;
+                ticket.Status = TicketStatus.Removed;
+                var response = _unitOfWork.Tickets.Update(ticket);
 
-                return Ok(new APIResponse<bool>(true) { Message = "Ticket deleted successfully." });
+                return Ok(new APIResponse<bool>(true) { Message = "Ticket Marked As Removed." });
             }
             catch (Exception ex)
             {
