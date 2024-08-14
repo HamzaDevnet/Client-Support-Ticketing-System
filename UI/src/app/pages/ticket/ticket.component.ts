@@ -90,6 +90,7 @@ export class TicketComponent implements OnInit {
   }
 
   openTicketDetails(ticketId: string): void {
+    console.log('Opening ticket details for ticketId:', ticketId);
     const dialogRef = this.dialog.open(TicketDetailsComponent, {
       width: '600px',
       data: { id: ticketId }
@@ -97,5 +98,5 @@ export class TicketComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed');
     });
-  }
+  }  
 }

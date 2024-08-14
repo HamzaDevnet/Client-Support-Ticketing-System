@@ -5,7 +5,23 @@
   <p><strong>Description:</strong> {{ ticket.problemDescription }}</p>
   <p><strong>Status:</strong> {{ getStatusText(ticket.status) }}</p>
   <p><strong>Created Date:</strong> {{ ticket.createdDate | date }}</p>
-  <p><strong>Assigned To:</strong> {{ ticket.assignedToUserName || 'N/A' }}</p>
+  <p><strong>Assigned To:</strong> {{ ticket.assignedToFullName || 'N/A' }}</p>
+  
+  <div *ngIf="ticket.comments?.length">
+    <h3>Comments</h3>
+    <ul>
+      <li *ngFor="let comment of ticket.comments">{{ comment }}</li>
+    </ul>
+  </div>
+
+  <div *ngIf="ticket.attachments?.length">
+    <h3>Attachments</h3>
+    <ul>
+      <li *ngFor="let attachment of ticket.attachments">
+        <a [href]="attachment.fileUrl" target="_blank">{{ attachment.fileName }}</a>
+      </li>
+    </ul>
+  </div>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button (click)="onClose()">Close</button>

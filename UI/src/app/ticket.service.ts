@@ -5,17 +5,18 @@ import { map } from 'rxjs/operators';
 import { Ticket } from './ticket';
 import { environment } from 'environments/environment';
 import { SheardServiceService } from './sheard-service.service';
+import { TicketStatus } from "./enums/ticket.enum";
 
 export interface User {
   userId: string;
   fullName: string;
-}//if it for members put in member interface 
+}
 
 export interface WebResponse<T> {
   data: T;
   code: number;
   message: string;
-} //seperate file because it's shareable 
+}
 
 @Injectable({
   providedIn: 'root'
@@ -24,39 +25,51 @@ export class TicketService {
   private baseUrl = 'https://localhost:7125/api/Tickets';
   private usersUrl = 'https://localhost:7125/api/Users';
 
-  constructor(private http: HttpClient, private SheardServiceService: SheardServiceService) {}
+  constructor(private http: HttpClient, private sheardServiceService: SheardServiceService) {}
 
   getTickets(): Observable<Ticket[]> {
-    const headers = this.SheardServiceService.Header_Get();
-    return this.http.get<Ticket[]>(`${environment.BaseURL}/Tickets`, { headers });
+    const headers = this.sheardServiceService.Header_Get();
+    return this.http.get<{ result: { data: Ticket[] } }>(this.baseUrl, { headers }).pipe(
+      map(response => response.result.data)
+    );
   }
 
   getTicketById(id: string): Observable<Ticket> {
-    const headers = this.SheardServiceService.Header_Get();
-    return this.http.get<Ticket>(`${this.baseUrl}/${id}`);
+    const headers = this.sheardServiceService.Header_Get();
+    return this.http.get<{ code: number, data: Ticket }>(`${this.baseUrl}/${id}`, { headers }).pipe(
+      map(response => {
+        console.log('API response:', response);
+        if (response && response.data) {
+          return response.data;
+        } else {
+          throw new Error('Invalid response format');
+        }
+      })
+    );
   }
-
   assignTicket(ticketId: string, assignedTo: string): Observable<void> {
-    const headers = this.SheardServiceService.Header_Post();
+    const headers = this.sheardServiceService.Header_Post();
     return this.http.put<void>(`${this.baseUrl}/Assign`, { ticketId, assignedTo }, { headers });
   }
 
   closeTicket(ticketId: string): Observable<void> {
-    const headers = this.SheardServiceService.Header_Post();
-    return this.http.put<void>(`${this.baseUrl}/Close/${ticketId}`, { }, { headers });
+    const headers = this.sheardServiceService.Header_Post();
+    return this.http.put<void>(`${this.baseUrl}/Close/${ticketId}`, {}, { headers });
   }
 
   getSupportTeamMembers(): Observable<User[]> {
-    const headers = this.SheardServiceService.Header_Get();
-    return this.http.get<WebResponse<User[]>>(`${this.usersUrl}/support-team-members`).pipe(
-      map(response => response.data)
-    );
-  } //take it 
+    const headers = this.sheardServiceService.Header_Get();
+    return this.http.get<WebResponse<User[]>>(`${this.usersUrl}/support-team-members`, { headers })
+      .pipe(map(response => response.data));
+  }
 
   getClients(): Observable<User[]> {
-    const headers = this.SheardServiceService.Header_Get();
-    return this.http.get<WebResponse<User[]>>(`${this.usersUrl}/external-clients`).pipe(
-      map(response => response.data)
-    );
+    const headers = this.sheardServiceService.Header_Get();
+    return this.http.get<WebResponse<User[]>>(`${this.usersUrl}/external-clients`, { headers })
+      .pipe(map(response => response.data));
+  }
+  updateTicketStatus(ticketId: string, status: TicketStatus): Observable<void> {
+    const headers = this.sheardServiceService.Header_Post();
+    return this.http.put<void>(`${this.baseUrl}/${ticketId}`, { status }, { headers });
   }
 }

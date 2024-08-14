@@ -4,8 +4,11 @@ export interface Ticket {
     ticketId: string;
     product: string;
     problemDescription: string;
-    status: TicketStatus; // Use TicketStatus enum
+    status: TicketStatus;
     createdDate: Date;
     assignedToUserName: string;
-    sequentialId: number; // Add this property
+    assignedToFullName: string;
+    sequentialId: number;
+    comments?: string[];  // Add this property
+    attachments?: { attachmentId: string, fileName: string, fileUrl: string }[];  // Add this property
 }
