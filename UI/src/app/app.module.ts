@@ -48,6 +48,7 @@ import { LandingComponent } from './pages/landing/landing.component';
 import { ClientComponent } from './pages/client/client.component';
 import { AddSupportComponent } from './pages/add-support/add-support.component';
 import { ClienttickectdetailsComponent } from './pages/clienttickectdetails/clienttickectdetails.component';
+import { DatePipe } from "@angular/common";
 
 
 @NgModule({
@@ -99,7 +100,7 @@ import { ClienttickectdetailsComponent } from './pages/clienttickectdetails/clie
     FooterModule,
     FixedPluginModule
   ],
-  providers: [SupportTeamService, UsersService, TicketService],
+  providers: [SupportTeamService, UsersService, TicketService, DatePipe],
   bootstrap: [AppComponent],
 })
 export class AppModule { }

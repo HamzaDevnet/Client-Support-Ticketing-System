@@ -4,6 +4,7 @@ import { Users } from 'app/users';
 import { UsersService } from 'app/users.service';
 import { EditDialogComponent } from '../edit-dialog/edit-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { UserStatus } from 'app/enums/user.enum';
 
 @Component({
   selector: 'app-client',
@@ -12,6 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class ClientComponent implements OnInit {
   clients: Users[] = [];
+  UserStatus = UserStatus;
   displayedColumns: string[] = ['FirstName', 'LastName', 'MobileNumber', 'address','Deactivate','edit'];
   dataSource = new MatTableDataSource<Users>(this.clients);
 
@@ -38,35 +40,34 @@ export class ClientComponent implements OnInit {
   openEditClientDialog(client: Users): void {
     const dialogRef = this.dialog.open(EditDialogComponent, {
       width: '600px',
-      data: {
-        userId: client.userId , 
-        firstName: client.firstName,
-        lastName: client.lastName,
-        mobileNumber: client.mobileNumber,
-        email: client.email,
-        strDateOfBirth: client.strDateOfBirth,
-        address: client.address
-      }
+      data: client
     });
   
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        client.firstName = result.firstName;
-        client.lastName = result.lastName;
-        client.mobileNumber = result.mobileNumber;
-        client.email = result.email;
-        client.dateOfBirth = result.dateOfBirth;
-        client.address = result.address;
-        this.dataSource.data = [...this.clients];
         this.getClients();
       }
     });
   }
 
-  deactivateclient(id: string , userdata: Users):void{
-    this.UsersService.deactivateClient(id,userdata).subscribe({
+  deactivateclient(client:Users):void{
+    this.UsersService.deactivatecUser(client.userId).subscribe({
       next: (response)=>{
-        response.message = "deactivated successfully";
+        if(response.data === true){
+          this.getClients();
+        }
+
+      }
+    })
+  }
+
+  activateclient(client:Users):void{
+    this.UsersService.activateUser(client.userId).subscribe({
+      next: (response)=>{
+        if(response.data === true){
+          this.getClients();
+        }
+
       }
     })
   }

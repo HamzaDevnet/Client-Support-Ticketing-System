@@ -23,6 +23,10 @@ export class UserLocalStorageService {
    localStorage.setItem(this.tokenKey, token);
   }
 
+  clearToken():void{
+    localStorage.removeItem(this.tokenKey);
+  }
+
   
   getCurrentUser():Userdata | null {
     debugger

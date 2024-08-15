@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { LoginService } from 'app/login.service';
 import { Userdata } from 'app/userdata';
 import { UserLocalStorageService } from 'app/user-local-storage.service'; // Assuming this import is needed
+import { UserType } from 'app/enums/user.enum';
 
 
 @Component({
@@ -14,12 +15,13 @@ import { UserLocalStorageService } from 'app/user-local-storage.service'; // Ass
 export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
+  errorMessage: string;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private loginService: LoginService, 
-    private userLocalStorage: UserLocalStorageService 
+    private loginService: LoginService,
+    private userLocalStorage: UserLocalStorageService
   ) { }
 
   ngOnInit(): void {
@@ -34,12 +36,16 @@ export class LoginComponent implements OnInit {
       console.log('Form data:', this.loginForm.value);
       this.loginService.getLogin(this.loginForm.value).subscribe({
         next: (response) => { 
+          if(response.code == 200){
           console.log('API response:', response);
           const token = response.data.token;
-  
              //check for password "if statment"
           this.userLocalStorage.setToken(token); 
-          this.router.navigate(['/dashboard']);
+          this.navigate(response.data.userType);
+          }
+          else {
+            alert(response.message);
+          }
         },
         error: (error) => {
           console.error('Error logging in', error);
@@ -49,5 +55,21 @@ export class LoginComponent implements OnInit {
       console.log('Form is invalid');
     }
   }
+
+  private navigate(userType:UserType):void{
+    switch(userType){
+      case UserType.Client:
+        this.router.navigate(['/myTickets']);
+        break;
+      case UserType.Support:
+        this.router.navigate(['/openticket']);
+        break;
+      case UserType.Manager:
+        this.router.navigate(['/dashboard']);
+        break;
+        
+    }
+  }
+
 }
 

@@ -44,7 +44,7 @@ export class SheardServiceService {
   getUserType(): UserType {
     try {
       const decodedToken: any = jwtDecode(localStorage.getItem(this.tokenKey));
-      return decodedToken.UserType;
+      return +decodedToken.UserType;
     } catch (error) {
       console.error('Invalid token', error);
       return null;

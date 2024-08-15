@@ -1,51 +1,50 @@
 <div class="container mt-2">
-    <div class="row">
-      <div class="col-md-3">
-        <div class="card">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="card-title">Open Ticket</h5>
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table mat-table class="table"  [dataSource]="dataSource">
-                <ng-container matColumnDef="TicketID">
-                  <th mat-header-cell *matHeaderCellDef> Ticket ID </th>
-                  <td mat-cell *matCellDef="let ticket"> {{ticket.ticketId}} </td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-              </table>
-            </div>
-          </div>
+  <div class="row">
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title">Open Tickets</h5>
         </div>
-      </div>
-      <div class="col-md-8">
-        <div class="card" style="height: 600px;">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="card-title">Ticket</h5>
-            <div>
-              <button mat-button [matMenuTriggerFor]="menu">{{ selectedFilter }}</button>
-              <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)="setFilter('status')">Status</button>
-                <button mat-menu-item (click)="setFilter('On Progress')">On Progress</button>
-                <button mat-menu-item (click)="setFilter('Closed')">Closed</button>
-              </mat-menu>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="comment-container" style="height: 450px; overflow-y: auto; border: 1px solid #ccc; margin-bottom: 10px;">
-              <!-- Comments will go here -->
-               <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Natus sapiente neque voluptates perspiciatis sit cum aliquid cumque? Temporibus, porro quae!</p>
-              <div *ngFor="let comment of ccomments">
-                <strong>{{ comment.user }}:</strong> {{ comment.text }}
-              </div>
-            </div>
-            <div class="input-group">
-              <input type="text" class="form-control" placeholder="Write a comment..." [(ngModel)]="newComment">
-              <button class="btn btn-primary" (click)="postComment()">Post</button>
-            </div>
+        <div class="card-body">
+          <div class="list-group">
+            <a *ngFor="let ticket of tickets" class="list-group-item list-group-item-action" (click)="selectTicket(ticket)">
+              {{ ticket.product }}
+            </a>
           </div>
         </div>
       </div>
     </div>
+    <div class="col-md-9">
+      <div class="card" *ngIf="selectedTicket">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title">{{ selectedTicket.product }}</h5>
+          <div>
+            <button mat-button [matMenuTriggerFor]="menu">{{ getStatusText(selectedTicket?.status) || 'Status' }}</button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item *ngFor="let status of statuses" (click)="updateStatus(status)">
+                {{ getStatusText(status) }}
+              </button>
+            </mat-menu>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><strong>Description:</strong> {{ selectedTicket.problemDescription }}</p>
+          <p><strong>Assigned To:</strong> {{ selectedTicket.assignedToFullName || 'N/A' }}</p>
+          <p><strong>Created Date:</strong> {{ selectedTicket.createdDate | date }}</p>
+          <div class="comment-container" style="height: 300px; overflow-y: auto; border: 1px solid #ccc; margin-bottom: 10px;">
+            <div *ngFor="let comment of ccomments">
+              <strong>{{ comment.userName }}:</strong> {{ comment.content }}
+            </div>
+          </div>
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Write a comment..." [(ngModel)]="newComment">
+            <button class="btn btn-primary" (click)="postComment()">Post</button>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!selectedTicket" class="card-body">
+        <p>Select a ticket to view details</p>
+      </div>
+    </div>
   </div>
+</div>

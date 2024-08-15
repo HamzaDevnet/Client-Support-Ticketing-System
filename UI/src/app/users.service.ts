@@ -10,38 +10,46 @@ import { SheardServiceService } from './sheard-service.service';
   providedIn: 'root'
 })
 export class UsersService {
-  constructor(private http: HttpClient , private SheardServiceService:SheardServiceService) { }
+  constructor(private http: HttpClient, private sheardService: SheardServiceService) {}
 
-  private supportMember ='https://localhost:7125/api/Users/support-team-members';
-  private clients = 'https://localhost:7125/api/Users/external-clients';
+  private supportMemberUrl = `${environment.BaseURL}/Users/support-team-members`;
+  private clientsUrl = `${environment.BaseURL}/Users/external-clients`;
 
+  getUserInfo(id: string):Observable<WebResponse<Users>>{
+    return this.http.get<WebResponse<Users>>(`${environment.BaseURL}/users/${id}`);
+  }
 
-getClientsbyManager(): Observable<Users[]> {
-  const headers = this.SheardServiceService.getToken();
-  return this.http.get<WebResponse<Users[]>>(`${environment.BaseURL}/Users/clients`,{headers}).pipe(
-    map(response => response.data)
-  );
+  getSupportTeamMembers(): Observable<User[]> {
+    const headers = this.sheardService.getToken();
+    return this.http.get<WebResponse<User[]>>(this.supportMemberUrl, { headers }).pipe(
+      map(response => response.data)
+    );
+  }
+
+  getClients(): Observable<User[]> {
+    const headers = this.sheardService.getToken();
+    return this.http.get<WebResponse<User[]>>(this.clientsUrl, { headers }).pipe(
+      map(response => response.data)
+    );
+  }
+
+  getClientsbyManager(): Observable<Users[]> {
+    const headers = this.sheardService.getToken();
+    return this.http.get<WebResponse<Users[]>>(`${environment.BaseURL}/Users/clients`, { headers }).pipe(
+      map(response => response.data)
+    );
+  }
+
+  editUser(id: string, userdata: Users): Observable<WebResponse<Users>> {
+    const headers = this.sheardService.getToken();
+    return this.http.put<WebResponse<Users>>(`${environment.BaseURL}/users/${id}`, userdata, { headers });
+  }
+
+  deactivatecUser(id: string): Observable<WebResponse<boolean>> {
+    return this.http.patch<WebResponse<boolean>>(`${environment.BaseURL}/users/${id}/deactivate`, null);
+  }
+
+  activateUser(id: string): Observable<WebResponse<boolean>> {
+    return this.http.patch<WebResponse<boolean>>(`${environment.BaseURL}/users/${id}/activate`, null);
 }
-
-editClient(id: string , userdata:Users): Observable<WebResponse<Users>> {
-  const headers = this.SheardServiceService.getToken();
-  return this.http.put<WebResponse<Users>>(`${environment.BaseURL}/users/${id}`,userdata,{headers})
-
-}
-
-deactivateClient(id: string , userdata: Users):Observable<WebResponse<User>>{
-  return this.http.patch<WebResponse<User>>(`${environment.BaseURL}/users/${id}/deactivate`, userdata);
-}
-  // getSupportTeamMembers(): Observable<User[]> {
-  //   return this.http.get<WebResponse<User[]>>(`${this.usersUrl}/support-team-members`).pipe(
-  //     map(response => response.data)
-  //   );
-  // }
-
-  // getClients(): Observable<User[]> {
-  //   return this.http.get<WebResponse<User[]>>(`${this.usersUrl}/external-clients`).pipe(
-  //     map(response => response.data)
-  //   );
-  // }
-
 }

@@ -21,7 +21,7 @@ export class SupportTeamService {
 
 
   addSupportMember(data: Users): Observable<WebResponse<Users>> {
-    return this.http.post<WebResponse<Users>>(`${environment.BaseURL2}/RegisterSupportTeamMember`, data)
+    return this.http.post<WebResponse<Users>>(`${environment.BaseURL}/RegisterSupportTeamMember`, data)
   }
 
   deactivateSupportMember(userid:number):Observable<WebResponse<boolean>> {

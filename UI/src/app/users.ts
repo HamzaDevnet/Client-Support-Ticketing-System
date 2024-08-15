@@ -3,6 +3,7 @@ export interface Users {
   userId: string ; 
   firstName: string;
   lastName: string;
+  userStatus: UserStatus ;
   fullName:string ;
   userName: string;
   mobileNumber: string;
@@ -12,6 +13,7 @@ export interface Users {
   dateOfBirth: Date;
   strDateOfBirth: string ;
   address: string ;
+  
 
 }
 

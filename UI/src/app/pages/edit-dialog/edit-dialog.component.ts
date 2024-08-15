@@ -3,6 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Users } from 'app/users';
 import { UsersService } from 'app/users.service';
+import { DatePipe } from '@angular/common';
 
 
 
@@ -18,14 +19,16 @@ export class EditDialogComponent {
     public dialogRef: MatDialogRef<EditDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Users ,
     private UsersService : UsersService,
+    private datePipe : DatePipe ,
   ) 
   { 
+    console.log(data);
     this.editForm = this.fb.group({
       firstName: [data.firstName],
       lastName: [data.lastName],
       email: [data.email],
       mobileNumber: [data.mobileNumber],
-      dateOfBirth: [data.dateOfBirth],
+      dateOfBirth: [this.datePipe.transform(data.dateOfBirth,"yyyy-MM-dd")],
       address: [data.address] ,
     });
   }
@@ -35,29 +38,14 @@ export class EditDialogComponent {
   }
 
   onSave(): void {
-    const updatedData: Users = {
-      userId: this.editForm.value.userId,
-      firstName: this.editForm.value.firstName,
-      lastName: this.editForm.value.lastName,
-      userName: this.editForm.value.userName,
-      email: this.editForm.value.email,
-      password: this.editForm.value.password,
-      mobileNumber: this.editForm.value.mobileNumber,
-      dateOfBirth: this.editForm.value.dateOfBirth,
-      address: this.editForm.value.address,
-      userImage: this.editForm.value.userImage,
-      fullName: '',
-      strDateOfBirth: ''
-    };
-  
-    console.log(this.data.userId, updatedData);
-    this.UsersService.editClient(this.data.userId ,updatedData).subscribe({
+    console.log(this.data.userId, this.editForm.value);
+    this.UsersService.editUser(this.data.userId,this.editForm.value).subscribe({
       next: (response) => {
         this.dialogRef.close(response.data);
         
       },
       error: (error) => {
-        console.error('Error updating client:', error);
+        console.error('Error updating', error);
       }
     });
   }

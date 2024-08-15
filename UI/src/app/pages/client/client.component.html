@@ -61,10 +61,13 @@
             </ng-container>
 
             <ng-container matColumnDef="Deactivate">
-              <th mat-header-cell *matHeaderCellDef> Deactivate </th>
+              <th mat-header-cell *matHeaderCellDef> Activate/Deactivate </th>
               <td mat-cell *matCellDef="let client">
-                <button mat-icon-button (click)="deactivateclient(client)">  
+                <button mat-icon-button *ngIf="client.userStatus === UserStatus.Active" (click)="deactivateclient(client)">  
                   <mat-icon>clear</mat-icon>
+                </button>
+                <button mat-icon-button *ngIf="client.userStatus === UserStatus.Deactivated" (click)="activateclient(client)">  
+                  <mat-icon>done</mat-icon>
                 </button>
               </td>
             </ng-container>
