@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoginService } from 'app/login.service';
-import { Userdata } from 'app/userdata';
-import { UserLocalStorageService } from 'app/user-local-storage.service'; // Assuming this import is needed
+import { UserLocalStorageService } from 'app/user-local-storage.service';
 import { UserType } from 'app/enums/user.enum';
 import { ToastrService } from 'ngx-toastr';
 
@@ -62,8 +61,8 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  private navigate(userType:UserType):void{
-    switch(userType){
+  private navigate(userType: UserType): void {
+    switch(userType) {
       case UserType.Client:
         this.router.navigate(['/myTickets']);
         break;
@@ -73,9 +72,6 @@ export class LoginComponent implements OnInit {
       case UserType.Manager:
         this.router.navigate(['/dashboard']);
         break;
-        
     }
   }
-
 }
-

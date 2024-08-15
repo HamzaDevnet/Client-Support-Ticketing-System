@@ -17,12 +17,19 @@ export interface WebResponse<T> {
   code: number;
   message: string;
 }
+export interface CreateTicketDTO {
+  product: string;
+  problemDescription: string;
+}
 
 export interface Comment {
   commentId: string;
   content: string;
   createdDate: Date;
-  userName: string;
+  userName: string | null;
+  userType: string | null; // Add this field if it's not already present
+  userId: string;
+  ticketId: string;
 }
 
 export interface CreateCommentDTO {
@@ -92,15 +99,25 @@ export class TicketService {
     return this.http.put<void>(`${this.baseUrl}/${ticketId}`, { status }, { headers });
   }
 
-  getComments(ticketId: string): Observable<Comment[]> {
+  getComments(ticketId: string, pageNumber: number = 1, pageSize: number = 100): Observable<Comment[]> {
     const headers = this.sheardService.Header_Get();
-    return this.http.get<WebResponse<Comment[]>>(`${this.commentsUrl}/${ticketId}`, { headers })
-      .pipe(map(response => response.data));
+    const url = `${this.commentsUrl}/support?ticketId=${ticketId}`;
+    return this.http.get<{ data: Comment[] }>(url, { headers }).pipe(
+      map(response => response.data)
+    );
   }
 
   addComment(comment: CreateCommentDTO): Observable<Comment> {
     const headers = this.sheardService.Header_Post();
-    return this.http.post<WebResponse<Comment>>(`${this.commentsUrl}`, comment, { headers })
-      .pipe(map(response => response.data));
+    return this.http.post<{ data: Comment }>(this.commentsUrl, comment, { headers }).pipe(
+      map(response => response.data)
+    );
+  }
+
+  addTicket(ticket: CreateTicketDTO): Observable<Ticket> {
+    const headers = this.sheardService.Header_Post();
+    return this.http.post<{ data: Ticket }>(this.baseUrl, ticket, { headers }).pipe(
+      map(response => response.data)
+    );
   }
 }

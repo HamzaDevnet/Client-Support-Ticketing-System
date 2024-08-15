@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using System.Runtime.Intrinsics.X86;
 
 using User = CSTS.DAL.Models.User;
+using CSTS.DAL.Enum;
 
 public class ApplicationDbContext : DbContext
 {
@@ -56,5 +57,25 @@ public class ApplicationDbContext : DbContext
             .WithOne(c => c.User)
             .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Seed data
+        modelBuilder.Entity<User>().HasData(
+            new User
+            {
+                UserId =Guid.Parse( "725c2c65-2fc0-45ec-b28f-fc56f268c225"),
+                UserName = "Manger",
+                FirstName = "Admin",
+                LastName = "Admin",
+                MobileNumber = "1234567890",
+                Email = "Manger@example.com",
+                UserStatus = UserStatus.Active,
+                UserType = UserType.SupportManager,
+                Password = "123456", // Consider using a hashed password in production
+                Address = "Address1",
+                RegistrationDate = DateTime.Parse("2024 - 08 - 14 15:30:00"),
+                DateOfBirth = new DateTime(1990, 1, 1)
+            }
+           
+        );
     }
 }

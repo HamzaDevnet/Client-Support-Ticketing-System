@@ -1,0 +1,32 @@
+<div class="container-fluid d-flex vh-100 bg-light-green">
+    <div class="row justify-content-center align-self-center w-100">
+      <div class="col-md-4">
+        <div class="card border-0 card-custom">
+          <div class="card-body d-flex flex-column justify-content-center align-items-center">
+            <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+              <h5 class="card-title text-center flex-grow-1">Forgot Password</h5>
+            </div>
+            <form [formGroup]="forgotPasswordForm">
+              <div class="row mb-2">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label class="control-label required">Email</label>
+                    <input type="email" class="form-control" formControlName="email" placeholder="Enter your email address">
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-4">
+                <div class="col">
+                  <div class="d-flex justify-content-start">
+                    <button (click)="sendResetLink()" class="btn btn-success rounded-5 me-2">Send Reset Link</button>
+                    <button routerLink="/login" class="btn btn-secondary rounded-5">Cancel</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

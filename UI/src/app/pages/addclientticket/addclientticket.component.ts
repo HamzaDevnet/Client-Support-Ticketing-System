@@ -10,8 +10,8 @@ import { Ticket } from 'app/ticket';
 
 export class AddclientticketComponent {
   ticketData = {
-    title: '',
-    description: '',
+    product: '',
+    problemDescription: '',
     file: null
   };
 

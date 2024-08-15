@@ -50,7 +50,7 @@ namespace CSTS.API.Controllers
 
         // GET: api/comments/support
         [HttpGet("support")]
-        [CstsAuth(UserType.SupportManager)]
+        [CstsAuth(UserType.SupportTeamMember)]
         public async Task<ActionResult<APIResponse<IEnumerable<CommentResponseDTO>>>> GetSupportComments([FromQuery] Guid ticketId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
         {
             try
@@ -68,7 +68,7 @@ namespace CSTS.API.Controllers
 
         // GET api/comments/{id}
         [HttpGet("{id}")]
-        [CstsAuth(UserType.SupportManager, UserType.ExternalClient)]
+        [CstsAuth(UserType.SupportTeamMember, UserType.ExternalClient)]
         public async Task<ActionResult<APIResponse<CommentResponseDTO>>> Get(Guid id)
         {
             try
@@ -90,7 +90,7 @@ namespace CSTS.API.Controllers
 
         // POST api/comments
         [HttpPost]
-        //[CstsAuth(UserType.SupportManager, UserType.ExternalClient)]
+        //[CstsAuth(UserType.SupportTeamMember, UserType.ExternalClient)]
         public async Task<ActionResult<APIResponse<CommentResponseDTO>>> Post([FromBody] CreateCommentDTO createCommentDto)
         {
             try

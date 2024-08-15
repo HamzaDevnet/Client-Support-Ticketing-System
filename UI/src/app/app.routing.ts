@@ -8,6 +8,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { LandingComponent } from './pages/landing/landing.component';
 import { TicketDetailsComponent } from './pages/ticket-details/ticket-details.component';
 import { ClienttickectdetailsComponent } from './pages/clienttickectdetails/clienttickectdetails.component';
+import { ForgetComponent } from './pages/forget/forget.component'; // Import ForgetComponent
 import { AuthGuard } from './auth.guard';
 
 export const AppRoutes: Routes = [
@@ -17,16 +18,22 @@ export const AppRoutes: Routes = [
     pathMatch: 'full',
   },
   {
-    path:'landing',
+    path: 'landing',
     component: LandingComponent
   },
-  {path:'login',         
-    component:LoginComponent},
-    {
-      path:'register',
-      component: RegisterComponent
-    },
-   {
+  {
+    path: 'login',
+    component: LoginComponent
+  },
+  {
+    path: 'register',
+    component: RegisterComponent
+  },
+  {
+    path: 'forgot-password', // Add this route for Forgot Password
+    component: ForgetComponent
+  },
+  {
     path: '',
     component: AdminLayoutComponent,
     children: [
@@ -42,4 +49,18 @@ export const AppRoutes: Routes = [
   path:"**" ,
   redirectTo:"/landing"
 }
+      {
+        path: '',
+        loadChildren: () => import('./layouts/admin-layout/admin-layout.module').then(x => x.AdminLayoutModule)
+      },
+      {
+        path: 'userprofile',
+        component: UserProfileComponent
+      },
+      {
+        path: 'ticketdetails',
+        component: ClienttickectdetailsComponent
+      },
+    ],
+  },
 ];
