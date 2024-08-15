@@ -2,10 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoginService } from 'app/login.service';
-import { Userdata } from 'app/userdata';
-import { UserLocalStorageService } from 'app/user-local-storage.service'; // Assuming this import is needed
+import { UserLocalStorageService } from 'app/user-local-storage.service';
 import { UserType } from 'app/enums/user.enum';
-
 
 @Component({
   selector: 'app-login',
@@ -37,13 +35,11 @@ export class LoginComponent implements OnInit {
       this.loginService.getLogin(this.loginForm.value).subscribe({
         next: (response) => { 
           if(response.code == 200){
-          console.log('API response:', response);
-          const token = response.data.token;
-             //check for password "if statment"
-          this.userLocalStorage.setToken(token); 
-          this.navigate(response.data.userType);
-          }
-          else {
+            console.log('API response:', response);
+            const token = response.data.token;
+            this.userLocalStorage.setToken(token);
+            this.navigate(response.data.userType);
+          } else {
             alert(response.message);
           }
         },
@@ -56,8 +52,8 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  private navigate(userType:UserType):void{
-    switch(userType){
+  private navigate(userType: UserType): void {
+    switch(userType) {
       case UserType.Client:
         this.router.navigate(['/myTickets']);
         break;
@@ -67,9 +63,6 @@ export class LoginComponent implements OnInit {
       case UserType.Manager:
         this.router.navigate(['/dashboard']);
         break;
-        
     }
   }
-
 }
-

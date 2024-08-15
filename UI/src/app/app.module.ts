@@ -49,6 +49,7 @@ import { ClientComponent } from './pages/client/client.component';
 import { AddSupportComponent } from './pages/add-support/add-support.component';
 import { ClienttickectdetailsComponent } from './pages/clienttickectdetails/clienttickectdetails.component';
 import { DatePipe } from "@angular/common";
+import { ForgetComponent } from './pages/forget/forget.component';
 
 
 @NgModule({
@@ -71,6 +72,7 @@ import { DatePipe } from "@angular/common";
     ClientComponent,
     AddSupportComponent,
     ClienttickectdetailsComponent,
+    ForgetComponent,
 
   ],
   imports: [

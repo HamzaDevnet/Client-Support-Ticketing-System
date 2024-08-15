@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { TicketService, Comment, CreateCommentDTO } from 'app/ticket.service';
+import { TicketService, Comment, CreateCommentDTO, CreateTicketDTO } from 'app/ticket.service';
 import { Ticket } from 'app/ticket';
 import { MatDialog } from '@angular/material/dialog';
 import { AddclientticketComponent } from '../addclientticket/addclientticket.component';
@@ -18,23 +18,23 @@ export class ClientticketsComponent implements OnInit {
   selectedTicket: Ticket | undefined;
   comments: Comment[] = [];
   newComment: string = '';
-  userId: string | undefined;
+  userId: string;
 
   constructor(public dialog: MatDialog, private ticketService: TicketService, private sheardService: SheardServiceService) {}
 
   ngOnInit(): void {
-    const userClaims = this.sheardService.getUserClaims();
-    if (userClaims && userClaims.UserId) {
-      this.userId = userClaims.UserId;
-      this.getTickets(this.userId);
-    } else {
-      console.error('User ID not found in token');
+    this.userId = this.sheardService.getUserId();
+    if (!this.userId) {
+      console.error('User ID not found in token, using default user ID');
+      this.userId = 'eaf994d3-0c78-4288-b45a-5b3b3de88421'; // Default user ID
     }
+    this.getTickets(this.userId);
   }
 
   getTickets(userId: string): void {
     this.ticketService.getTickets(userId).subscribe({
       next: (tickets) => {
+        console.log('Tickets received:', tickets); // Add this line for debugging
         this.tickets = tickets;
         this.dataSource.data = tickets;
       },
@@ -51,7 +51,19 @@ export class ClientticketsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.getTickets(this.userId); // Refresh the ticket list after adding a new ticket
+        const newTicket: CreateTicketDTO = {
+          product: result.product,
+          problemDescription: result.problemDescription,
+        };
+        this.ticketService.addTicket(newTicket).subscribe({
+          next: (ticket) => {
+            this.tickets.push(ticket);
+            this.dataSource.data = [...this.tickets];
+          },
+          error: (error) => {
+            console.error('Error adding ticket', error);
+          }
+        });
       }
     });
   }
@@ -68,7 +80,7 @@ export class ClientticketsComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading comments', error);
-      }
+      },
     });
   }
 
@@ -76,9 +88,10 @@ export class ClientticketsComponent implements OnInit {
     if (this.newComment.trim() && this.selectedTicket) {
       const newComment: CreateCommentDTO = {
         ticketId: this.selectedTicket.ticketId,
-        content: this.newComment , 
-        userId : ""
+        content: this.newComment,
+        userId: this.userId, // Use userId from the component, which defaults to the provided ID if not found in the token
       };
+
       this.ticketService.addComment(newComment).subscribe({
         next: (comment) => {
           this.comments.push(comment);
@@ -86,8 +99,29 @@ export class ClientticketsComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error posting comment', error);
-        }
+        },
       });
+    } else {
+      console.error('New comment text or selected ticket is missing');
+    }
+  }
+
+  getUserDisplayName(comment: Comment): string {
+    const userName = comment.userName ? comment.userName : 'Anonymous';
+    const role = this.getUserRole(comment.userType);
+    return `${userName} (${role})`;
+  }
+
+  getUserRole(userType: string | null): string {
+    switch (userType) {
+      case '0':
+        return 'Client';
+      case '1':
+        return 'Support Team Member';
+      case '2':
+        return 'Manager';
+      default:
+        return 'User';
     }
   }
 }

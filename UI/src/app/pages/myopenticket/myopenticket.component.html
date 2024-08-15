@@ -32,8 +32,8 @@
           <p><strong>Assigned To:</strong> {{ selectedTicket.assignedToFullName || 'N/A' }}</p>
           <p><strong>Created Date:</strong> {{ selectedTicket.createdDate | date }}</p>
           <div class="comment-container" style="height: 300px; overflow-y: auto; border: 1px solid #ccc; margin-bottom: 10px;">
-            <div *ngFor="let comment of ccomments">
-              <strong>{{ comment.userName }}:</strong> {{ comment.content }}
+            <div *ngFor="let comment of comments">
+              <strong>{{ getUserDisplayName(comment) }}:</strong> {{ comment.content }}
             </div>
           </div>
           <div class="input-group">

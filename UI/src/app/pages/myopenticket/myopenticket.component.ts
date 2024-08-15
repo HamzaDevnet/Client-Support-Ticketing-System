@@ -15,26 +15,24 @@ export class MyopenticketComponent implements OnInit {
   displayedColumns: string[] = ['product'];
   dataSource = new MatTableDataSource<Ticket>(this.tickets);
   selectedFilter: string = 'Status';
-  ccomments: Comment[] = [];
+  comments: Comment[] = []; // Initialize as an empty array
   newComment: string = '';
-  statuses : TicketStatus[]; 
+  statuses: TicketStatus[];
   selectedTicket: Ticket | undefined;
-  userId: string | undefined;
+  userId: string;
 
   constructor(private ticketService: TicketService, private sheardService: SheardServiceService) {
-   
-    this.statuses = [ 
-      TicketStatus.Assigned ,
-      TicketStatus.InProgress , 
-      TicketStatus.Closed 
-    ]
+    this.statuses = [
+      TicketStatus.Assigned,
+      TicketStatus.InProgress,
+      TicketStatus.Closed
+    ];
     console.log(this.statuses);
   }
 
   ngOnInit(): void {
-    const userClaims = this.sheardService.getUserClaims();
-    if (userClaims && userClaims.UserId) {
-      this.userId = userClaims.UserId;
+    this.userId = this.sheardService.getUserId();
+    if (this.userId) {
       this.getTickets(this.userId);
     } else {
       console.error('User ID not found in token');
@@ -75,7 +73,7 @@ export class MyopenticketComponent implements OnInit {
   loadComments(ticketId: string): void {
     this.ticketService.getComments(ticketId).subscribe({
       next: (comments) => {
-        this.ccomments = comments;
+        this.comments = comments;
       },
       error: (error) => {
         console.error('Error loading comments', error);
@@ -102,21 +100,46 @@ export class MyopenticketComponent implements OnInit {
   }
 
   postComment() {
+    // Ensure comments is initialized as an empty array if it's not already
+    this.comments = this.comments || [];
+
     if (this.newComment.trim() && this.selectedTicket) {
-      const newComment: CreateCommentDTO  = {
+      const newComment: CreateCommentDTO = {
         ticketId: this.selectedTicket.ticketId,
         content: this.newComment,
-        userId : "db79c212-b2af-43d3-b13c-854dfc9b9c6a",
+        userId: this.userId, // Use the userId from the service
       };
+
       this.ticketService.addComment(newComment).subscribe({
         next: (comment) => {
-          this.ccomments.push(comment);
+          this.comments.push(comment); // Push the new comment to the array
           this.newComment = '';
         },
         error: (error) => {
           console.error('Error posting comment', error);
         },
       });
+    } else {
+      console.error('New comment text or selected ticket is missing');
+    }
+  }
+
+  getUserDisplayName(comment: Comment): string {
+    const userName = comment.userName ? comment.userName : 'Anonymous';
+    const role = this.getUserRole(comment.userType);
+    return `${userName} (${role})`;
+  }
+
+  getUserRole(userType: string | null): string {
+    switch (userType) {
+      case '0':
+        return 'Client';
+      case '1':
+        return 'Support Team Member';
+      case '2':
+        return 'Manager';
+      default:
+        return 'User';
     }
   }
 }
