@@ -8,6 +8,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { LandingComponent } from './pages/landing/landing.component';
 import { TicketDetailsComponent } from './pages/ticket-details/ticket-details.component';
 import { ClienttickectdetailsComponent } from './pages/clienttickectdetails/clienttickectdetails.component';
+import { AuthGuard } from './auth.guard';
 
 export const AppRoutes: Routes = [
   {
@@ -32,14 +33,13 @@ export const AppRoutes: Routes = [
         {
       path: '',
       loadChildren: () => import('./layouts/admin-layout/admin-layout.module').then(x => x.AdminLayoutModule)
+
   },
-  {
-    path: 'userprofile', 
-    component: UserProfileComponent
-  },
-  {
-    path: 'ticketdetails', 
-    component: ClienttickectdetailsComponent
-  },
-]},
+
+] , canActivate: [AuthGuard]
+},
+{
+  path:"**" ,
+  redirectTo:"/landing"
+}
 ];

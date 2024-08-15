@@ -58,7 +58,7 @@
                 <input type="text" class="form-control" formControlName="address">
               </div>
               <label>Upload Image</label>
-              <input type="file" class="form-control" accept=".jpg ,.png">
+              <input type="file" (change)="upload($event)" class="form-control" accept=".jpg ,.png">
             </div>
           </div>
           <div class="row">

@@ -6,5 +6,6 @@
 export const environment = {
   production: false,
   BaseURL : "https://localhost:7125/api" ,
-  BaseURL2 :"https://localhost:7125" ,
+  BackendURL :"https://localhost:7125" ,
+
 };

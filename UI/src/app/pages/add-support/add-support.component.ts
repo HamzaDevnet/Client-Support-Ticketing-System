@@ -33,6 +33,7 @@ export class AddSupportComponent  {
     if (this.supportForm.valid) {
       this.SupportTeamService.addSupportMember(this.supportForm.value).subscribe({
         next:(response)=>{
+          response.data.userId
           this.dialogRef.close({
             isdone:true
           });

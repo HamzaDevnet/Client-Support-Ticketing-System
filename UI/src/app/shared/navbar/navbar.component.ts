@@ -2,8 +2,9 @@ import { Component, OnInit, Renderer2, ViewChild, ElementRef } from '@angular/co
 import { ROUTES } from '../../sidebar/sidebar.component';
 import { Router } from '@angular/router';
 import { Location} from '@angular/common';
-
+import { UsersService } from 'app/users.service';
 import { UserLocalStorageService } from 'app/user-local-storage.service';
+import { Users } from 'app/users';
 
 @Component({
     moduleId: module.id,
@@ -14,9 +15,11 @@ import { UserLocalStorageService } from 'app/user-local-storage.service';
 export class NavbarComponent implements OnInit{
     private listTitles: any[];
     location: Location;
+    userProfile: Users 
     private nativeElement: Node;
     private toggleButton;
     private sidebarVisible: boolean;
+;
 
     public isCollapsed = true;
     @ViewChild("navbar-cmp", {static: false}) button;
@@ -25,6 +28,7 @@ export class NavbarComponent implements OnInit{
       private element : ElementRef,
        private router: Router,
        private UserLocalStorageService : UserLocalStorageService,
+       private UsersService : UsersService 
       
       ) {
         this.location = location;
@@ -38,8 +42,38 @@ export class NavbarComponent implements OnInit{
         this.toggleButton = navbar.getElementsByClassName('navbar-toggle')[0];
         this.router.events.subscribe((event) => {
           this.sidebarClose();
+          this.getUserData("7fe07f71-e335-4db8-3c17-08dcbca48489");
        });
     }
+
+    getUserData(userId: string):void{
+      // this.userProfile = {
+      //   firstName: "Alanoud",
+      //   lastName: "Abdullah",
+      //   fullName: "Alanoud Abdullah",
+      //   mobileNumber: "1234567890",
+      //   email: "john.doe@example.com",
+      //   userStatus: 1,
+      //   dateOfBirth: new Date("1990-01-01T00:00:00"),
+      //   strDateOfBirth: "Monday, January 1, 1990",
+      //   address: "123 Main St, Anytown, USA",
+      //   password : "",
+      //   userId : "" , 
+      //   userImage : null ,
+      //   userName : " "
+        
+      // } 
+      this.UsersService.getUserInfo(userId).subscribe({
+        next: (response)=>{
+         console.log(response);
+         this.userProfile = response.data; 
+        }, 
+        error:(error)=>{
+          console.log("Error fechting user information",error);
+        }
+      })
+    }
+
     getTitle(){
       var titlee = this.location.prepareExternalUrl(this.location.path());
       if(titlee.charAt(0) === '#'){

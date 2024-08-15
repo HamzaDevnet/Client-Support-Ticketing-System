@@ -5,6 +5,7 @@ import { LoginService } from 'app/login.service';
 import { Userdata } from 'app/userdata';
 import { UserLocalStorageService } from 'app/user-local-storage.service'; // Assuming this import is needed
 import { UserType } from 'app/enums/user.enum';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
@@ -21,7 +22,8 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private loginService: LoginService,
-    private userLocalStorage: UserLocalStorageService
+    private userLocalStorage: UserLocalStorageService, 
+    private ToastrService : ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -42,12 +44,16 @@ export class LoginComponent implements OnInit {
              //check for password "if statment"
           this.userLocalStorage.setToken(token); 
           this.navigate(response.data.userType);
+         
+            this.ToastrService.success("Login successful");
+            
           }
           else {
-            alert(response.message);
+            this.ToastrService.error(response.message);
           }
         },
         error: (error) => {
+          this.ToastrService.error(error.message);
           console.error('Error logging in', error);
         }
       });
