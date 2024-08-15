@@ -19,10 +19,12 @@ namespace CSTS.API.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
         private readonly FileService _fileService;
+        private readonly ILogger<LoginController> _logger;
 
 
-        public LoginController(IUnitOfWork unitOfWork, IConfiguration configuration, FileService fileService)
+        public LoginController(IUnitOfWork unitOfWork, IConfiguration configuration, FileService fileService,ILogger<LoginController> logger)
         {
+            _logger=logger;
             _unitOfWork = unitOfWork;
             _configuration = configuration;
             _fileService = fileService;
@@ -33,6 +35,9 @@ namespace CSTS.API.Controllers
 
         public async Task<IActionResult> Login([FromBody] Login loginRequest)
         {
+            _logger.LogError("LogError");
+            _logger.LogInformation("LogInformation");
+            _logger.LogWarning("LogWarning");
             var user = GetUser_ByUserName(loginRequest.Username);
             if (user == null)
             {
