@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using NLog.Extensions.Logging;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -92,6 +93,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddScoped<FileService>(); // Add this line to register FileService
 
+builder.Logging.AddNLog("nlog.config");
 
 // Add CORS policy
 builder.Services.AddCors(options =>
@@ -107,18 +109,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try
-    {
-        SeedData.Initialize(services);
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"An error occurred seeding the DB: {ex.Message}");
-    }
-}
 
 app.UseStaticFiles();
 
