@@ -51,6 +51,16 @@ export class SheardServiceService {
     }
   }
 
+  getUserId(): string {
+    try {
+      const decodedToken: any = jwtDecode(localStorage.getItem(this.tokenKey));
+      return decodedToken.sub;
+    } catch (error) {
+      console.error('Invalid token', error);
+      return null;
+    }
+  }
+
 
 }
 
