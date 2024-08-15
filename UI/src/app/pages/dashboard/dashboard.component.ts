@@ -4,6 +4,7 @@ import { TicketService } from 'app/ticket.service';
 import { UsersService } from 'app/users.service';
 import { SheardServiceService } from 'app/sheard-service.service';
 import { Chart } from 'chart.js';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'dashboard-cmp',
@@ -22,11 +23,14 @@ export class DashboardComponent implements OnInit {
   clientCount: number = 0;
   userId: string | undefined;
 
+
   constructor(
     private ticketService: TicketService,
     private usersService: UsersService,
-    private sheardService: SheardServiceService
+    private sheardService: SheardServiceService,
+    private translate: TranslateService
   ) {}
+
 
   ngOnInit() {
     this.getTickets();
@@ -34,6 +38,7 @@ export class DashboardComponent implements OnInit {
     this.getSupportMembersNum();
     this.getTicketCount();
     this.getClientsNum();
+
   }
 
   getSupportMembersNum(): void {

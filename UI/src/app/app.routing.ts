@@ -16,6 +16,7 @@ export const AppRoutes: Routes = [
     path: '',
     redirectTo: 'landing',
     pathMatch: 'full',
+    
   },
   {
     path: 'landing',
@@ -49,18 +50,5 @@ export const AppRoutes: Routes = [
   path:"**" ,
   redirectTo:"/landing"
 }
-      {
-        path: '',
-        loadChildren: () => import('./layouts/admin-layout/admin-layout.module').then(x => x.AdminLayoutModule)
-      },
-      {
-        path: 'userprofile',
-        component: UserProfileComponent
-      },
-      {
-        path: 'ticketdetails',
-        component: ClienttickectdetailsComponent
-      },
-    ],
-  },
+     
 ];

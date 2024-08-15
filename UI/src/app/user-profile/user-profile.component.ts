@@ -18,11 +18,8 @@ export class UserProfileComponent implements OnInit {
      private SheardServiceService : SheardServiceService ) { }
 
   ngOnInit(): void {
-    // return user id or make api for returing user data by token s 
-   const x=  this.SheardServiceService.getUserClaims();
-   const userId = x.userId;
-   console.log(x);
-   this.getUserData("7fe07f71-e335-4db8-3c17-08dcbca48489");
+   const userId=  this.SheardServiceService.getUserId();
+   this.getUserData(userId);
   }
 
 

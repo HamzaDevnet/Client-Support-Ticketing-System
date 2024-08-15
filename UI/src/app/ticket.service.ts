@@ -99,6 +99,11 @@ export class TicketService {
     return this.http.put<void>(`${this.baseUrl}/${ticketId}`, { status }, { headers });
   }
 
+  RemoveTicketStatus(ticketId: string, status: TicketStatus): Observable<void> {
+    const headers = this.sheardService.Header_Post();
+    return this.http.put<void>(`${this.baseUrl}/Remove/${ticketId}`, { status }, { headers });
+  }
+
   getComments(ticketId: string, pageNumber: number = 1, pageSize: number = 100): Observable<Comment[]> {
     const headers = this.sheardService.Header_Get();
     const url = `${this.commentsUrl}/support?ticketId=${ticketId}`;

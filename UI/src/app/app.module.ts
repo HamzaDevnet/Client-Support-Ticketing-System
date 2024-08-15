@@ -15,7 +15,7 @@ import { AppRoutes } from './app.routing';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 
 import { SupportTeamService } from './support-team.service';
-import { HttpClientModule } from "@angular/common/http";
+import { HttpClient, HttpClientModule } from "@angular/common/http";
 import { CommonModule } from "@angular/common";
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from "@angular/material/button";
@@ -50,7 +50,12 @@ import { AddSupportComponent } from './pages/add-support/add-support.component';
 import { ClienttickectdetailsComponent } from './pages/clienttickectdetails/clienttickectdetails.component';
 import { DatePipe } from "@angular/common";
 import { ForgetComponent } from './pages/forget/forget.component';
+import {TranslateLoader, TranslateModule, TranslatePipe} from '@ngx-translate/core';
+import { TranslateHttpLoader } from "@ngx-translate/http-loader";
 
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
 
 @NgModule({
   declarations: [
@@ -73,6 +78,7 @@ import { ForgetComponent } from './pages/forget/forget.component';
     AddSupportComponent,
     ClienttickectdetailsComponent,
     ForgetComponent,
+
 
   ],
   imports: [
@@ -100,7 +106,14 @@ import { ForgetComponent } from './pages/forget/forget.component';
     NavbarModule,
     ToastrModule.forRoot(),
     FooterModule,
-    FixedPluginModule
+    FixedPluginModule,
+    TranslateModule.forRoot({
+      loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [HttpClient]
+      }
+  })
   ],
   providers: [SupportTeamService, UsersService, TicketService, DatePipe],
   bootstrap: [AppComponent],

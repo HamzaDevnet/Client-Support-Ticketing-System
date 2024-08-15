@@ -14,13 +14,13 @@ import { TicketStatus } from 'app/enums/ticket.enum';
 })
 export class TicketComponent implements OnInit {
   tickets: Ticket[] = [];
-  TicketStatus = TicketStatus ;
+  TicketStatus = TicketStatus;
   filteredTickets: Ticket[] = [];
   displayedColumns: string[] = ['id', 'title', 'createdDate', 'assignedTo', 'status', 'action'];
   dataSource = new MatTableDataSource<Ticket>(this.tickets);
   selectedFilter: string = 'All Tickets';
 
-  constructor(private ticketService: TicketService, public dialog: MatDialog) {}
+  constructor(private ticketService: TicketService, public dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.getTickets();
@@ -51,6 +51,8 @@ export class TicketComponent implements OnInit {
         return 'In Progress';
       case TicketStatus.Closed:
         return 'Closed';
+      case TicketStatus.Removed:
+        return 'Removed';
       default:
         return 'Unknown';
     }
@@ -67,7 +69,7 @@ export class TicketComponent implements OnInit {
         this.filteredTickets = this.tickets.filter(ticket => ticket.status !== TicketStatus.Closed);
         break;
       case 'Assigned Tickets':
-        this.filteredTickets = this.tickets.filter(ticket => ticket.status !== TicketStatus.New,ticket => ticket.status !== TicketStatus.Closed);
+        this.filteredTickets = this.tickets.filter(ticket => ticket.status !== TicketStatus.New && ticket.status !== TicketStatus.Closed);
         break;
       default:
         this.filteredTickets = this.tickets;
@@ -99,5 +101,18 @@ export class TicketComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed');
     });
-  }  
+  }
+
+  removeTicket(ticket: Ticket): void {
+    this.ticketService.RemoveTicketStatus(ticket.ticketId, TicketStatus.Removed).subscribe({
+      next: () => {
+        ticket.status = TicketStatus.Removed;
+        console.log('Ticket status updated to Removed');
+      },
+      error: (error) => {
+        console.error('Error updating ticket status', error);
+      }
+    });
+  }
 }
+

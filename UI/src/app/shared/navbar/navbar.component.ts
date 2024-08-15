@@ -5,6 +5,8 @@ import { Location} from '@angular/common';
 import { UsersService } from 'app/users.service';
 import { UserLocalStorageService } from 'app/user-local-storage.service';
 import { Users } from 'app/users';
+import { SheardServiceService } from 'app/sheard-service.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     moduleId: module.id,
@@ -19,6 +21,7 @@ export class NavbarComponent implements OnInit{
     private nativeElement: Node;
     private toggleButton;
     private sidebarVisible: boolean;
+    selectedLang: string = 'en';
 ;
 
     public isCollapsed = true;
@@ -28,7 +31,9 @@ export class NavbarComponent implements OnInit{
       private element : ElementRef,
        private router: Router,
        private UserLocalStorageService : UserLocalStorageService,
-       private UsersService : UsersService 
+       private UsersService : UsersService , 
+       private SheardServiceService : SheardServiceService ,
+       private translate: TranslateService, 
       
       ) {
         this.location = location;
@@ -40,12 +45,20 @@ export class NavbarComponent implements OnInit{
         this.listTitles = ROUTES.filter(listTitle => listTitle);
         var navbar : HTMLElement = this.element.nativeElement;
         this.toggleButton = navbar.getElementsByClassName('navbar-toggle')[0];
+        const userId = this.SheardServiceService.getUserId();
+        this.translate.setDefaultLang('en');
+        this.translate.use(this.selectedLang);
+        this.getUserData(userId);
         this.router.events.subscribe((event) => {
           this.sidebarClose();
-          this.getUserData("7fe07f71-e335-4db8-3c17-08dcbca48489");
        });
     }
 
+    onLanguageChange() {
+      this.translate.use(this.selectedLang);
+    }
+  
+    
     getUserData(userId: string):void{
       // this.userProfile = {
       //   firstName: "Alanoud",

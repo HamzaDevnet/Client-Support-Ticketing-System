@@ -29,7 +29,6 @@ export class UserLocalStorageService {
 
   
   getCurrentUser():Userdata | null {
-    debugger
     const user = localStorage.getItem(this.userKey);
     const userCliams = this.getClaims(this.tokenKey);
     console.log(userCliams);
@@ -49,5 +48,7 @@ export class UserLocalStorageService {
   getToken():string | null {
     return localStorage.getItem(this.tokenKey);
   }
+
+  
 }
 
