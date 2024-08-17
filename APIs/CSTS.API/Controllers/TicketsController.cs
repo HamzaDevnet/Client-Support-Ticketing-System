@@ -156,7 +156,7 @@ namespace CSTS.API.Controllers
                         CommentId = c.CommentId,
                         Content = c.Content,
                         CreatedDate = c.CreatedDate,
-                        UserName = c.User?.FullName
+                        FullName = c.User?.FullName
                     }).ToList(),
                     Attachments = ticket.Attachments.Select(a => new AttachmentDto
                     {
