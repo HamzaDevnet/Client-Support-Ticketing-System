@@ -29,6 +29,12 @@ public class Repository<T> : IRepository<T> where T : class
         return await _dbSet.AsNoTracking().SingleOrDefaultAsync(filter);
     }
 
+    public async Task<T> GetAsync(Expression<Func<T, bool>> filter)
+    {
+        return await _dbSet.AsNoTracking().SingleOrDefaultAsync(filter);
+    }
+
+
     public IEnumerable<T> Get(int PageNumber = 1, int PageSize = 10)
     {
         return _dbSet.Skip((PageNumber - 1) * PageSize).Take(PageSize).ToList();
@@ -163,4 +169,3 @@ public class Repository<T> : IRepository<T> where T : class
     }
 
 }
-

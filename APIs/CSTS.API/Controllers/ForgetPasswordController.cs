@@ -71,7 +71,7 @@ namespace YourNamespace.Controllers
                 return BadRequest(new { Success = false, Code = ResponseCode.Error, Message = "Invalid or expired token." });
             }
 
-            user.Password = request.NewPassword;
+            user.Password = request.NewPassword; 
             _unitOfWork.Users.Update(user);
             await _unitOfWork.CompleteAsync();
 
@@ -184,6 +184,6 @@ namespace YourNamespace.Controllers
 
             return userIdClaim != null ? Guid.Parse(userIdClaim.Value) : (Guid?)null;
         }
-
+        
     }
 }
