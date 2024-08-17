@@ -25,4 +25,6 @@ public interface IRepository<T> where T : class
     int Count(Func<T, bool> predicate);
     IQueryable<T> GetQueryable();
 
+    Task<T?> GetByIdAsync(Guid id); 
+    Task<T> GetAsync(Expression<Func<T, bool>> filter);
 }
