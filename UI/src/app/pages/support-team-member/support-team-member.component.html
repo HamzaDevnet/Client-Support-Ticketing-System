@@ -4,7 +4,7 @@
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="card-title">{{ 'Manage Support Members' | translate }}</h5>
         <div class="d-flex justify-content-end">
-          <button mat-button (click)="openAddSupportDialog()">{{ 'Add Support Member' | translate }}</button>
+          <button mat-button class="bg-secondary btn mat-button mat-focus-indicator rounded-pill" (click)="openAddSupportDialog()">{{ 'Add Support Member' | translate }}</button>
         </div>
       </div>
       <div class="card-body">
@@ -52,7 +52,7 @@
             <ng-container matColumnDef="edit">
               <th mat-header-cell *matHeaderCellDef>{{ 'Edit' | translate }}</th>
               <td mat-cell *matCellDef="let supportteam">
-                <button mat-icon-button (click)="openEditSupportDialog(supportteam)">
+                <button class ="mat-icon-button btn-outline-secondary mat-focus-indicator mat-raised-button mat-button-base rounded-pill" (click)="openEditSupportDialog(supportteam)">
                   <mat-icon>edit</mat-icon>
                 </button>
               </td>
@@ -61,10 +61,10 @@
             <ng-container matColumnDef="ActivateDeactivate">
               <th mat-header-cell *matHeaderCellDef>{{ 'Activate/Deactivate' | translate }}</th>
               <td mat-cell *matCellDef="let supportteam">
-                <button mat-icon-button *ngIf="supportteam.userStatus === UserStatus.Active" (click)="deactivateSupport(supportteam)">  
+                <button class ="mat-icon-button btn-outline-secondary mat-focus-indicator mat-raised-button mat-button-base rounded-pill" *ngIf="supportteam.userStatus === UserStatus.Active" (click)="deactivateSupport(supportteam)">  
                   <mat-icon>clear</mat-icon>
                 </button>
-                <button mat-icon-button *ngIf="supportteam.userStatus === UserStatus.Deactivated" (click)="activateSupport(supportteam)">  
+                <button class ="mat-icon-button btn-outline-secondary mat-focus-indicator mat-raised-button mat-button-base rounded-pill" *ngIf="supportteam.userStatus === UserStatus.Deactivated" (click)="activateSupport(supportteam)">  
                   <mat-icon>done</mat-icon>
                 </button>
               </td>

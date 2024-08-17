@@ -14,7 +14,7 @@
     </mat-form-field>
   </form>
 </mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-button (click)="onCancel()">{{ 'Cancel' | translate }}</button>
-  <button mat-button (click)="onAssign()" [disabled]="assignForm.invalid">{{ 'Assign' | translate }}</button>
+<mat-dialog-actions class="justify-content-end">
+  <button mat-button class="btn-secondary rounded-pill mat-button" (click)="onCancel()">{{ 'Cancel' | translate }}</button>
+  <button mat-button class="btn-success rounded-pill mat-button"  (click)="onAssign()">{{ 'Assign' | translate }}</button>
 </mat-dialog-actions>
