@@ -30,6 +30,25 @@ namespace CSTS.API.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet]
+        [CstsAuth(UserType.SupportTeamMember, UserType.ExternalClient)]
+        public async Task<ActionResult<APIResponse<IEnumerable<CommentResponseDTO>>>> GetComments([FromQuery] Guid ticketId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
+        {
+            try
+            {
+                var comments = _unitOfWork.Comments.Find(c => c.TicketId == ticketId, pageNumber, pageSize, c => c.User, c => c.Ticket);
+
+                var commentDtos = _mapper.Map<IEnumerable<CommentResponseDTO>>(comments);
+
+                return Ok(new APIResponse<IEnumerable<CommentResponseDTO>>(commentDtos, ResponseCode.Success, "Success"));
+            }
+            catch (Exception ex)
+            {
+                return Ok(new APIResponse<IEnumerable<CommentResponseDTO>>(null, ResponseCode.Error, ex.Message));
+            }
+        }
+
+        /* ******************  WHY DO WE NEED TWO GET METHODS FOR COMMENTS BASED ON USER ROLE????
         // GET: api/comments/client
         [HttpGet("client")]
         [CstsAuth(UserType.ExternalClient)]
@@ -55,7 +74,7 @@ namespace CSTS.API.Controllers
         {
             try
             {
-                var comments = _unitOfWork.Comments.Find(c => c.TicketId == ticketId && (c.User.UserType == UserType.SupportTeamMember || c.User.UserType == UserType.SupportManager), pageNumber, pageSize, c => c.User, c => c.Ticket);
+                var comments = _unitOfWork.Comments.Find(c => c.TicketId == ticketId && (c.User.UserType == UserType.SupportTeamMember || c.User.UserType == UserType.ExternalClient), pageNumber, pageSize, c => c.User, c => c.Ticket);
                 var commentDtos = _mapper.Map<IEnumerable<CommentResponseDTO>>(comments);
 
                 return Ok(new APIResponse<IEnumerable<CommentResponseDTO>>(commentDtos, ResponseCode.Success, "Success"));
@@ -64,7 +83,8 @@ namespace CSTS.API.Controllers
             {
                 return Ok(new APIResponse<IEnumerable<CommentResponseDTO>>(null, ResponseCode.Error, ex.Message));
             }
-        }
+        } */
+
 
         // GET api/comments/{id}
         [HttpGet("{id}")]
@@ -90,7 +110,7 @@ namespace CSTS.API.Controllers
 
         // POST api/comments
         [HttpPost]
-        //[CstsAuth(UserType.SupportTeamMember, UserType.ExternalClient)]
+        [CstsAuth(UserType.SupportTeamMember, UserType.ExternalClient)]
         public async Task<ActionResult<APIResponse<CommentResponseDTO>>> Post([FromBody] CreateCommentDTO createCommentDto)
         {
             try
@@ -100,7 +120,6 @@ namespace CSTS.API.Controllers
                     return Ok(new APIResponse<CommentResponseDTO>(null, ResponseCode.Null, "Comment cannot be null."));
                 }
 
-                // Validate comment DTO
                 ValidationResult result = _validator.Validate(createCommentDto);
                 if (!result.IsValid)
                 {

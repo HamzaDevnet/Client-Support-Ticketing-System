@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { User, WebResponse } from './ticket.service';
 import { environment } from 'environments/environment';
 import { SheardServiceService } from './sheard-service.service';
+import { Ticket } from './ticket';
 
 @Injectable({
   providedIn: 'root'
@@ -21,17 +22,33 @@ export class UsersService {
 
   getSupportTeamMembers(): Observable<User[]> {
     const headers = this.sheardService.getToken();
-    return this.http.get<WebResponse<User[]>>(this.supportMemberUrl, { headers }).pipe(
+    return this.http.get<WebResponse<User[]>>(`${environment.BaseURL}/Users/clients`, { headers }).pipe(
       map(response => response.data)
     );
   }
 
   getClients(): Observable<User[]> {
     const headers = this.sheardService.getToken();
-    return this.http.get<WebResponse<User[]>>(this.clientsUrl, { headers }).pipe(
+    return this.http.get<WebResponse<User[]>>(`${environment.BaseURL}/Users/clients`, { headers }).pipe(
       map(response => response.data)
     );
   }
+
+    getTeamMemberTicketsCount():Observable<any[]> {
+      const headers = this.sheardService.getToken();
+      return this.http.get<any[]>(`${environment.BaseURL}/Dashboard/TeamMemberTicketsCount`, { headers })
+    }
+
+    getClientTicketsCount():Observable<any[]> {
+      const headers = this.sheardService.getToken();
+      return this.http.get<any[]>(`${environment.BaseURL}/Dashboard/ClientTicketsCount`, { headers })
+    }
+
+    getTeamMemberClosedTicketsCount():Observable<any[]> {
+      const headers = this.sheardService.getToken();
+      return this.http.get<any[]>(`${environment.BaseURL}/Dashboard/TeamMemberClosedTicketsCount`, { headers })
+    }
+  
 
   getClientsbyManager(): Observable<Users[]> {
     const headers = this.sheardService.getToken();

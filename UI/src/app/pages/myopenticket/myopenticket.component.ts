@@ -4,6 +4,7 @@ import { TicketService, Comment, CreateCommentDTO } from 'app/ticket.service';
 import { Ticket } from 'app/ticket';
 import { TicketStatus } from '../../enums/ticket.enum';
 import { SheardServiceService } from 'app/sheard-service.service';
+import { UserType } from 'app/enums/user.enum';
 
 @Component({
   selector: 'app-myopenticket',
@@ -15,11 +16,13 @@ export class MyopenticketComponent implements OnInit {
   displayedColumns: string[] = ['product'];
   dataSource = new MatTableDataSource<Ticket>(this.tickets);
   selectedFilter: string = 'Status';
-  comments: Comment[] = []; // Initialize as an empty array
+  comments: Comment[] = [];
   newComment: string = '';
   statuses: TicketStatus[];
   selectedTicket: Ticket | undefined;
-  userId: string;
+  userId: string | undefined;
+  isLoadingTickets = false;
+  isLoadingComments = false;
 
   constructor(private ticketService: TicketService, private sheardService: SheardServiceService) {
     this.statuses = [
@@ -27,7 +30,6 @@ export class MyopenticketComponent implements OnInit {
       TicketStatus.InProgress,
       TicketStatus.Closed
     ];
-    console.log(this.statuses);
   }
 
   ngOnInit(): void {
@@ -36,18 +38,21 @@ export class MyopenticketComponent implements OnInit {
       this.getTickets(this.userId);
     } else {
       console.error('User ID not found in token');
-      this.getTickets(); // Call without userId if not found
+      return; // Stop execution if the userId is not found
     }
   }
 
-  getTickets(userId?: string): void {
+  getTickets(userId: string): void {
+    this.isLoadingTickets = true;
     this.ticketService.getTickets(userId).subscribe({
       next: (tickets) => {
         this.tickets = tickets;
         this.dataSource.data = tickets;
+        this.isLoadingTickets = false;
       },
       error: (error) => {
         console.error('Error fetching tickets', error);
+        this.isLoadingTickets = false;
       },
     });
   }
@@ -71,12 +76,15 @@ export class MyopenticketComponent implements OnInit {
   }
 
   loadComments(ticketId: string): void {
+    this.isLoadingComments = true;
     this.ticketService.getComments(ticketId).subscribe({
       next: (comments) => {
-        this.comments = comments;
+        this.comments = comments.sort((a, b) => new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime());
+        this.isLoadingComments = false;
       },
       error: (error) => {
         console.error('Error loading comments', error);
+        this.isLoadingComments = false;
       },
     });
   }
@@ -95,25 +103,22 @@ export class MyopenticketComponent implements OnInit {
     }
   }
 
-  setFilter(filter: string) {
-    this.selectedFilter = filter;
-  }
-
   postComment() {
-    // Ensure comments is initialized as an empty array if it's not already
-    this.comments = this.comments || [];
-
     if (this.newComment.trim() && this.selectedTicket) {
       const newComment: CreateCommentDTO = {
         ticketId: this.selectedTicket.ticketId,
         content: this.newComment,
-        userId: this.userId, // Use the userId from the service
+        userId: this.userId!, // Non-null assertion since userId should exist
       };
 
       this.ticketService.addComment(newComment).subscribe({
         next: (comment) => {
-          this.comments.push(comment); // Push the new comment to the array
+          this.comments.push(comment);
           this.newComment = '';
+          setTimeout(() => {
+            const commentInput = document.querySelector<HTMLInputElement>('.input-group input');
+            commentInput?.focus();
+          }, 0);
         },
         error: (error) => {
           console.error('Error posting comment', error);
@@ -125,18 +130,18 @@ export class MyopenticketComponent implements OnInit {
   }
 
   getUserDisplayName(comment: Comment): string {
-    const userName = comment.userName ? comment.userName : 'Anonymous';
-    const role = this.getUserRole(comment.userType);
-    return `${userName} (${role})`;
+    const fullName = comment.fullName ? comment.fullName : 'Anonymous';
+    const role = this.getUserRole(comment.userType); // Pass the userType enum value
+    return `${fullName} (${role})`;
   }
 
-  getUserRole(userType: string | null): string {
+  getUserRole(userType: UserType): string {
     switch (userType) {
-      case '0':
+      case UserType.Client:
         return 'Client';
-      case '1':
+      case UserType.Support:
         return 'Support Team Member';
-      case '2':
+      case UserType.Manager:
         return 'Manager';
       default:
         return 'User';

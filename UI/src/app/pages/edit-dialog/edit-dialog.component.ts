@@ -41,7 +41,7 @@ export class EditDialogComponent {
     console.log(this.data.userId, this.editForm.value);
     this.UsersService.editUser(this.data.userId,this.editForm.value).subscribe({
       next: (response) => {
-        this.dialogRef.close(response.data);
+        this.dialogRef.close({isdone:true});
         
       },
       error: (error) => {

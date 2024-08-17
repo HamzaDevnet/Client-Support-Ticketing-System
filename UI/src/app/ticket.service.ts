@@ -6,6 +6,7 @@ import { Ticket } from './ticket';
 import { environment } from 'environments/environment';
 import { SheardServiceService } from './sheard-service.service';
 import { TicketStatus } from './enums/ticket.enum';
+import { UserType } from './enums/user.enum';
 
 export interface User {
   userId: string;
@@ -26,8 +27,8 @@ export interface Comment {
   commentId: string;
   content: string;
   createdDate: Date;
-  userName: string | null;
-  userType: string | null; // Add this field if it's not already present
+  fullName: string | null;
+  userType: UserType;
   userId: string;
   ticketId: string;
 }
@@ -94,14 +95,24 @@ export class TicketService {
       .pipe(map(response => response.data));
   }
 
+  getTicketsCountByState(): Observable<Ticket[]> {
+    const headers = this.sheardService.getToken();
+    return this.http.get<Ticket[]>(`${environment.BaseURL}/Dashboard/TicketsCountByState`, { headers })
+  }
+
   updateTicketStatus(ticketId: string, status: TicketStatus): Observable<void> {
     const headers = this.sheardService.Header_Post();
     return this.http.put<void>(`${this.baseUrl}/${ticketId}`, { status }, { headers });
   }
 
+  RemoveTicketStatus(ticketId: string, status: TicketStatus): Observable<void> {
+    const headers = this.sheardService.Header_Post();
+    return this.http.put<void>(`${this.baseUrl}/Remove/${ticketId}`, { status }, { headers });
+  }
+
   getComments(ticketId: string, pageNumber: number = 1, pageSize: number = 100): Observable<Comment[]> {
     const headers = this.sheardService.Header_Get();
-    const url = `${this.commentsUrl}/support?ticketId=${ticketId}`;
+    const url = `${this.commentsUrl}?ticketId=${ticketId}&pageNumber=${pageNumber}&pageSize=${pageSize}`;
     return this.http.get<{ data: Comment[] }>(url, { headers }).pipe(
       map(response => response.data)
     );

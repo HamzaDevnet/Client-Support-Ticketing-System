@@ -359,3 +359,13 @@
 .panel-header-lg{
   height: 380px
 }
+
+@media screen and (max-width: 991px) {
+    .sidebar.rtl , .bootstrap-navbar {
+  transform: translate3d(260px,0,0);
+}
+.nav-open .main-panel.rtl {
+  right: 0;
+  transform: translate3d(-260px, 0, 0);
+}
+}

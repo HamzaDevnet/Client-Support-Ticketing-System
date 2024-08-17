@@ -2,8 +2,12 @@ import { Component, OnInit, Renderer2, ViewChild, ElementRef } from '@angular/co
 import { ROUTES } from '../../sidebar/sidebar.component';
 import { Router } from '@angular/router';
 import { Location} from '@angular/common';
-
+import { UsersService } from 'app/users.service';
 import { UserLocalStorageService } from 'app/user-local-storage.service';
+import { Users } from 'app/users';
+import { SheardServiceService } from 'app/sheard-service.service';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
     moduleId: module.id,
@@ -14,9 +18,13 @@ import { UserLocalStorageService } from 'app/user-local-storage.service';
 export class NavbarComponent implements OnInit{
     private listTitles: any[];
     location: Location;
+    userProfile: Users 
     private nativeElement: Node;
     private toggleButton;
     private sidebarVisible: boolean;
+    languages = ['en', 'ar']; 
+    currentLanguage: string = 'en'; // default language
+;
 
     public isCollapsed = true;
     @ViewChild("navbar-cmp", {static: false}) button;
@@ -25,33 +33,64 @@ export class NavbarComponent implements OnInit{
       private element : ElementRef,
        private router: Router,
        private UserLocalStorageService : UserLocalStorageService,
+       private UsersService : UsersService , 
+       private SheardServiceService : SheardServiceService ,
+       private translate: TranslateService, 
+  
       
       ) {
         this.location = location;
         this.nativeElement = element.nativeElement;
         this.sidebarVisible = false;
+        this.translate.setDefaultLang('en'); 
     }
 
     ngOnInit(){
-        this.listTitles = ROUTES.filter(listTitle => listTitle);
+      const browserLang = this.translate.getBrowserLang();
+      if (browserLang && this.languages.includes(browserLang)) {
+        this.currentLanguage = browserLang;
+      }
+      this.translate.use(this.currentLanguage); // Set the initial language
+      this.listTitles = ROUTES.filter(listTitle => listTitle);
         var navbar : HTMLElement = this.element.nativeElement;
         this.toggleButton = navbar.getElementsByClassName('navbar-toggle')[0];
+        const userId = this.SheardServiceService.getUserId();
+        this.getUserData(userId);
         this.router.events.subscribe((event) => {
           this.sidebarClose();
        });
     }
-    getTitle(){
-      var titlee = this.location.prepareExternalUrl(this.location.path());
-      if(titlee.charAt(0) === '#'){
-          titlee = titlee.slice( 1 );
-      }
-      for(var item = 0; item < this.listTitles.length; item++){
-          if(this.listTitles[item].path === titlee){
-              return this.listTitles[item].title;
-          }
-      }
-      return 'Dashboard';
+
+  onLanguageChange(language: string) {
+    this.currentLanguage = language;
+    this.translate.use(language); 
+  }
+    getUserData(userId: string):void{
+      this.UsersService.getUserInfo(userId).subscribe({
+        next: (response)=>{
+         console.log(response);
+         this.userProfile = response.data; 
+        }, 
+        error:(error)=>{
+          console.log("Error fechting user information",error);
+        }
+      })
     }
+    getTitle() {
+      var titlee = this.location.prepareExternalUrl(this.location.path());
+      if (titlee.charAt(0) === '#') {
+        titlee = titlee.slice(1);
+      }
+  
+      for (var item = 0; item < this.listTitles.length; item++) {
+        if (this.listTitles[item].path === titlee) {
+          return this.translate.instant(this.listTitles[item].title);
+        }
+      }
+  
+      return this.translate.instant('My Profile'); 
+    }
+
     sidebarToggle() {
         if (this.sidebarVisible === false) {
             this.sidebarOpen();

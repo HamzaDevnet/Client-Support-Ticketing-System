@@ -3,13 +3,18 @@
     <div class="col-md-3">
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="card-title">Open Tickets</h5>
+          <h5 class="card-title">{{ 'Open Tickets' | translate }}</h5>
         </div>
         <div class="card-body">
-          <div class="list-group">
-            <a *ngFor="let ticket of tickets" class="list-group-item list-group-item-action" (click)="selectTicket(ticket)">
-              {{ ticket.product }}
-            </a>
+          <div *ngIf="isLoadingTickets" class="text-center">
+            <mat-spinner></mat-spinner>
+          </div>
+          <div *ngIf="!isLoadingTickets">
+            <div class="list-group">
+              <a *ngFor="let ticket of tickets" class="list-group-item list-group-item-action" (click)="selectTicket(ticket)">
+                {{ ticket.product }}
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -19,31 +24,60 @@
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="card-title">{{ selectedTicket.product }}</h5>
           <div>
-            <button mat-button [matMenuTriggerFor]="menu">{{ getStatusText(selectedTicket?.status) || 'Status' }}</button>
+            <button mat-button [matMenuTriggerFor]="menu">{{ getStatusText(selectedTicket?.status) || 'Status' | translate }}</button>
             <mat-menu #menu="matMenu">
               <button mat-menu-item *ngFor="let status of statuses" (click)="updateStatus(status)">
-                {{ getStatusText(status) }}
+                {{ getStatusText(status) | translate }}
               </button>
             </mat-menu>
           </div>
         </div>
         <div class="card-body">
-          <p><strong>Description:</strong> {{ selectedTicket.problemDescription }}</p>
-          <p><strong>Assigned To:</strong> {{ selectedTicket.assignedToFullName || 'N/A' }}</p>
-          <p><strong>Created Date:</strong> {{ selectedTicket.createdDate | date }}</p>
-          <div class="comment-container" style="height: 300px; overflow-y: auto; border: 1px solid #ccc; margin-bottom: 10px;">
-            <div *ngFor="let comment of comments">
-              <strong>{{ getUserDisplayName(comment) }}:</strong> {{ comment.content }}
+          <div class="row">
+            <div class="col-md-12">
+              <p><strong>{{ 'Description' | translate }}:</strong> {{ selectedTicket.problemDescription }}</p>
+              <p><strong>{{ 'Assigned To' | translate }}:</strong> {{ selectedTicket.assignedToFullName || 'N/A' }}</p>
+              <p><strong>{{ 'Created Date' | translate }}:</strong> {{ selectedTicket.createdDate | date }}</p>
+              <p><strong>{{ 'Status' | translate }}:</strong> {{ getStatusText(selectedTicket.status) }}</p>
             </div>
           </div>
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="Write a comment..." [(ngModel)]="newComment">
-            <button class="btn btn-primary" (click)="postComment()">Post</button>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="comment-container" style="height: 300px; overflow-y: auto; margin-bottom: 10px; padding: 10px;">
+                <div *ngIf="isLoadingComments" class="text-center">
+                  <mat-spinner></mat-spinner>
+                </div>
+                <div *ngIf="!isLoadingComments">
+                  <div *ngIf="comments.length > 0; else noComments">
+                    <div *ngFor="let comment of comments" class="comment-box d-flex">
+                      <img src="{{ comment.userImage || 'default-avatar.png' }}" alt="User Avatar" class="avatar">
+                      <div class="comment-content-container">
+                        <div class="comment-header d-flex justify-content-between align-items-center">
+                          <div>
+                            <strong>{{ comment.fullName || 'Anonymous' }}</strong>
+                            <div class="text-muted small">{{ comment.createdDate | date:'short' }}</div>
+                          </div>
+                          <div class="user-type text-muted">{{ getUserRole(comment.userType) }}</div>
+                        </div>
+                        <p class="comment-content">{{ comment.content }}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <ng-template #noComments>
+                    <p class="text-muted">No comments yet. Be the first to comment!</p>
+                  </ng-template>
+                </div>
+              </div>
+              <div class="input-group mt-2">
+                <input type="text" class="form-control" placeholder="{{ 'Write a comment...' | translate }}" [(ngModel)]="newComment" (keyup.enter)="postComment()">
+                <button class="btn btn-primary mat-raised-button" (click)="postComment()">{{ 'Post' | translate }}></button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div *ngIf="!selectedTicket" class="card-body">
-        <p>Select a ticket to view details</p>
+        <p>{{ 'Select a ticket to view details' | translate }}</p>
       </div>
     </div>
   </div>

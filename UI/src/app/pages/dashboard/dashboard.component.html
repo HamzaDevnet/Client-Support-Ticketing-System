@@ -10,7 +10,7 @@
           </div>
           <div class="col-7 col-md-8">
             <div class="numbers">
-              <p class="card-category">Support Members</p>
+              <p class="card-category">{{ 'Support Members' | translate }}</p>
               <p class="card-title">{{ supportCount }}</p>
             </div>
           </div>
@@ -18,9 +18,6 @@
       </div>
       <div class="card-footer">
         <hr>
-        <!-- <div class="stats">
-          <i class="fa fa-refresh"></i> Update Now
-        </div> -->
       </div>
     </div>
   </div>
@@ -34,9 +31,9 @@
             </div>
           </div>
           <div class="col-7 col-md-8">
-              <div class="numbers">
-                <p class="card-category">Tickets</p>
-                <p class="card-title">{{ ticketCount }}</p>
+            <div class="numbers">
+              <p class="card-category">{{ 'Tickets' | translate }}</p>
+              <p class="card-title">{{ ticketCount }}</p>
             </div>
           </div>
         </div>
@@ -85,8 +82,8 @@
           </div>
           <div class="col-7 col-md-8">
             <div class="numbers">
-              <p class="card-category">Clients</p>
-                <p class="card-title">{{ clientCount }}</p>
+              <p class="card-category">{{ 'Clients' | translate }}</p>
+              <p class="card-title">{{ clientCount }}</p>
             </div>
           </div>
         </div>
@@ -104,35 +101,29 @@
   <div class="col-md-7">
     <div class="card">
       <div class="card-header">
-        <h5 class="card-title">Users Behavior</h5>
-        <p class="card-category">24 Hours performance</p>
+        <h5 class="card-title">{{ 'Team Member Tickets Count' | translate }}</h5>
       </div>
       <div class="card-body">
-        <canvas id="chartHours" width="400" height="100"></canvas>
-      </div>
-      <div class="card-footer">
-        <hr>
-        <!-- <div class="stats">
-          <i class="fa fa-history"></i> Updated 3 minutes ago
-        </div> -->
+        <canvas id="supportChart"></canvas>
       </div>
     </div>
   </div>
   <div class="col-md-5">
     <div class="card">
       <div class="card-header">
-        <h5 class="card-title">Ticket Status</h5>
-        <p class="card-category">Current Status Distribution</p>
+        <h5 class="card-title">{{ 'Ticket Status' | translate }}</h5>
+        <p class="card-category">{{ 'Current Status Distribution' | translate }}</p>
       </div>
       <div class="card-body">
         <canvas id="chartEmail"></canvas>
       </div>
       <div class="card-footer">
         <div class="legend">
-          <i class="fa fa-circle text-primary"></i> New
-          <i class="fa fa-circle text-warning"></i> Assigned
-          <i class="fa fa-circle text-danger"></i> In Progress
-          <i class="fa fa-circle text-gray"></i> Closed
+          <i class="fa fa-circle text-primary"></i> {{ 'New' | translate }}
+          <i class="fa fa-circle text-warning"></i> {{ 'Assigned' | translate }}
+          <i class="fa fa-circle text-danger"></i> {{ 'In Progress' | translate }}
+          <i class="fa fa-circle text-gray"></i> {{ 'Closed' | translate }}
+          <i class="fa fa-circle" style="color: #A02334;"></i> {{ 'Removed' | translate }}
         </div>
         <hr>
         <!-- <div class="stats">
@@ -140,7 +131,7 @@
         </div> -->
       </div>
     </div>
-  <!-- <div class="col-md-8">
+    <!-- <div class="col-md-8">
     <div class="card card-chart">
       <div class="card-header">
         <h5 class="card-title">NASDAQ: AAPL</h5>
@@ -161,4 +152,46 @@
       </div>
     </div>
   </div> -->
+  </div>
 </div>
+
+<div class="row">
+  <!-- <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">{{ 'Users Behavior' | translate }}</h5>
+        <p class="card-category">{{ '24 Hours performance' | translate }}</p>
+      </div>
+      <div class="card-body">
+        <canvas id="chartHours"></canvas>
+      </div>
+      <div class="card-footer">
+      </div>
+    </div>
+  </div> -->
+
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">{{ 'closed Tickets Count of Support Member' | translate }}</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="teamMemberTicketChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">{{'client Ticket count' | translate }}</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="clientTicketChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+

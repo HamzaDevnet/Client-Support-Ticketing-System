@@ -22,7 +22,11 @@ namespace CSTS.DAL.AutoMapper.DTOs
         public string Address { get; set; } = string.Empty;
 
     }
-
+    public class ResetPasswordDto
+    {
+        public string OldPassword { get; set; }
+        public string NewPassword { get; set; }
+    }
     public class UserResponseDTO
     {
         public Guid UserId { get; set; }

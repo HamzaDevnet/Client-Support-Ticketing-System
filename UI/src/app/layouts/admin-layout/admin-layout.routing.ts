@@ -8,6 +8,8 @@ import { MyopenticketComponent } from 'app/pages/myopenticket/myopenticket.compo
 import { ClientticketsComponent } from 'app/pages/clienttickets/clienttickets.component';
 import { ClientComponent } from 'app/pages/client/client.component';
 import { ClienttickectdetailsComponent } from 'app/pages/clienttickectdetails/clienttickectdetails.component';
+import { UserProfileComponent } from 'app/user-profile/user-profile.component';
+
 
 
 export const AdminLayoutRoutes: Routes = [
@@ -17,7 +19,9 @@ export const AdminLayoutRoutes: Routes = [
     {path:'client',          component:ClientComponent},
     { path: 'openticket',     component: MyopenticketComponent },
     { path: 'myTickets',      component: ClientticketsComponent },
-    {path: 'ticketdetails',  component:ClienttickectdetailsComponent}
+    {path: 'ticketdetails',  component:ClienttickectdetailsComponent},
+    {path: 'userprofile', component: UserProfileComponent},
+      { path: 'ticketdetails',   component: ClienttickectdetailsComponent },
 
 
 ];

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 
 @Component({
@@ -8,5 +9,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AdminLayoutComponent implements OnInit {
 
-  ngOnInit() { }
+  public isArabic: boolean = false;
+
+  constructor(private translateService: TranslateService) {}
+  
+  ngOnInit() {
+    this.isArabic = this.translateService.currentLang === 'ar';
+
+    this.translateService.onLangChange.subscribe(event => {
+      this.isArabic = event.lang === 'ar';
+    });
+  }
+
+  onLanguageChange(language: string) {
+    this.isArabic = language === 'ar';
+    this.translateService.use(language);
+  }
 }

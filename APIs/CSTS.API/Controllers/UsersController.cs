@@ -10,6 +10,8 @@ using CSTS.DAL.Enum;
 using CSTS.API.ApiServices;
 using CSTS.DAL.AutoMapper.DTOs;
 using AutoMapper;
+using BCrypt.Net;
+
 
 namespace CSTS.API.Controllers
 {
@@ -132,7 +134,7 @@ namespace CSTS.API.Controllers
 
         // Activate a user
         [HttpPatch("{id}/activate")]
-        //[CstsAuth(UserType.SupportManager)]
+        [CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<bool>>> Activate(Guid id)
         {
             try
@@ -155,7 +157,7 @@ namespace CSTS.API.Controllers
 
         // Deactivate a user
         [HttpPatch("{id}/deactivate")]
-        //[CstsAuth(UserType.SupportManager)]
+        [CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<bool>>> Deactivate(Guid id)
         {
             try
@@ -178,6 +180,7 @@ namespace CSTS.API.Controllers
 
         // GET: api/users/support-team-members
         [HttpGet("support-team-members")]
+        [CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<IEnumerable<UserResponseDTO>>>> GetSupportTeamMembers()
         {
             try
@@ -193,7 +196,7 @@ namespace CSTS.API.Controllers
 
         // GET Clients
         [HttpGet("clients")]
-        //[CstsAuth(UserType.SupportManager)]
+        [CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<IEnumerable<UserResponseDTO>>>> GetExternalClients([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
             try
@@ -204,6 +207,45 @@ namespace CSTS.API.Controllers
             catch (Exception ex)
             {
                 return Ok(new APIResponse<IEnumerable<UserResponseDTO>>(new List<UserResponseDTO>(), ex.Message));
+            }
+        }
+        [HttpPut("{id}/reset-password")]
+        [CstsAuth(UserType.SupportTeamMember, UserType.ExternalClient)]
+        public async Task<ActionResult<APIResponse<bool>>> ResetPassword([FromRoute] Guid id, [FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            try
+            {
+                var existingUser = _unitOfWork.Users.GetById(id);
+                if (existingUser == null)
+                {
+                    return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
+                }
+
+                bool isPasswordValid;
+
+                if (existingUser.Password.StartsWith("$2a$") || existingUser.Password.StartsWith("$2b$") || existingUser.Password.StartsWith("$2y$"))
+                {
+                    isPasswordValid = BCrypt.Net.BCrypt.Verify(resetPasswordDto.OldPassword, existingUser.Password);
+                }
+                else
+                {
+                    isPasswordValid = existingUser.Password == resetPasswordDto.OldPassword;
+                }
+
+                if (!isPasswordValid)
+                {
+                    return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = "Old password is incorrect." });
+                }
+
+                string hashedNewPassword = BCrypt.Net.BCrypt.HashPassword(resetPasswordDto.NewPassword);
+                existingUser.Password = hashedNewPassword;
+                var response = _unitOfWork.Users.Update(existingUser);
+
+                return Ok(new APIResponse<bool> { Data = response, Code = ResponseCode.Success, Message = "Password reset successfully." });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
             }
         }
     }

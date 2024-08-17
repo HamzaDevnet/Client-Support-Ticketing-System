@@ -9,12 +9,14 @@ import { LandingComponent } from './pages/landing/landing.component';
 import { TicketDetailsComponent } from './pages/ticket-details/ticket-details.component';
 import { ClienttickectdetailsComponent } from './pages/clienttickectdetails/clienttickectdetails.component';
 import { ForgetComponent } from './pages/forget/forget.component'; // Import ForgetComponent
+import { AuthGuard } from './auth.guard';
 
 export const AppRoutes: Routes = [
   {
     path: '',
     redirectTo: 'landing',
     pathMatch: 'full',
+    
   },
   {
     path: 'landing',
@@ -36,18 +38,17 @@ export const AppRoutes: Routes = [
     path: '',
     component: AdminLayoutComponent,
     children: [
-      {
-        path: '',
-        loadChildren: () => import('./layouts/admin-layout/admin-layout.module').then(x => x.AdminLayoutModule)
-      },
-      {
-        path: 'userprofile',
-        component: UserProfileComponent
-      },
-      {
-        path: 'ticketdetails',
-        component: ClienttickectdetailsComponent
-      },
-    ],
+        {
+      path: '',
+      loadChildren: () => import('./layouts/admin-layout/admin-layout.module').then(x => x.AdminLayoutModule)
+
   },
+
+] , canActivate: [AuthGuard]
+},
+{
+  path:"**" ,
+  redirectTo:"/landing"
+}
+     
 ];

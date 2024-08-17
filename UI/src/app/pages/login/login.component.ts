@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { LoginService } from 'app/login.service';
 import { UserLocalStorageService } from 'app/user-local-storage.service';
 import { UserType } from 'app/enums/user.enum';
+import { ToastrService } from 'ngx-toastr';
+
 
 @Component({
   selector: 'app-login',
@@ -19,7 +21,8 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private loginService: LoginService,
-    private userLocalStorage: UserLocalStorageService
+    private userLocalStorage: UserLocalStorageService, 
+    private ToastrService : ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -35,15 +38,21 @@ export class LoginComponent implements OnInit {
       this.loginService.getLogin(this.loginForm.value).subscribe({
         next: (response) => { 
           if(response.code == 200){
-            console.log('API response:', response);
-            const token = response.data.token;
-            this.userLocalStorage.setToken(token);
-            this.navigate(response.data.userType);
-          } else {
-            alert(response.message);
+          console.log('API response:', response);
+          const token = response.data.token;
+             //check for password "if statment"
+          this.userLocalStorage.setToken(token); 
+          this.navigate(response.data.userType);
+         
+            this.ToastrService.success("Login successful");
+            
+          }
+          else {
+            this.ToastrService.error(response.message);
           }
         },
         error: (error) => {
+          this.ToastrService.error(error.message);
           console.error('Error logging in', error);
         }
       });
