@@ -27,7 +27,7 @@ export interface Comment {
   content: string;
   createdDate: Date;
   userName: string | null;
-  userType: string | null; // Add this field if it's not already present
+  userType: string | null;
   userId: string;
   ticketId: string;
 }
@@ -92,6 +92,11 @@ export class TicketService {
     const headers = this.sheardService.Header_Get();
     return this.http.get<WebResponse<User[]>>(`${this.usersUrl}/external-clients`, { headers })
       .pipe(map(response => response.data));
+  }
+
+  getTicketsCountByState(): Observable<Ticket[]> {
+    const headers = this.sheardService.getToken();
+    return this.http.get<Ticket[]>(`${environment.BaseURL}/Dashboard/TicketsCountByState`, { headers })
   }
 
   updateTicketStatus(ticketId: string, status: TicketStatus): Observable<void> {

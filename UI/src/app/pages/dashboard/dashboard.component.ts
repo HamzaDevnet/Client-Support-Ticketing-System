@@ -1,10 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { Ticket } from 'app/ticket';
-import { TicketService } from 'app/ticket.service';
+import { TicketService, User } from 'app/ticket.service';
 import { UsersService } from 'app/users.service';
 import { SheardServiceService } from 'app/sheard-service.service';
 import { Chart } from 'chart.js';
 import { TranslateService } from '@ngx-translate/core';
+import { Users } from 'app/users';
+
+interface SupportMember {
+  name: string;
+  ticketCount: number;
+}
+
 
 @Component({
   selector: 'dashboard-cmp',
@@ -12,6 +19,10 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: 'dashboard.component.html'
 })
 export class DashboardComponent implements OnInit {
+  supportMembers: any[] = []; 
+  clientTicketsCount: any[] = []; 
+  teamMemberClosedTickets: any[] = [];
+  supportAssingedCount: number = 0;
   public canvas: any;
   public ctx: any;
   public chartColor: string;
@@ -34,10 +45,13 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.getTickets();
-    this.createLineChart();
     this.getSupportMembersNum();
     this.getTicketCount();
     this.getClientsNum();
+    this.getSuuortMemberCount();
+    this.getClientTicketsCount();
+    this.getTeamMemberClosedTicketsCount();
+    
 
   }
 
@@ -73,7 +87,7 @@ export class DashboardComponent implements OnInit {
   }
 
   getTicketCount(): void {
-    this.ticketService.getTickets(this.userId!).subscribe({
+    this.ticketService.getTickets().subscribe({
       next: (tickets) => {
         if (Array.isArray(tickets)) {
           this.ticketCount = tickets.length;
@@ -86,6 +100,72 @@ export class DashboardComponent implements OnInit {
       }
     });
   }
+
+  getClientTicketsCount(): void {
+    this.usersService.getClientTicketsCount().subscribe({
+      next: (clientTickets) => {
+        this.clientTicketsCount = clientTickets;
+        this.createDoughnutChart();
+      },
+      error: (error) => {
+        console.error('Error fetching client ticket counts', error);
+      }
+    });
+  }
+
+  createDoughnutChart() {
+    const ctx = document.getElementById('clientTicketChart') as HTMLCanvasElement; // Get the canvas element
+    const clientsWithTickets = this.clientTicketsCount.filter(client => client.ticketsCount > 0);
+
+    const names = clientsWithTickets.map(client => client.clientName);
+    const counts = clientsWithTickets.map(client => client.ticketsCount);
+
+    const colors = [
+      'rgba(255, 99, 132, 0.2)',
+      'rgba(54, 162, 235, 0.2)',
+      'rgba(255, 206, 86, 0.2)',
+      'rgba(75, 192, 192, 0.2)',
+      'rgba(153, 102, 255, 0.2)',
+      'rgba(255, 159, 64, 0.2)',
+      'rgba(255, 20, 147, 0.2)', 
+      'rgba(100, 149, 237, 0.2)',
+      'rgba(150, 100, 200, 0.2)',
+      'rgba(200, 150, 100, 0.2)',
+      'rgba(100, 200, 150, 0.2)',
+      'rgba(150, 200, 100, 0.2)',
+      'rgba(200, 100, 150, 0.2)',
+      'rgba(100, 100, 200, 0.2)',
+      'rgba(150, 150, 150, 0.2)',
+      'rgba(200, 200, 200, 0.2)'
+    ];
+
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: names,
+        datasets: [{
+          label: 'Ticket Count',
+          data: counts,
+          backgroundColor: colors.slice(0, names.length), 
+          borderColor: colors.slice(0, names.length).map(color => color.replace('0.2', '1')), 
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true, 
+        plugins: {
+          legend: {
+            position: 'top', 
+          },
+          title: {
+            display: true,
+            text: 'Client Ticket Count' 
+          }
+        }
+      }
+    });
+  }
+
 
   createLineChart() {
     const canvas = document.getElementById("chartHours") as HTMLCanvasElement;
@@ -157,11 +237,95 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  getTickets(): void {
-    this.ticketService.getTickets().subscribe({
-      next: (tickets) => {
-        const statusCounts = this.countStatuses(tickets);
+  getTeamMemberClosedTicketsCount(): void {
+    this.usersService.getTeamMemberClosedTicketsCount().subscribe({
+      next: (teamMemberTickets) => {
+        this.teamMemberClosedTickets = teamMemberTickets;
+        this.createPointStylingChart();
+      },
+      error: (error) => {
+        console.error('Error fetching team member closed ticket counts', error);
+      }
+    });
+  }
 
+  createPointStylingChart() {
+    const ctx = document.getElementById('teamMemberTicketChart') as HTMLCanvasElement; // Get the canvas element
+
+    // Filter team members with closed tickets
+    const teamMembersWithTickets = this.teamMemberClosedTickets.filter(member => member.ticketsClosedCount > 0);
+
+    const names = teamMembersWithTickets.map(member => member.teamMemberName);
+    const counts = teamMembersWithTickets.map(member => member.ticketsClosedCount);
+
+    new Chart(ctx, {
+      type: 'bar', 
+      data: {
+        labels: names,
+        datasets: [{
+          label: 'Closed Ticket Count',
+          data: counts,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)',
+            'rgba(255, 20, 147, 0.2)', 
+            'rgba(100, 149, 237, 0.2)',
+            'rgba(150, 100, 200, 0.2)',
+            'rgba(200, 150, 100, 0.2)',
+            'rgba(100, 200, 150, 0.2)',
+            'rgba(150, 200, 100, 0.2)',
+            'rgba(200, 100, 150, 0.2)',
+            'rgba(100, 100, 200, 0.2)',
+            'rgba(150, 150, 150, 0.2)',
+            'rgba(200, 200, 200, 0.2)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)',
+            'rgba(255, 20, 147, 1)', 
+            'rgba(100, 149, 237, 1)',
+            'rgba(150, 100, 200, 1)',
+            'rgba(200, 150, 100, 1)',
+            'rgba(100, 200, 150, 1)',
+            'rgba(150, 200, 100, 1)',
+            'rgba(200, 100, 150, 1)',
+            'rgba(100, 100, 200, 1)',
+            'rgba(150, 150, 150, 1)',
+            'rgba(200, 200, 200, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true, 
+        plugins: {
+          legend: {
+            position: 'top', 
+          },
+          title: {
+            display: true,
+            text: 'Team Member Closed Ticket Count' 
+          }
+        }
+      }
+    });
+  }
+
+
+
+  getTickets(): void {
+    this.ticketService.getTicketsCountByState().subscribe({
+      next: (tickets:any) => {
+        console.log(tickets);
+        const statusCounts = this.countStatuses(tickets);
         this.createPieChart(statusCounts);
       },
       error: (error) => {
@@ -169,36 +333,41 @@ export class DashboardComponent implements OnInit {
       }
     });
   }
-
-  countStatuses(tickets: Ticket[]): { new: number, assigned: number, inProgress: number, closed: number } {
+  
+  countStatuses(tickets: { state: string, count: number }[]): { new: number, assigned: number, inProgress: number, closed: number, removed: number } {
     const statusCounts = {
       new: 0,
       assigned: 0,
       inProgress: 0,
-      closed: 0
+      closed: 0,
+      removed: 0
     };
-
+  
     tickets.forEach(ticket => {
-      switch (ticket.status) {
-        case 0:
-          statusCounts.new++;
+      switch (ticket.state) {
+        case 'New':
+          statusCounts.new = ticket.count;
           break;
-        case 1:
-          statusCounts.assigned++;
+        case 'Assigned':
+          statusCounts.assigned = ticket.count;
           break;
-        case 2:
-          statusCounts.inProgress++;
+        case 'In Progress':
+          statusCounts.inProgress = ticket.count;
           break;
-        case 3:
-          statusCounts.closed++;
+        case 'Closed':
+          statusCounts.closed = ticket.count;
+          break;
+        case 'Removed':
+          statusCounts.removed = ticket.count;
           break;
       }
     });
-
+  
+    console.log(statusCounts);
     return statusCounts;
   }
-
-  createPieChart(statusCounts: { new: number, assigned: number, inProgress: number, closed: number }): void {
+  
+  createPieChart(statusCounts: { new: number, assigned: number, inProgress: number, closed: number , removed:number}): void {
     const canvas = document.getElementById('chartEmail') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d');
   
@@ -206,18 +375,20 @@ export class DashboardComponent implements OnInit {
       console.error('Could not get canvas context for pie chart');
       return;
     }
-  
+    
     this.chart = new Chart(ctx, {
       type: 'pie',
       data: {
-        labels: ['New', 'Assigned', 'In Progress', 'Closed'],
+        labels: ['New', 'Assigned', 'In Progress', 'Closed' , 'Removed'],
         datasets: [{
-          backgroundColor: ['#4acccd', '#fcc468', '#ef8157', '#e3e3e3'],
+          backgroundColor: ['#4acccd', '#fcc468', '#ef8157', '#e3e3e3' , '#A02334'],
           data: [
             statusCounts.new,
             statusCounts.assigned,
             statusCounts.inProgress,
-            statusCounts.closed
+            statusCounts.closed,
+            statusCounts.removed
+            
           ]
         }]
       },
@@ -230,5 +401,47 @@ export class DashboardComponent implements OnInit {
         }
       }
     });
+    }
+    
+
+    getSuuortMemberCount(): void {
+      this.usersService.getTeamMemberTicketsCount().subscribe({
+        next: (supportMembers) => {
+          this.supportMembers = supportMembers;
+          this.supportCount = supportMembers.length;
+          this.createBarChart();
+        },
+        error: (error) => {
+          console.error('Error fetching support members', error);
+        }
+      });
+    }
+  
+    createBarChart() {
+      const ctx = document.getElementById('supportChart') as HTMLCanvasElement; 
+      const names = this.supportMembers.map(member => member.teamMemberName); 
+      const counts = this.supportMembers.map(member => member.ticketsAssignedCount);
+  
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: names,
+          datasets: [{
+            label: 'Ticket Count',
+            data: counts,
+            backgroundColor: 'rgb(127, 161, 195)',
+            borderColor: 'rgb(100, 130, 173)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
   }
-}
+  

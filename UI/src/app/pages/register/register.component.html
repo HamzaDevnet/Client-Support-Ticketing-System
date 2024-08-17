@@ -6,19 +6,19 @@
     <div class="col-md-6 d-flex align-items-center">
       <div class="card-body w-100">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="card-title text-center flex-grow-1">Register</h5>
+          <h5 class="card-title text-center flex-grow-1">{{ 'register' | translate }}</h5>
         </div>
         <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
           <div class="row">
             <div class="col-6">
               <div class="form-group">
-                <label class="control-label required">First Name</label>
+                <label class="control-label required">{{ 'firstName' | translate }}</label>
                 <input type="text" class="form-control" formControlName="firstName">
               </div>
             </div>
             <div class="col-6">
               <div class="form-group">
-                <label class="control-label required">Last Name</label>
+                <label class="control-label required">{{ 'lastName' | translate }}</label>
                 <input type="text" class="form-control" formControlName="lastName">
               </div>
             </div>
@@ -26,7 +26,7 @@
           <div class="row">
             <div class="col-12">
               <div class="form-group">
-                <label class="control-label required">Username</label>
+                <label class="control-label required">{{ 'username' | translate }}</label>
                 <input type="text" class="form-control" formControlName="username">
               </div>
             </div>
@@ -34,7 +34,7 @@
           <div class="row">
             <div class="col-12">
               <div class="form-group">
-                <label class="control-label required">Phone Number</label>
+                <label class="control-label required">{{ 'phoneNumber' | translate }}</label>
                 <input type="tel" class="form-control" formControlName="MobileNumber">
               </div>
             </div>
@@ -42,30 +42,30 @@
           <div class="row">
             <div class="col-12">
               <div class="form-group">
-                <label class="control-label required">Email</label>
+                <label class="control-label required">{{ 'email' | translate }}</label>
                 <input type="email" class="form-control" formControlName="email" placeholder="example@mail.com">
               </div>
               <div class="form-group">
-                <label class="control-label required">Password</label>
+                <label class="control-label required">{{ 'password' | translate }}</label>
                 <input type="password" class="form-control" formControlName="password">
               </div>
               <div class="form-group">
-                <label class="control-label">Date of Birth</label>
+                <label class="control-label">{{ 'dateOfBirth' | translate }}</label>
                 <input type="date" class="form-control" formControlName="DateOfBirth">
               </div>
               <div class="form-group">
-                <label class="control-label">Address</label>
+                <label class="control-label">{{ 'address' | translate }}</label>
                 <input type="text" class="form-control" formControlName="address">
               </div>
-              <label>Upload Image</label>
+              <label>{{ 'uploadImage' | translate }}</label>
               <input type="file" (change)="upload($event)" class="form-control" accept=".jpg ,.png">
             </div>
           </div>
           <div class="row">
             <div class="col">
               <div class="d-flex justify-content-start mt-3">
-                <button type="submit" class="btn btn-success rounded-5 me-2">Register</button>
-                <button routerLinke="/landing" class="btn btn-dark rounded-5">Cancel</button>
+                <button type="submit" class="btn btn-success rounded-5 me-2">{{ 'registerButton' | translate }}</button>
+                <button routerLink="/landing" class="btn btn-dark rounded-5">{{ 'cancelButton' | translate }}</button>
               </div>
             </div>
           </div>

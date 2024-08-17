@@ -1,31 +1,31 @@
-<h1 mat-dialog-title>Edit</h1>
+<h1 mat-dialog-title>{{ 'Edit' | translate }}</h1>
 <div mat-dialog-content>
   <form [formGroup]="editForm">
     <div class="row">
       <div class="col-md-5 pr-1">
         <div class="form-group">
-          <label>firstname</label>
-          <input type="text" class="form-control" placeholder="firstName" formControlName="firstName">
+          <label>{{ 'firstName' | translate }}</label>
+          <input type="text" class="form-control" placeholder="{{ 'firstName' | translate }}" formControlName="firstName">
         </div>
       </div>
 
       <div class="col-md-5">
         <div class="form-group">
-          <label>lastname</label>
-          <input type="text" class="form-control" placeholder="lastname" formControlName="lastName">
+          <label>{{ 'lastName' | translate }}</label>
+          <input type="text" class="form-control" placeholder="{{ 'lastName' | translate }}" formControlName="lastName">
         </div>
       </div>
     </div>
     <div class="row">
       <div class="col-md-6 px-1">
         <div class="form-group">
-          <label>Mobile phone</label>
-          <input type="text" class="form-control" placeholder="MobilePhone" formControlName="mobileNumber">
+          <label>{{ 'Mobile phone' | translate }}</label>
+          <input type="text" class="form-control" placeholder="{{ 'MobilePhone' | translate }}" formControlName="mobileNumber">
         </div>
       </div>
       <div class="col-md-6 pl-1">
         <div class="form-group">
-          <label>Date of birth</label>
+          <label>{{ 'Date of birth' | translate }}</label>
           <input type="date" class="form-control" formControlName="dateOfBirth">
         </div>
       </div>
@@ -39,7 +39,7 @@
     <div class="row">
       <div class="col-md-12 pl-1">
         <div class="form-group">
-          <label>Email</label>
+          <label>{{ 'Email' | translate }}</label>
           <input type="email" class="form-control" placeholder="example@gexample.com" formControlName="email">
         </div>
       </div>
@@ -55,8 +55,8 @@
     <div class="row">
       <div class="col-md-12 px-1">
         <div class="form-group">
-          <label>Adress</label>
-          <input type="text" class="form-control" placeholder="address" formControlName="address">
+          <label>{{ 'Adress' | translate }}</label>
+          <input type="text" class="form-control" placeholder="{{ 'address' | translate }}" formControlName="address">
         </div>
       </div>
     </div>
@@ -64,6 +64,7 @@
   </form>
 
   <div mat-dialog-actions>
-    <button mat-button class="bg-secondary justify-content-end" (click)="onCancel()">Cancel</button>
-    <button mat-button class="bg-info justify-content-end" (click)="onSave()" cdkFocusInitial>Save</button>
+    <button mat-button class="bg-secondary justify-content-end" (click)="onCancel()">{{ 'Cancel' | translate }}</button>
+    <button mat-button class="bg-info justify-content-end" (click)="onSave()" cdkFocusInitial>{{ 'Save' | translate }}</button>
   </div>
+</div>

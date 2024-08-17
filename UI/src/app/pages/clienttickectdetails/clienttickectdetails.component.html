@@ -1,20 +1,20 @@
-<h2 mat-dialog-title>Ticket Details</h2>
+<h2 mat-dialog-title>{{ 'Ticket Details' | translate }}</h2>
 <div class="card h-100 w-100">
   <div class="card-body">
     <h5 class="card-title">{{ ticket.product }}</h5>
     <p class="card-text">{{ ticket.problemDescription }}</p>
     <ul class="list-group list-group-flush">
       <li class="list-group-item">
-        <strong>ID:</strong> {{ ticket.ticketId }}
+        <strong>{{ 'ID' | translate }}:</strong> {{ ticket.ticketId }}
       </li>
       <li class="list-group-item">
-        <strong>Status:</strong> {{ getStatusText(ticket.status) }}
+        <strong>{{ 'Status' | translate }}:</strong> {{ getStatusText(ticket.status) }}
       </li>
       <li class="list-group-item">
-        <strong>Created Date:</strong> {{ ticket.createdDate | date }}
+        <strong>{{ 'Created Date' | translate }}:</strong> {{ ticket.createdDate | date }}
       </li>
       <li class="list-group-item">
-        <strong>Assigned To:</strong> {{ ticket.assignedToUserName || 'N/A' }}
+        <strong>{{ 'Assigned To' | translate }}:</strong> {{ ticket.assignedToUserName || 'N/A' }}
       </li>
     </ul>
   </div>
@@ -40,8 +40,8 @@
       </div>
     </div>
     <div class="chat-input">
-      <textarea class="form-control" rows="3" placeholder="Add a comment..." [(ngModel)]="newMessage"></textarea>
-      <button class="btn btn-primary mt-2" (click)="sendMessage()">Send</button>
+      <textarea class="form-control" rows="3" placeholder="{{ 'Add a comment...' | translate }}" [(ngModel)]="newMessage"></textarea>
+      <button class="btn btn-primary mt-2" (click)="sendMessage()">{{ 'Send' | translate }}</button>
     </div>
   </div>
 </div>

@@ -23,23 +23,7 @@ export class UserProfileComponent implements OnInit {
   }
 
 
-  getUserData(userId: string):void{
-    // this.userProfile = {
-    //   firstName: "Alanoud",
-    //   lastName: "Abdullah",
-    //   fullName: "Alanoud Abdullah",
-    //   mobileNumber: "1234567890",
-    //   email: "john.doe@example.com",
-    //   userStatus: 1,
-    //   dateOfBirth: new Date("1990-01-01T00:00:00"),
-    //   strDateOfBirth: "Monday, January 1, 1990",
-    //   address: "123 Main St, Anytown, USA",
-    //   password : "",
-    //   userId : "" , 
-    //   userImage : null ,
-    //   userName : " "
-      
-    // } 
+  getUserData(userId: string):void{ 
     this.UsersService.getUserInfo(userId).subscribe({
       next: (response)=>{
        console.log(response);

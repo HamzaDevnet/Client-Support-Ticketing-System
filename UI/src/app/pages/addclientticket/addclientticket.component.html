@@ -1,18 +1,18 @@
-<h1 mat-dialog-title>Add Ticket</h1>
+<h1 mat-dialog-title>{{ 'Add Ticket' | translate }}</h1>
 <div mat-dialog-content>
   <mat-form-field appearance="fill">
-    <mat-label>Product</mat-label>
+    <mat-label>{{ 'Product' | translate }}</mat-label>
     <input matInput [(ngModel)]="ticketData.product">
   </mat-form-field>
 
   <mat-form-field appearance="fill">
-    <mat-label>Description</mat-label>
+    <mat-label>{{ 'Description' | translate }}</mat-label>
     <textarea matInput [(ngModel)]="ticketData.problemDescription"></textarea>
   </mat-form-field>
 
   <input type="file" (change)="onFileSelected($event)" />
 </div>
 <div mat-dialog-actions>
-  <button mat-button (click)="onCancel()">Cancel</button>
-  <button mat-button (click)="onSubmit()">Submit</button>
+  <button mat-button (click)="onCancel()">{{ 'Cancel' | translate }}</button>
+  <button mat-button (click)="onSubmit()">{{ 'Submit' | translate }}</button>
 </div>

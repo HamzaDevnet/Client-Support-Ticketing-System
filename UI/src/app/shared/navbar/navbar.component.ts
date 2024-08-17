@@ -7,6 +7,7 @@ import { UserLocalStorageService } from 'app/user-local-storage.service';
 import { Users } from 'app/users';
 import { SheardServiceService } from 'app/sheard-service.service';
 import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
     moduleId: module.id,
@@ -21,7 +22,8 @@ export class NavbarComponent implements OnInit{
     private nativeElement: Node;
     private toggleButton;
     private sidebarVisible: boolean;
-    selectedLang: string = 'en';
+    languages = ['en', 'ar']; 
+    currentLanguage: string = 'en'; // default language
 ;
 
     public isCollapsed = true;
@@ -34,48 +36,36 @@ export class NavbarComponent implements OnInit{
        private UsersService : UsersService , 
        private SheardServiceService : SheardServiceService ,
        private translate: TranslateService, 
+  
       
       ) {
         this.location = location;
         this.nativeElement = element.nativeElement;
         this.sidebarVisible = false;
+        this.translate.setDefaultLang('en'); 
     }
 
     ngOnInit(){
-        this.listTitles = ROUTES.filter(listTitle => listTitle);
+      const browserLang = this.translate.getBrowserLang();
+      if (browserLang && this.languages.includes(browserLang)) {
+        this.currentLanguage = browserLang;
+      }
+      this.translate.use(this.currentLanguage); // Set the initial language
+      this.listTitles = ROUTES.filter(listTitle => listTitle);
         var navbar : HTMLElement = this.element.nativeElement;
         this.toggleButton = navbar.getElementsByClassName('navbar-toggle')[0];
         const userId = this.SheardServiceService.getUserId();
-        this.translate.setDefaultLang('en');
-        this.translate.use(this.selectedLang);
         this.getUserData(userId);
         this.router.events.subscribe((event) => {
           this.sidebarClose();
        });
     }
 
-    onLanguageChange() {
-      this.translate.use(this.selectedLang);
-    }
-  
-    
+  onLanguageChange(language: string) {
+    this.currentLanguage = language;
+    this.translate.use(language); 
+  }
     getUserData(userId: string):void{
-      // this.userProfile = {
-      //   firstName: "Alanoud",
-      //   lastName: "Abdullah",
-      //   fullName: "Alanoud Abdullah",
-      //   mobileNumber: "1234567890",
-      //   email: "john.doe@example.com",
-      //   userStatus: 1,
-      //   dateOfBirth: new Date("1990-01-01T00:00:00"),
-      //   strDateOfBirth: "Monday, January 1, 1990",
-      //   address: "123 Main St, Anytown, USA",
-      //   password : "",
-      //   userId : "" , 
-      //   userImage : null ,
-      //   userName : " "
-        
-      // } 
       this.UsersService.getUserInfo(userId).subscribe({
         next: (response)=>{
          console.log(response);
@@ -86,19 +76,21 @@ export class NavbarComponent implements OnInit{
         }
       })
     }
-
-    getTitle(){
+    getTitle() {
       var titlee = this.location.prepareExternalUrl(this.location.path());
-      if(titlee.charAt(0) === '#'){
-          titlee = titlee.slice( 1 );
+      if (titlee.charAt(0) === '#') {
+        titlee = titlee.slice(1);
       }
-      for(var item = 0; item < this.listTitles.length; item++){
-          if(this.listTitles[item].path === titlee){
-              return this.listTitles[item].title;
-          }
+  
+      for (var item = 0; item < this.listTitles.length; item++) {
+        if (this.listTitles[item].path === titlee) {
+          return this.translate.instant(this.listTitles[item].title);
+        }
       }
-      return 'Dashboard';
+  
+      return this.translate.instant('My Profile'); 
     }
+
     sidebarToggle() {
         if (this.sidebarVisible === false) {
             this.sidebarOpen();

@@ -3,7 +3,7 @@
     <div class="col-md-3">
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="card-title">Open Tickets</h5>
+          <h5 class="card-title">{{ 'Open Tickets' | translate }}</h5>
         </div>
         <div class="card-body">
           <div class="list-group">
@@ -19,31 +19,32 @@
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="card-title">{{ selectedTicket.product }}</h5>
           <div>
-            <button mat-button [matMenuTriggerFor]="menu">{{ getStatusText(selectedTicket?.status) || 'Status' }}</button>
+            <button mat-button [matMenuTriggerFor]="menu">{{ getStatusText(selectedTicket?.status) || 'Status' | translate }}</button>
             <mat-menu #menu="matMenu">
               <button mat-menu-item *ngFor="let status of statuses" (click)="updateStatus(status)">
-                {{ getStatusText(status) }}
+                {{ getStatusText(status) | translate }}
               </button>
             </mat-menu>
           </div>
         </div>
         <div class="card-body">
-          <p><strong>Description:</strong> {{ selectedTicket.problemDescription }}</p>
-          <p><strong>Assigned To:</strong> {{ selectedTicket.assignedToFullName || 'N/A' }}</p>
-          <p><strong>Created Date:</strong> {{ selectedTicket.createdDate | date }}</p>
+          <p><strong>{{ 'Description' | translate }}:</strong> {{ selectedTicket.problemDescription }}</p>
+          <p><strong>{{ 'Assigned To' | translate }}:</strong> {{ selectedTicket.assignedToFullName || 'N/A' }}</p>
+          <p><strong>{{ 'Created Date' | translate }}:</strong> {{ selectedTicket.createdDate | date }}</p>
+          <p><strong>{{ 'Status' | translate }}:</strong> {{ selectedTicket.status }}</p>
           <div class="comment-container" style="height: 300px; overflow-y: auto; border: 1px solid #ccc; margin-bottom: 10px;">
             <div *ngFor="let comment of comments">
               <strong>{{ getUserDisplayName(comment) }}:</strong> {{ comment.content }}
             </div>
           </div>
           <div class="input-group">
-            <input type="text" class="form-control" placeholder="Write a comment..." [(ngModel)]="newComment">
-            <button class="btn btn-primary" (click)="postComment()">Post</button>
+            <input type="text" class="form-control" placeholder="{{ 'Write a comment...' | translate }}" [(ngModel)]="newComment">
+            <button class="btn btn-primary" (click)="postComment()">{{ 'Post' | translate }}</button>
           </div>
         </div>
       </div>
       <div *ngIf="!selectedTicket" class="card-body">
-        <p>Select a ticket to view details</p>
+        <p>{{ 'Select a ticket to view details' | translate }}</p>
       </div>
     </div>
   </div>
