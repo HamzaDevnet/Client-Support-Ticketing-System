@@ -35,17 +35,10 @@
         <div class="card-body">
           <div class="row">
             <div class="col-md-12">
-              <p><strong>Description:</strong> {{ selectedTicket.problemDescription }}</p>
-              <p><strong>Assigned To:</strong> {{ selectedTicket.assignedToFullName || 'N/A' }}</p>
-              <p><strong>Created Date:</strong> {{ selectedTicket.createdDate | date }}</p>
-              <p><strong>Status:</strong> {{ getStatusText(selectedTicket.status) }}</p>
-          <p><strong>{{ 'Description' | translate }}:</strong> {{ selectedTicket.problemDescription }}</p>
-          <p><strong>{{ 'Assigned To' | translate }}:</strong> {{ selectedTicket.assignedToFullName || 'N/A' }}</p>
-          <p><strong>{{ 'Created Date' | translate }}:</strong> {{ selectedTicket.createdDate | date }}</p>
-          <p><strong>{{ 'Status' | translate }}:</strong> {{ selectedTicket.status }}</p>
-          <div class="comment-container" style="height: 300px; overflow-y: auto; border: 1px solid #ccc; margin-bottom: 10px;">
-            <div *ngFor="let comment of comments">
-              <strong>{{ getUserDisplayName(comment) }}:</strong> {{ comment.content }}
+              <p><strong>{{ 'Description' | translate }}:</strong> {{ selectedTicket.problemDescription }}</p>
+              <p><strong>{{ 'Assigned To' | translate }}:</strong> {{ selectedTicket.assignedToFullName || 'N/A' }}</p>
+              <p><strong>{{ 'Created Date' | translate }}:</strong> {{ selectedTicket.createdDate | date }}</p>
+              <p><strong>{{ 'Status' | translate }}:</strong> {{ getStatusText(selectedTicket.status) }}</p>
             </div>
           </div>
           <div class="row">
@@ -76,13 +69,10 @@
                 </div>
               </div>
               <div class="input-group mt-2">
-                <input type="text" class="form-control" placeholder="Write a comment..." [(ngModel)]="newComment" (keyup.enter)="postComment()">
-                <button class="btn btn-primary mat-raised-button" (click)="postComment()">POST</button>
+                <input type="text" class="form-control" placeholder="{{ 'Write a comment...' | translate }}" [(ngModel)]="newComment" (keyup.enter)="postComment()">
+                <button class="btn btn-primary mat-raised-button" (click)="postComment()">{{ 'Post' | translate }}></button>
               </div>
             </div>
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="{{ 'Write a comment...' | translate }}" [(ngModel)]="newComment">
-            <button class="btn btn-primary" (click)="postComment()">{{ 'Post' | translate }}</button>
           </div>
         </div>
       </div>
