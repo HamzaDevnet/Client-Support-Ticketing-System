@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSTS.DAL.Enum;
+using System;
 
 namespace CSTS.DAL.AutoMapper.DTOs
 {
@@ -16,7 +17,8 @@ namespace CSTS.DAL.AutoMapper.DTOs
         public Guid CommentId { get; set; }
         public string Content { get; set; }
         public DateTime CreatedDate { get; set; }
-        public string UserName { get; set; }
+        public string FullName { get; set; }
+        public UserType userType { get; set; }
         public Guid TicketId { get; set; }
     }
 }

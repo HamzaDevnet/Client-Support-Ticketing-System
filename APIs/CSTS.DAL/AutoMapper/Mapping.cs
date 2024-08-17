@@ -7,7 +7,10 @@ public class Mapping : Profile
     public Mapping()
     {
         // تحويل بين الكائنات الفعلية و DTOs الخاصة بالتعليقات
-        CreateMap<Comment, CommentResponseDTO>();
+        CreateMap<Comment, CommentResponseDTO>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.User.FullName))
+                .ForMember(dest => dest.UserImage, opt => opt.MapFrom(src => src.User.Image))
+                .ForMember(dest => dest.userType, opt => opt.MapFrom(src => src.User.UserType));
         CreateMap<CreateCommentDTO, Comment>();
 
         // تحويل بين الكائنات الفعلية و DTOs الخاصة بالتذاكر

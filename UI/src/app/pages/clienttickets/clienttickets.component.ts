@@ -5,6 +5,7 @@ import { Ticket } from 'app/ticket';
 import { MatDialog } from '@angular/material/dialog';
 import { AddclientticketComponent } from '../addclientticket/addclientticket.component';
 import { SheardServiceService } from 'app/sheard-service.service';
+import { UserType } from 'app/enums/user.enum';  // Import the UserType enum
 
 @Component({
   selector: 'app-clienttickets',
@@ -18,28 +19,32 @@ export class ClientticketsComponent implements OnInit {
   selectedTicket: Ticket | undefined;
   comments: Comment[] = [];
   newComment: string = '';
-  userId: string;
+  userId: string | undefined;
+  isLoadingTickets = false;
+  isLoadingComments = false;
 
   constructor(public dialog: MatDialog, private ticketService: TicketService, private sheardService: SheardServiceService) {}
 
   ngOnInit(): void {
     this.userId = this.sheardService.getUserId();
     if (!this.userId) {
-      console.error('User ID not found in token, using default user ID');
-      this.userId = 'eaf994d3-0c78-4288-b45a-5b3b3de88421'; // Default user ID
+      console.error('User ID not found in token');
+      return; // Stop execution if the userId is not found
     }
     this.getTickets(this.userId);
   }
 
   getTickets(userId: string): void {
+    this.isLoadingTickets = true;
     this.ticketService.getTickets(userId).subscribe({
       next: (tickets) => {
-        console.log('Tickets received:', tickets); // Add this line for debugging
         this.tickets = tickets;
         this.dataSource.data = tickets;
+        this.isLoadingTickets = false;
       },
       error: (error) => {
         console.error('Error listing tickets', error);
+        this.isLoadingTickets = false;
       }
     });
   }
@@ -74,12 +79,15 @@ export class ClientticketsComponent implements OnInit {
   }
 
   loadComments(ticketId: string): void {
+    this.isLoadingComments = true;
     this.ticketService.getComments(ticketId).subscribe({
       next: (comments) => {
-        this.comments = comments;
+        this.comments = comments.sort((a, b) => new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime());
+        this.isLoadingComments = false;
       },
       error: (error) => {
         console.error('Error loading comments', error);
+        this.isLoadingComments = false;
       },
     });
   }
@@ -89,13 +97,17 @@ export class ClientticketsComponent implements OnInit {
       const newComment: CreateCommentDTO = {
         ticketId: this.selectedTicket.ticketId,
         content: this.newComment,
-        userId: this.userId, // Use userId from the component, which defaults to the provided ID if not found in the token
+        userId: this.userId!, // Using non-null assertion since userId should exist
       };
 
       this.ticketService.addComment(newComment).subscribe({
         next: (comment) => {
           this.comments.push(comment);
           this.newComment = '';
+          setTimeout(() => {
+            const commentInput = document.querySelector<HTMLInputElement>('.input-group input');
+            commentInput?.focus();
+          }, 0);
         },
         error: (error) => {
           console.error('Error posting comment', error);
@@ -107,21 +119,34 @@ export class ClientticketsComponent implements OnInit {
   }
 
   getUserDisplayName(comment: Comment): string {
-    const userName = comment.userName ? comment.userName : 'Anonymous';
-    const role = this.getUserRole(comment.userType);
-    return `${userName} (${role})`;
+    const fullName = comment.fullName ? comment.fullName : 'Anonymous';
+    const role = this.getUserRole(comment.userType); 
+    return `${fullName} (${role})`;
   }
 
-  getUserRole(userType: string | null): string {
+  getUserRole(userType: UserType): string {
     switch (userType) {
-      case '0':
+      case UserType.Client:
         return 'Client';
-      case '1':
+      case UserType.Support:
         return 'Support Team Member';
-      case '2':
+      case UserType.Manager:
         return 'Manager';
       default:
         return 'User';
+    }
+  }
+
+  getStatusText(status: number): string {
+    switch (status) {
+      case 0:
+        return 'Open';
+      case 1:
+        return 'In Progress';
+      case 2:
+        return 'Closed';
+      default:
+        return 'New';
     }
   }
 }
