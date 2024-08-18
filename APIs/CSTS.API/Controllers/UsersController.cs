@@ -238,8 +238,9 @@ namespace CSTS.API.Controllers
             try
             {
                 _logger.LogInformation("Attempting to reset password");
-                var existingUser = _unitOfWork.Users.GetById(id);
-                if (existingUser == null)
+                Guid id = this.GetCurrentUserId();
+                var user = _unitOfWork.Users.GetById(id);
+                if (user == null)
                 {
                     _logger.LogWarning("User not found");
                     return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
