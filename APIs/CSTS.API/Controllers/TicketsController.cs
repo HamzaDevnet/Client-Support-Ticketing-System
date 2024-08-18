@@ -21,12 +21,14 @@ namespace CSTS.API.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<Ticket> _validator;
         private readonly FileService _fileService;
+        private readonly ILogger<TicketsController> _logger;
 
-        public TicketsController(IUnitOfWork unitOfWork, IValidator<Ticket> validator, FileService fileService)
+        public TicketsController(IUnitOfWork unitOfWork, IValidator<Ticket> validator, FileService fileService, ILogger<TicketsController> logger)
         {
             _unitOfWork = unitOfWork;
             _validator = validator;
             _fileService = fileService;
+            _logger = logger;
         }
 
         [HttpGet("")]
@@ -35,23 +37,27 @@ namespace CSTS.API.Controllers
         {
             try
             {
+                var userType = this.GetCurrentUserType();
 
-                switch (this.GetCurrentUserType())
+                _logger.LogInformation("User type: {UserType}", userType);
+
+                switch (userType)
                 {
                     case UserType.ExternalClient:
-                        return Ok(GetClientTickets());
-
+                        return Ok(await GetClientTickets(PageNumber, PageSize));
                     case UserType.SupportTeamMember:
-                        return Ok(GetSupportTickets());
-
+                        return Ok(await GetSupportTickets(PageNumber, PageSize));
                     case UserType.SupportManager:
-                        return Ok(GetManagerTickets());
-
+                        return Ok(await GetManagerTickets(PageNumber, PageSize));
+                    default:
+                        _logger.LogWarning("Unknown user type: {UserType}", userType);
+                        return Ok(new APIResponse<IEnumerable<TicketSummaryDTO>>(new List<TicketSummaryDTO>()));
                 }
 
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred while getting tickets");
                 return Ok(new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}"));
             }
 
@@ -61,9 +67,11 @@ namespace CSTS.API.Controllers
 
         private async Task<APIResponse<IEnumerable<TicketSummaryDTO>>> GetClientTickets([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
+            _logger.LogInformation("Getting client tickets for user: {UserId}", this.GetCurrentUserId());
             try
             {
                 var tickets = _unitOfWork.Tickets.Find(t => t.CreatedById == this.GetCurrentUserId(), PageNumber, PageSize, t => t.AssignedTo);
+
                 var ticketDtos = tickets.Select(t => new TicketSummaryDTO
                 {
                     TicketId = t.TicketId,
@@ -72,17 +80,19 @@ namespace CSTS.API.Controllers
                     CreatedDate = t.CreatedDate,
                     AssignedToFullName = t.AssignedTo != null ? t.AssignedTo.FullName : "Not Assigned"
                 }).ToList();
-
+                _logger.LogInformation("Retrieved {Count} client tickets", ticketDtos.Count);
                 return new APIResponse<IEnumerable<TicketSummaryDTO>>(ticketDtos);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred while getting client tickets");
                 return new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}");
             }
         }
 
         private async Task<APIResponse<IEnumerable<TicketSummaryDTO>>> GetSupportTickets([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
+            _logger.LogInformation("Getting Support tickets for user: {UserId}", this.GetCurrentUserId());
             try
             {
                 var tickets = _unitOfWork.Tickets.Find(t => t.AssignedToId == this.GetCurrentUserId() && t.Status == TicketStatus.Assigned, PageNumber, PageSize, t => t.AssignedTo);
@@ -94,17 +104,19 @@ namespace CSTS.API.Controllers
                     CreatedDate = t.CreatedDate,
                     AssignedToFullName = t.AssignedTo != null ? t.AssignedTo.FullName : "Not Assigned"
                 }).ToList();
-
+                _logger.LogInformation("Retrieved {Count} Support tickets", ticketDtos.Count);
                 return new APIResponse<IEnumerable<TicketSummaryDTO>>(ticketDtos) { Message = "Assigned tickets retrieved successfully." };
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred while getting Support tickets");
                 return new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}");
             }
         }
 
         private async Task<APIResponse<IEnumerable<TicketSummaryDTO>>> GetManagerTickets([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
+            _logger.LogInformation("Getting Manager tickets for user: {UserId}", this.GetCurrentUserId());
             try
             {
                 var tickets = _unitOfWork.Tickets.Get(PageNumber, PageSize, t => t.AssignedTo);
@@ -116,19 +128,24 @@ namespace CSTS.API.Controllers
                     CreatedDate = t.CreatedDate,
                     AssignedToFullName = t.AssignedTo != null ? t.AssignedTo.FullName : "Not Assigned"
                 }).ToList();
-
+                _logger.LogInformation("Retrieved {Count} Manager tickets", ticketDtos.Count);
                 return new APIResponse<IEnumerable<TicketSummaryDTO>>(ticketDtos) { Message = "All tickets retrieved successfully." };
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred while getting Manager tickets");
                 return new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}");
             }
         }
 
         // GET api/tickets/{id}
         [HttpGet("{id}")]
+        [CstsAuth(UserType.ExternalClient, UserType.SupportTeamMember, UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<TicketResponseDTO>>> Get(Guid id)
         {
+            _logger.LogError("LogError");
+            _logger.LogInformation("LogInformation");
+            _logger.LogWarning("LogWarning");
             try
             {
                 var ticket = _unitOfWork.Tickets.GetQueryable()
@@ -179,10 +196,11 @@ namespace CSTS.API.Controllers
         [CstsAuth(UserType.ExternalClient)]
         public async Task<ActionResult<APIResponse<TicketResponseDTO>>> Post([FromBody] CreateTicketDTO createDto)
         {
+            _logger.LogInformation("Creating new ticket for product: {Product}", createDto.Product);
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var user = _unitOfWork.Users.GetById(Guid.Parse(userId));
+                var userId = this.GetCurrentUserId();//  User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var user = _unitOfWork.Users.GetById(userId);
                 if (user == null || user.UserStatus != UserStatus.Active)
                     return Ok(new APIResponse<TicketResponseDTO>(null, "User is not active."));
 
@@ -192,7 +210,7 @@ namespace CSTS.API.Controllers
                     ProblemDescription = createDto.ProblemDescription,
                     CreatedDate = DateTime.UtcNow,
                     Status = TicketStatus.New,
-                    CreatedById = Guid.Parse(userId),
+                    CreatedById = userId,
                     Attachments = new List<Attachment>()
                 };
 
@@ -226,11 +244,12 @@ namespace CSTS.API.Controllers
                     AssignedToFullName = ticket.AssignedTo?.FullName,
                     Attachments = ticket.Attachments.Select(a => new AttachmentDto { AttachmentId = a.AttachmentId, FileName = a.FileName, FileUrl = a.FileUrl }).ToList()
                 };
-
+                _logger.LogInformation("Ticket created successfully. TicketId: {TicketId}", ticket.TicketId);
                 return CreatedAtAction(nameof(Get), new { id = ticket.TicketId }, new APIResponse<TicketResponseDTO>(ticketDto) { Message = "Ticket created successfully." });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred while creating ticket");
                 return Ok(new APIResponse<TicketResponseDTO>(null, $"Internal server error: {ex.Message} - {ex.StackTrace}"));
             }
         }
@@ -240,6 +259,9 @@ namespace CSTS.API.Controllers
         [CstsAuth(UserType.SupportTeamMember)]
         public async Task<ActionResult<APIResponse<UpdateResponseDTO>>> Put([FromRoute]Guid id, [FromBody] UpdateTicketDTO updateDto)
         {
+            _logger.LogError("LogError");
+            _logger.LogInformation("LogInformation");
+            _logger.LogWarning("LogWarning");
             try
             {
                 var ticket = _unitOfWork.Tickets.GetById(id);
@@ -269,6 +291,9 @@ namespace CSTS.API.Controllers
         [CstsAuth(UserType.SupportTeamMember)]
         public async Task<ActionResult<APIResponse<bool>>> CloseTicket([FromRoute] Guid ticketId)
         {
+            _logger.LogError("LogError");
+            _logger.LogInformation("LogInformation");
+            _logger.LogWarning("LogWarning");
             try
             {
                 var ticket = _unitOfWork.Tickets.GetById(ticketId);
@@ -294,6 +319,9 @@ namespace CSTS.API.Controllers
         [CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<bool>>> AssignTicket([FromBody] AssignTicketDTO assignTicketDto)
         {
+            _logger.LogError("LogError");
+            _logger.LogInformation("LogInformation");
+            _logger.LogWarning("LogWarning");
             try
             {
                 var ticket = _unitOfWork.Tickets.GetById(assignTicketDto.TicketId);
@@ -320,6 +348,9 @@ namespace CSTS.API.Controllers
         [CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<bool>>> Delete(Guid id)
         {
+            _logger.LogError("LogError");
+            _logger.LogInformation("LogInformation");
+            _logger.LogWarning("LogWarning");
             try
             {
                 var ticket = _unitOfWork.Tickets.GetById(id);
@@ -342,6 +373,9 @@ namespace CSTS.API.Controllers
         [HttpGet("health")]
         public async Task<ActionResult<APIResponse<string>>> Health()
         {
+            _logger.LogError("LogError");
+            _logger.LogInformation("LogInformation");
+            _logger.LogWarning("LogWarning");
             var canConnect = await _unitOfWork.CanConnectAsync();
             if (!canConnect)
                 return Ok(new APIResponse<string>(null, "Database connection failed."));

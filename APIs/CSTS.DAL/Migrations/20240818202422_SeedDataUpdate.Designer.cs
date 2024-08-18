@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSTS.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240814222805_SeedData")]
-    partial class SeedData
+    [Migration("20240818202422_SeedDataUpdate")]
+    partial class SeedDataUpdate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -175,9 +175,10 @@ namespace CSTS.DAL.Migrations
                             DateOfBirth = new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "Manger@example.com",
                             FirstName = "Admin",
+                            Image = "/Image/Manager.webp",
                             LastName = "Admin",
                             MobileNumber = "1234567890",
-                            Password = "123456",
+                            Password = ".�Ra�ˈof)h�#�s�����9��e�",
                             RegistrationDate = new DateTime(2024, 8, 14, 15, 30, 0, 0, DateTimeKind.Unspecified),
                             UserName = "Manger",
                             UserStatus = 1,

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSTS.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240818104424_SeedData")]
+    partial class SeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -172,10 +175,9 @@ namespace CSTS.DAL.Migrations
                             DateOfBirth = new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "Manger@example.com",
                             FirstName = "Admin",
-                            Image = "/Image/Manager.webp",
                             LastName = "Admin",
                             MobileNumber = "1234567890",
-                            Password = ".�Ra�ˈof)h�#�s�����9��e�",
+                            Password = "123456",
                             RegistrationDate = new DateTime(2024, 8, 14, 15, 30, 0, 0, DateTimeKind.Unspecified),
                             UserName = "Manger",
                             UserStatus = 1,
