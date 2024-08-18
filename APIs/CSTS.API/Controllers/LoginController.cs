@@ -5,6 +5,7 @@ using System.Security.Claims;
 using CSTS.DAL.AutoMapper.DTOs;
 using CSTS.DAL.Repository.IRepository;
 using CSTS.DAL.Enum;
+using CSTS.DAL;
 using CSTS.DAL.Models;
 using CSTS.API.ApiServices;
 

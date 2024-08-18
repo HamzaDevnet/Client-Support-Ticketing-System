@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace CSTS.API.ApiServices
+namespace CSTS.DAL
 {
     public static class HashingHelper
     {
@@ -26,10 +26,9 @@ namespace CSTS.API.ApiServices
 
         public static bool CompareHash(string attemptedPassword, string hashed)
         {
-            string base64Hash = Convert.ToBase64String(hashed);
-            string base64AttemptedHash = Convert.ToBase64String(GetHashString(string.Concat(salt, attemptedPassword)));
+            string base64AttemptedHash = Convert.ToBase64String(GetHash(string.Concat(salt, attemptedPassword)));
 
-            return base64Hash == base64AttemptedHash;
+            return hashed == base64AttemptedHash;
         }
 
     }
