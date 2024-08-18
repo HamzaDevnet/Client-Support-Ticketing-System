@@ -16,7 +16,6 @@ namespace WebApplication1.Controllers
         private readonly FileService _fileService;
         private readonly ILogger<TeamMemberController> _logger;
 
-        [CstsAuth(UserType.SupportManager)]
         public TeamMemberController(IUnitOfWork unitOfWork, FileService fileService, ILogger<TeamMemberController> logger)
         {
             _unitOfWork = unitOfWork;
