@@ -12,6 +12,7 @@ using CSTS.DAL.AutoMapper.DTOs;
 using AutoMapper;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Identity.Data;
+using CSTS.DAL;
 
 
 namespace CSTS.API.Controllers

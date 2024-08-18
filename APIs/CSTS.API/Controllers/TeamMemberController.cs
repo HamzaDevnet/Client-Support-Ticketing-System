@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CSTS.DAL.Models;
+using CSTS.DAL;
 using CSTS.DAL.Enum;
 using CSTS.DAL.Repository.IRepository;
 using CSTS.DAL.AutoMapper.DTOs;
