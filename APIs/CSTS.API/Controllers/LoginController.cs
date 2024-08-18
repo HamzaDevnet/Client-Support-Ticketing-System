@@ -22,9 +22,9 @@ namespace CSTS.API.Controllers
         private readonly ILogger<LoginController> _logger;
 
 
-        public LoginController(IUnitOfWork unitOfWork, IConfiguration configuration, FileService fileService,ILogger<LoginController> logger)
+        public LoginController(IUnitOfWork unitOfWork, IConfiguration configuration, FileService fileService, ILogger<LoginController> logger)
         {
-            _logger=logger;
+            _logger = logger;
             _unitOfWork = unitOfWork;
             _configuration = configuration;
             _fileService = fileService;
@@ -49,7 +49,7 @@ namespace CSTS.API.Controllers
                 return Ok(new APIResponse<bool>(false, "User is Deactivated."));
             }
 
-            if (user.Password != loginRequest.Password)
+            if (HashingHelper.CompareHash(loginRequest.Password, user.Password))
             {
                 _logger.LogWarning("Login attempt failed for Username: {Username}. Reason: Incorrect password", loginRequest.Username);
                 return Ok(new APIResponse<bool>(false, "Incorrect password."));
@@ -123,6 +123,11 @@ namespace CSTS.API.Controllers
                     ModelState.AddModelError("UserName", "UserName is already in use.");
                 }
 
+                if (dto.Password.Count() < 8)
+                {
+                    return Ok(new APIResponse<bool>(false, "Password at least 8 characters"));
+                }
+
                 if (!ModelState.IsValid)
                 {
                     return Ok(new APIResponse<bool>(false, string.Join(" , ", ModelState.SelectMany(x => x.Value.Errors).Select(e => e.ErrorMessage))));
@@ -133,7 +138,7 @@ namespace CSTS.API.Controllers
                     FirstName = dto.FirstName,
                     LastName = dto.LastName,
                     Email = dto.Email,
-                    Password = dto.Password,
+                    Password = HashingHelper.GetHashString(dto.Password),
                     MobileNumber = dto.MobileNumber,
                     Image = _fileService.SaveFile(dto.UserImage, FolderType.Images),
                     DateOfBirth = dto.DateOfBirth,
