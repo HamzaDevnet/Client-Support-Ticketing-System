@@ -21,6 +21,7 @@ export class SupportTeamMemberComponent implements OnInit {
   UserStatus = UserStatus;
   displayedColumns: string[] = ['firstName', 'lastName', 'mobileNumber', 'email', 'ActivateDeactivate' , 'edit'];
   dataSource = new MatTableDataSource<Users>(this.supportTeam);
+  hoverContent: string;
 
   constructor(private supportTeamService: SupportTeamService, public dialog: MatDialog ,private UsersService : UsersService ) {}
 
@@ -91,5 +92,14 @@ export class SupportTeamMemberComponent implements OnInit {
       }
     })
   }
+
+  // onMouseEnter(event: MouseEvent) {
+  //   const targetElement = event.target as HTMLElement;
+  //   targetElement.innerHTML = '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">done</mat-icon>'
+  // }
+  // onMouseLeave(event: MouseEvent) {
+  //   const targetElement = event.target as HTMLElement;
+  //   targetElement.innerHTML = "<mat-icon>clear</mat-icon>"
+  // }
 
 }

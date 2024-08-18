@@ -61,7 +61,7 @@
             <ng-container matColumnDef="ActivateDeactivate">
               <th mat-header-cell *matHeaderCellDef>{{ 'Activate/Deactivate' | translate }}</th>
               <td mat-cell *matCellDef="let supportteam">
-                <button class ="mat-icon-button btn-outline-secondary mat-focus-indicator mat-raised-button mat-button-base rounded-pill" *ngIf="supportteam.userStatus === UserStatus.Active" (click)="deactivateSupport(supportteam)">  
+                <button (mouseenter)="onMouseEnter($event)" (mouseleave)="onMouseLeave($event)" class ="mat-icon-button btn-outline-secondary mat-focus-indicator mat-raised-button mat-button-base rounded-pill" *ngIf="supportteam.userStatus === UserStatus.Active" (click)="deactivateSupport(supportteam)">  
                   <mat-icon>clear</mat-icon>
                 </button>
                 <button class ="mat-icon-button btn-outline-secondary mat-focus-indicator mat-raised-button mat-button-base rounded-pill" *ngIf="supportteam.userStatus === UserStatus.Deactivated" (click)="activateSupport(supportteam)">  

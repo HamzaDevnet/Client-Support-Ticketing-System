@@ -7,6 +7,7 @@ import { UserType } from 'app/enums/user.enum';
 import { ToastrService } from 'ngx-toastr';
 
 
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -22,8 +23,10 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private loginService: LoginService,
     private userLocalStorage: UserLocalStorageService, 
-    private ToastrService : ToastrService
-  ) { }
+    private ToastrService : ToastrService,
+  ) {
+   
+   }
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
@@ -40,7 +43,6 @@ export class LoginComponent implements OnInit {
           if(response.code == 200){
           console.log('API response:', response);
           const token = response.data.token;
-             //check for password "if statment"
           this.userLocalStorage.setToken(token); 
           this.navigate(response.data.userType);
          

@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Users } from './users';
 import { environment } from 'environments/environment';
 import { WebResponse } from './pages/web-response';
+import { SheardServiceService } from './sheard-service.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,10 +12,11 @@ import { WebResponse } from './pages/web-response';
 export class SupportTeamService {
   private usersUrl = 'https://localhost:7125/api/Users';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient , private sheardService : SheardServiceService ) {}
 
   getSupportTeam(): Observable<Users[]> {
-    return this.http.get<WebResponse<Users[]>>(`${this.usersUrl}/support-team-members`).pipe(
+    const headers = this.sheardService.getToken();
+    return this.http.get<WebResponse<Users[]>>(`${this.usersUrl}/support-team-members`, { headers }).pipe(
       map(response => response.data)
     );
   }
@@ -24,7 +26,7 @@ export class SupportTeamService {
     return this.http.post<WebResponse<Users>>(`${environment.BaseURL}/RegisterSupportTeamMember`, data)
   }
 
-  deactivateSupportMember(userid:number):Observable<WebResponse<boolean>> {
-    return this.http.delete<WebResponse<boolean>>(`${environment.BaseURL}/users/${userid}`);
-  }
+  // deactivateSupportMember(userid:number):Observable<WebResponse<boolean>> {
+  //   return this.http.delete<WebResponse<boolean>>(`${environment.BaseURL}/users/${userid}`);
+  // }
 }

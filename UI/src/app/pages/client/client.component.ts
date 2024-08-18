@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Users } from 'app/users';
 import { UsersService } from 'app/users.service';
@@ -16,6 +16,7 @@ export class ClientComponent implements OnInit {
   UserStatus = UserStatus;
   displayedColumns: string[] = ['FirstName', 'LastName', 'MobileNumber', 'address','Deactivate','edit'];
   dataSource = new MatTableDataSource<Users>(this.clients);
+
 
 
   constructor(private UsersService : UsersService, public dialog: MatDialog) { }
@@ -37,6 +38,7 @@ export class ClientComponent implements OnInit {
       }
     })
   }
+  
   openEditClientDialog(client: Users): void {
     const dialogRef = this.dialog.open(EditDialogComponent, {
       width: '600px',
@@ -71,9 +73,8 @@ export class ClientComponent implements OnInit {
       }
     })
   }
-  
-  }
 
+}
 
   // if (this.supportForm.valid) {
   //   this.SupportTeamService.addSupportMember(this.supportForm.value).subscribe({

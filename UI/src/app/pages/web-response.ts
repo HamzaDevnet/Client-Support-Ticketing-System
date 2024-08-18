@@ -4,4 +4,3 @@ export interface WebResponse<T> {
     message: string ;
 
 }
-
