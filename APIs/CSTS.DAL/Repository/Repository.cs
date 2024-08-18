@@ -19,21 +19,6 @@ public class Repository<T> : IRepository<T> where T : class
         _context = context;
         _dbSet = _context.Set<T>();
     }
-    public async Task<T?> GetByIdAsync(Guid id)
-    {
-        return await _dbSet.FindAsync(id);
-    }
-
-    public async Task<T> GetAsync(Expression<Func<T, bool>> filter)
-    {
-        return await _dbSet.AsNoTracking().SingleOrDefaultAsync(filter);
-    }
-
-    public async Task<T> GetAsync(Expression<Func<T, bool>> filter)
-    {
-        return await _dbSet.AsNoTracking().SingleOrDefaultAsync(filter);
-    }
-
 
     public IEnumerable<T> Get(int PageNumber = 1, int PageSize = 10)
     {
@@ -169,3 +154,4 @@ public class Repository<T> : IRepository<T> where T : class
     }
 
 }
+
