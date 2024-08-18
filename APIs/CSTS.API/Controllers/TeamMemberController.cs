@@ -24,6 +24,9 @@ namespace WebApplication1.Controllers
         [HttpPost("RegisterSupportTeamMember")]
         public async Task<IActionResult> RegisterSupportTeamMember([FromBody] UserDto dto)
         {
+            _logger.LogError("LogError");
+            _logger.LogInformation("LogInformation");
+            _logger.LogWarning("LogWarning");
             if (ModelState.IsValid)
             {
 

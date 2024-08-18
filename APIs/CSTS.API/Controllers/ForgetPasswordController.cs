@@ -1,4 +1,5 @@
-﻿using CSTS.DAL.AutoMapper.DTOs;
+﻿using CSTS.API.Controllers;
+using CSTS.DAL.AutoMapper.DTOs;
 using CSTS.DAL.Enum;
 using CSTS.DAL.Models;
 using CSTS.DAL.Repository.IRepository;
@@ -19,20 +20,23 @@ namespace YourNamespace.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
-
-        public ForgetPasswordController(IUnitOfWork unitOfWork, IConfiguration configuration)
+        private readonly ILogger<ForgetPasswordController> _logger;
+        public ForgetPasswordController(IUnitOfWork unitOfWork, IConfiguration configuration , ILogger<ForgetPasswordController> logger)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
+            _logger = logger;
         }
 
         [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
+            _logger.LogInformation("Received password reset request for Email: {Email}", request.Email);
             var user = await _unitOfWork.Users.GetAsync(u => u.Email == request.Email);
 
             if (user == null)
             {
+                _logger.LogWarning("Password reset request failed: Email not found: {Email}", request.Email);
                 return BadRequest(new { Success = false, Code = ResponseCode.Error, Message = "Email not found." });
             }
 
@@ -41,6 +45,7 @@ namespace YourNamespace.Controllers
 
             if (emailSent)
             {
+                _logger.LogInformation("Password reset email sent successfully to: {Email}", user.Email);
                 return Ok(new { Success = true, Code = ResponseCode.Success, Message = "The email was sent successfully." });
                 /*{
                            "success": true,
@@ -57,6 +62,7 @@ namespace YourNamespace.Controllers
             }
             else
             {
+                _logger.LogError("Failed to send password reset email to: {Email}", user.Email);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { Success = false, Code = ResponseCode.Null, Message = "Failed to send password reset email." });
             }
         }
@@ -64,10 +70,17 @@ namespace YourNamespace.Controllers
         [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
+            _logger.LogInformation("Attempting to reset password with provided token.");
             var userId = GetUserIdFromToken();
+            if (userId == null)
+            {
+                _logger.LogWarning("Invalid or expired token provided for password reset.");
+                return BadRequest(new { Success = false, Code = ResponseCode.Error, Message = "Invalid or expired token." });
+            }
             var user = await _unitOfWork.Users.GetByIdAsync(userId.Value);
             if (user == null)
             {
+                _logger.LogWarning("User not found for the provided token.");
                 return BadRequest(new { Success = false, Code = ResponseCode.Error, Message = "Invalid or expired token." });
             }
 
@@ -75,36 +88,43 @@ namespace YourNamespace.Controllers
             _unitOfWork.Users.Update(user);
             await _unitOfWork.CompleteAsync();
 
+            _logger.LogInformation("Password reset successfully for User ID: {UserId}", user.UserId);
             return Ok(new { Success = true, Code = ResponseCode.Success, Message = "Password reset successful." });
         }
 
         [HttpPost("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
+            _logger.LogInformation("Received change password request.");
             var userId = GetUserIdFromToken();
             if (userId == null)
             {
+                _logger.LogWarning("Unauthorized change password attempt.");
                 return Unauthorized(new { Success = false, Code = ResponseCode.Unauthorized, Message = "Unauthorized." });
             }
 
             var user = await _unitOfWork.Users.GetByIdAsync(userId.Value);
             if (user == null)
             {
+                _logger.LogWarning("User not found for password change.");
                 return NotFound(new { Success = false, Code = ResponseCode.Error, Message = "User not found." });
             }
 
             if (!ValidatePassword(user, request.CurrentPassword))
             {
+                _logger.LogWarning("Password change failed: Current password is incorrect for User ID: {UserId}", user.UserId);
                 return BadRequest(new { Success = false, Code = ResponseCode.Error, Message = "Current password is incorrect." });
             }
 
             var changeResult = await ChangePassword(user, request.NewPassword);
             if (changeResult)
             {
+                _logger.LogInformation("Password changed successfully for User ID: {UserId}", user.UserId);
                 return Ok(new { Success = true, Code = ResponseCode.Success, Message = "Password changed successfully." });
             }
             else
             {
+                _logger.LogError("Failed to change password for User ID: {UserId}", user.UserId);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { Success = false, Code = ResponseCode.Null, Message = "Failed to change password." });
             }
         }
@@ -133,6 +153,7 @@ namespace YourNamespace.Controllers
 
         private string GeneratePasswordResetToken(User user)
         {
+            _logger.LogInformation("Generating password reset token for User ID: {UserId}", user.UserId);
             return Guid.NewGuid().ToString(); // Placeholder
         }
 
@@ -140,11 +161,13 @@ namespace YourNamespace.Controllers
         {
             try
             {
+                _logger.LogInformation("Sending password reset email to: {Email}", email);
                 // Implement email sending logic here
                 return true; 
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred while sending password reset email to: {Email}", email);
                 return false; 
             }
         }
@@ -163,6 +186,7 @@ namespace YourNamespace.Controllers
 
         private async Task<bool> ChangePassword(User user, string newPassword)
         {
+            _logger.LogInformation("Changing password for User ID: {UserId}", user.UserId);
             // Implement your password change logic
             user.Password = newPassword; 
             _unitOfWork.Users.Update(user);
@@ -175,6 +199,7 @@ namespace YourNamespace.Controllers
             var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(token))
             {
+                _logger.LogWarning("Authorization token not found.");
                 return null;
             }
 

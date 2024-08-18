@@ -11,19 +11,25 @@ namespace CSTS.API.Controllers
     public class DashboardController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<DashboardController> _logger;
 
-        public DashboardController(IUnitOfWork unitOfWork)
+
+        public DashboardController(IUnitOfWork unitOfWork , ILogger<DashboardController> logger)
         {
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         // 1. Count of tickets of each state
         [HttpGet("TicketsCountByState")]
         public IActionResult GetTicketsCountByState()
         {
+            _logger.LogInformation("Fetching tickets count by state");
+
             var tickets = _unitOfWork.Tickets.GetQueryable();
             if (!tickets.Any())
             {
+                _logger.LogWarning("No tickets found.");
                 return Ok("No tickets found.");
             }
 
@@ -35,7 +41,7 @@ namespace CSTS.API.Controllers
                     Count = group.Count()
                 })
                 .ToList();
-
+            _logger.LogInformation("Tickets count by state fetched successfully");
             return Ok(result);
         }
 
@@ -43,8 +49,14 @@ namespace CSTS.API.Controllers
         [HttpGet("ClientTicketsCount")]
         public IActionResult GetClientTicketsCount()
         {
+            _logger.LogInformation("Fetching count of tickets created by each client");
             var clients = _unitOfWork.Users.GetQueryable().Include(u => u.CreatedTickets).Where(u => u.UserType == UserType.ExternalClient);
-            
+            if (!clients.Any())
+            {
+                _logger.LogWarning("No clients found.");
+                return Ok("No clients found.");
+            }
+
             var result = clients
                 .Select(client => new
                 {
@@ -52,7 +64,7 @@ namespace CSTS.API.Controllers
                     TicketsCount = client.CreatedTickets != null ? client.CreatedTickets.Count(): 0
                 })
                 .ToList();
-
+            _logger.LogInformation("Client tickets count fetched successfully");
             return Ok(result);
         }
 
@@ -60,9 +72,11 @@ namespace CSTS.API.Controllers
         [HttpGet("TeamMemberTicketsCount")]
         public IActionResult GetTeamMemberTicketsCount()
         {
+            _logger.LogInformation("Fetching count of tickets assigned to each team member");
             var teamMembers = _unitOfWork.Users.GetQueryable().Where(u => u.UserType == UserType.SupportTeamMember).AsQueryable();
             if (!teamMembers.Any())
             {
+                _logger.LogWarning("No team members found.");
                 return Ok("No team members found.");
             }
 
@@ -73,7 +87,7 @@ namespace CSTS.API.Controllers
                     TicketsAssignedCount = member.AssignedTickets != null ? member.AssignedTickets.Count() : 0
                 })
                 .ToList();
-
+            _logger.LogInformation("Team member tickets count fetched successfully");
             return Ok(result);
         }
 
@@ -81,9 +95,12 @@ namespace CSTS.API.Controllers
         [HttpGet("TeamMemberClosedTicketsCount")]
         public IActionResult GetTeamMemberClosedTicketsCount()
         {
+            _logger.LogInformation("Fetching count of closed tickets assigned to each team member");
+
             var teamMembers = _unitOfWork.Users.GetQueryable().Where(u => u.UserType == UserType.SupportTeamMember).AsQueryable();
             if (!teamMembers.Any())
             {
+                _logger.LogWarning("No team members found.");
                 return Ok("No team members found.");
             }
 
@@ -95,6 +112,7 @@ namespace CSTS.API.Controllers
                         
                 })
                 .ToList();
+            _logger.LogInformation("Team member closed tickets count fetched successfully");
 
             return Ok(result);
         }

@@ -35,26 +35,28 @@ namespace CSTS.API.Controllers
 
         public async Task<IActionResult> Login([FromBody] Login loginRequest)
         {
-            _logger.LogError("LogError");
-            _logger.LogInformation("LogInformation");
-            _logger.LogWarning("LogWarning");
+            _logger.LogInformation("User {Username} is attempting to login.", loginRequest.Username);
             var user = GetUser_ByUserName(loginRequest.Username);
             if (user == null)
             {
+                _logger.LogWarning("Login attempt failed for Username: {Username}. Reason: Invalid Username", loginRequest.Username);
                 return Ok(new APIResponse<bool>(false, "Invalid Username"));
             }
 
             if (user.UserStatus == UserStatus.Deactivated)
             {
+                _logger.LogWarning("Login attempt failed for Username: {Username}. Reason: User is Deactivated", loginRequest.Username);
                 return Ok(new APIResponse<bool>(false, "User is Deactivated."));
             }
 
             if (user.Password != loginRequest.Password)
             {
+                _logger.LogWarning("Login attempt failed for Username: {Username}. Reason: Incorrect password", loginRequest.Username);
                 return Ok(new APIResponse<bool>(false, "Incorrect password."));
             }
 
             var token = GenerateJwtToken(user);
+            _logger.LogInformation("User {Username} logged in successfully.", loginRequest.Username);
 
             LoginResponseDto response = new LoginResponseDto()
             {
@@ -94,6 +96,7 @@ namespace CSTS.API.Controllers
         [HttpPost("RegisterClient")]
         public async Task<IActionResult> RegisterClient([FromBody] UserDto dto)
         {
+            _logger.LogInformation("New client registration attempt for Username: {Username}", dto.UserName);
 
             if (ModelState.IsValid)
             {
@@ -104,16 +107,19 @@ namespace CSTS.API.Controllers
 
                 if (users.Any(u => u.Email == dto.Email))
                 {
+                    _logger.LogWarning("Registration failed for Username: {Username}. Reason: Email already in use.", dto.UserName);
                     ModelState.AddModelError("Email", "Email is already in use.");
                 }
 
                 if (users.Any(u => u.MobileNumber == dto.MobileNumber))
                 {
+                    _logger.LogWarning("Registration failed for Username: {Username}. Reason: Mobile number already in use.", dto.UserName);
                     ModelState.AddModelError("MobileNumber", "Mobile number is already in use.");
                 }
 
                 if (users.Any(u => u.UserName == dto.UserName))
                 {
+                    _logger.LogWarning("Registration failed for Username: {Username}. Reason: Username already in use.", dto.UserName);
                     ModelState.AddModelError("UserName", "UserName is already in use.");
                 }
 
@@ -140,10 +146,10 @@ namespace CSTS.API.Controllers
                 };
 
                 _unitOfWork.Users.Add(user);
-
+                _logger.LogInformation("User {Username} registered successfully.", dto.UserName);
                 return Ok(new APIResponse<bool>(true));
             }
-
+            _logger.LogWarning("Registration attempt failed due to invalid model state for Username: {Username}.", dto.UserName);
             return Ok(new APIResponse<bool>(false, string.Concat(" , ", ModelState.SelectMany(x => x.Value.Errors).SelectMany(e => e.ErrorMessage))));
         }
 
