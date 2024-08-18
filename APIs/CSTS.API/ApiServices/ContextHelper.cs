@@ -18,6 +18,7 @@ namespace CSTS.API.ApiServices
             Enum.TryParse(x, out result);
             return result;
         }
+
         public static Guid GetCurrentUserId(this ControllerBase controllerBase)
         {
             return Guid.Parse(controllerBase.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);

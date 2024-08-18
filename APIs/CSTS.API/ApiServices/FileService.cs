@@ -16,9 +16,11 @@ namespace CSTS.API.ApiServices
         Other
     }
 
+
     public class FileService
     {
         private readonly IWebHostEnvironment _env;
+        private List<string> AllowedExtensions = new List<string>() { ".pdf", ".jepg" , ".webp" };
 
         public FileService(IWebHostEnvironment env)
         {
@@ -27,6 +29,16 @@ namespace CSTS.API.ApiServices
 
         public string SaveFile(byte[] fileBytes, FolderType folder, string extension)
         {
+
+            if (fileBytes == null)
+                return string.Empty;
+
+            if (!AllowedExtensions.Contains(extension))
+            {
+                return string.Empty;
+            }
+
+
             string wwwRootPath = _env.WebRootPath;
             string folderPath = Path.Combine(wwwRootPath, folder.ToString());
 
@@ -45,13 +57,13 @@ namespace CSTS.API.ApiServices
 
         public string SaveFile(RequestAttachment? file, FolderType folder)
         {
-            if(file == null)
+            if (file == null)
                 return string.Empty;
 
             return SaveFile(file.File, folder, file.Extension);
         }
 
-        public string SaveFile(IFormFile? file, FolderType folder )
+        public string SaveFile(IFormFile? file, FolderType folder)
         {
             if (file == null)
                 return "";
@@ -75,7 +87,6 @@ namespace CSTS.API.ApiServices
             return Path.Combine(folder.ToString(), fileName);
         }
 
-
         public byte[] ConvertToByteArray(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -88,6 +99,8 @@ namespace CSTS.API.ApiServices
             }
         }
 
+
     }
 
 }
+
