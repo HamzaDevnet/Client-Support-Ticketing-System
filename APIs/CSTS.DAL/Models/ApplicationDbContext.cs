@@ -75,7 +75,8 @@ public class ApplicationDbContext : DbContext
                 Password = HashingHelper.GetHashString("123456789"),
                 Address = "Address1",
                 RegistrationDate = DateTime.Parse("2024 - 08 - 14 15:30:00"),
-                DateOfBirth = new DateTime(1990, 1, 1)
+                DateOfBirth = new DateTime(1990, 1, 1),
+                Image = "/Image/Manager.webp"
             }
 
         );
