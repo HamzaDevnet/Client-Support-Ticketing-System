@@ -42,7 +42,6 @@ import { LandingComponent } from './pages/landing/landing.component';
 import { ClientComponent } from './pages/client/client.component';
 import { AddSupportComponent } from './pages/add-support/add-support.component';
 import { ClienttickectdetailsComponent } from './pages/clienttickectdetails/clienttickectdetails.component';
-import { ForgetComponent } from './pages/forget/forget.component';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -72,7 +71,6 @@ export function createTranslateLoader(http: HttpClient) {
     ClientComponent,
     AddSupportComponent,
     ClienttickectdetailsComponent,
-    ForgetComponent,
   ],
   imports: [
     BrowserModule,
