@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CSTS.DAL.Models;
+using CSTS.DAL;
 using CSTS.DAL.Enum;
 using CSTS.DAL.Repository.IRepository;
 using CSTS.DAL.AutoMapper.DTOs;
@@ -18,7 +19,7 @@ namespace WebApplication1.Controllers
         public TeamMemberController(IUnitOfWork unitOfWork, FileService fileService)
         {
             _unitOfWork = unitOfWork;
-            _fileService = fileService; 
+            _fileService = fileService;
         }
 
         [HttpPost("RegisterSupportTeamMember")]
@@ -46,6 +47,11 @@ namespace WebApplication1.Controllers
                     ModelState.AddModelError("UserName", "UserName is already in use.");
                 }
 
+                if (dto.Password.Count() < 8)
+                {
+                    return Ok(new APIResponse<bool>(false, "Password at least 8 characters"));
+                }
+
                 if (!ModelState.IsValid)
                 {
                     return Ok(new APIResponse<bool>(false, string.Join(" , ", ModelState.SelectMany(x => x.Value.Errors).Select(e => e.ErrorMessage))));
@@ -56,9 +62,9 @@ namespace WebApplication1.Controllers
                     FirstName = dto.FirstName,
                     LastName = dto.LastName,
                     Email = dto.Email,
-                    Password = dto.Password,
+                    Password = HashingHelper.GetHashString(dto.Password),
                     MobileNumber = dto.MobileNumber,
-                    Image = _fileService.SaveFile(dto.UserImage , FolderType.Images),
+                    Image = _fileService.SaveFile(dto.UserImage, FolderType.Images),
                     DateOfBirth = dto.DateOfBirth,
                     UserName = dto.UserName,
                     UserType = UserType.SupportTeamMember,

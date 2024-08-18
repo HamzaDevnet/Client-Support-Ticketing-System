@@ -5,6 +5,7 @@ using System.Security.Claims;
 using CSTS.DAL.AutoMapper.DTOs;
 using CSTS.DAL.Repository.IRepository;
 using CSTS.DAL.Enum;
+using CSTS.DAL;
 using CSTS.DAL.Models;
 using CSTS.API.ApiServices;
 
@@ -22,9 +23,9 @@ namespace CSTS.API.Controllers
         private readonly ILogger<LoginController> _logger;
 
 
-        public LoginController(IUnitOfWork unitOfWork, IConfiguration configuration, FileService fileService,ILogger<LoginController> logger)
+        public LoginController(IUnitOfWork unitOfWork, IConfiguration configuration, FileService fileService, ILogger<LoginController> logger)
         {
-            _logger=logger;
+            _logger = logger;
             _unitOfWork = unitOfWork;
             _configuration = configuration;
             _fileService = fileService;
@@ -35,9 +36,6 @@ namespace CSTS.API.Controllers
 
         public async Task<IActionResult> Login([FromBody] Login loginRequest)
         {
-            _logger.LogError("LogError");
-            _logger.LogInformation("LogInformation");
-            _logger.LogWarning("LogWarning");
             var user = GetUser_ByUserName(loginRequest.Username);
             if (user == null)
             {
@@ -49,7 +47,7 @@ namespace CSTS.API.Controllers
                 return Ok(new APIResponse<bool>(false, "User is Deactivated."));
             }
 
-            if (user.Password != loginRequest.Password)
+            if (HashingHelper.CompareHash(loginRequest.Password, user.Password))
             {
                 return Ok(new APIResponse<bool>(false, "Incorrect password."));
             }
@@ -117,6 +115,11 @@ namespace CSTS.API.Controllers
                     ModelState.AddModelError("UserName", "UserName is already in use.");
                 }
 
+                if (dto.Password.Count() < 8)
+                {
+                    return Ok(new APIResponse<bool>(false, "Password at least 8 characters"));
+                }
+
                 if (!ModelState.IsValid)
                 {
                     return Ok(new APIResponse<bool>(false, string.Join(" , ", ModelState.SelectMany(x => x.Value.Errors).Select(e => e.ErrorMessage))));
@@ -127,7 +130,7 @@ namespace CSTS.API.Controllers
                     FirstName = dto.FirstName,
                     LastName = dto.LastName,
                     Email = dto.Email,
-                    Password = dto.Password,
+                    Password = HashingHelper.GetHashString(dto.Password),
                     MobileNumber = dto.MobileNumber,
                     Image = _fileService.SaveFile(dto.UserImage, FolderType.Images),
                     DateOfBirth = dto.DateOfBirth,

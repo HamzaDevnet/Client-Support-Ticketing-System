@@ -48,44 +48,7 @@ namespace CSTS.API.Controllers
             }
         }
 
-        /* ******************  WHY DO WE NEED TWO GET METHODS FOR COMMENTS BASED ON USER ROLE????
-        // GET: api/comments/client
-        [HttpGet("client")]
-        [CstsAuth(UserType.ExternalClient)]
-        public async Task<ActionResult<APIResponse<IEnumerable<CommentResponseDTO>>>> GetClientComments([FromQuery] Guid ticketId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
-        {
-            try
-            {
-                var comments = _unitOfWork.Comments.Find(c => c.TicketId == ticketId && c.User.UserType == UserType.ExternalClient, pageNumber, pageSize, c => c.User, c => c.Ticket);
-                var commentDtos = _mapper.Map<IEnumerable<CommentResponseDTO>>(comments);
-
-                return Ok(new APIResponse<IEnumerable<CommentResponseDTO>>(commentDtos, ResponseCode.Success, "Success"));
-            }
-            catch (Exception ex)
-            {
-                return Ok(new APIResponse<IEnumerable<CommentResponseDTO>>(null, ResponseCode.Error, ex.Message));
-            }
-        }
-
-        // GET: api/comments/support
-        [HttpGet("support")]
-        [CstsAuth(UserType.SupportTeamMember)]
-        public async Task<ActionResult<APIResponse<IEnumerable<CommentResponseDTO>>>> GetSupportComments([FromQuery] Guid ticketId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
-        {
-            try
-            {
-                var comments = _unitOfWork.Comments.Find(c => c.TicketId == ticketId && (c.User.UserType == UserType.SupportTeamMember || c.User.UserType == UserType.ExternalClient), pageNumber, pageSize, c => c.User, c => c.Ticket);
-                var commentDtos = _mapper.Map<IEnumerable<CommentResponseDTO>>(comments);
-
-                return Ok(new APIResponse<IEnumerable<CommentResponseDTO>>(commentDtos, ResponseCode.Success, "Success"));
-            }
-            catch (Exception ex)
-            {
-                return Ok(new APIResponse<IEnumerable<CommentResponseDTO>>(null, ResponseCode.Error, ex.Message));
-            }
-        } */
-
-
+        
         // GET api/comments/{id}
         [HttpGet("{id}")]
         [CstsAuth(UserType.SupportTeamMember, UserType.ExternalClient)]

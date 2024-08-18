@@ -49,7 +49,7 @@ builder.Services.AddAuthorization();
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));  
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(Mapping).Assembly);
 
