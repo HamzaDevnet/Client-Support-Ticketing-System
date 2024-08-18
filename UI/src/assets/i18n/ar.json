@@ -112,7 +112,11 @@
       "Team Member Tickets Count":"عدد تذاكر أعضاء الفريق",
       "client Ticket count":"عدد تذاكر العميل",
       "closed ticket count":"عدد التذاكر المغلقه",
-      "tickets count" : "عددالتذاكر"
-      
+      "tickets count" : "عددالتذاكر",
+      "Add support Member":"أضافة عضو دعم",
+      "Username":"اسم المستخدم",
+      "Password":"كلمة المرور",
+      "Date of Birth" : "تاريخ الميلاد",
+      "Add" : "إضافة"  
 
 }

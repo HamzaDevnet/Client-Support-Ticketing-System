@@ -4,7 +4,7 @@
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="card-title">{{ 'Manage Ticket' | translate }}</h5>
         <div>
-          <button mat-button [matMenuTriggerFor]="menu">{{ selectedFilter | translate }}</button>
+          <button mat-button class="mat-button bg-secondary btn"  [matMenuTriggerFor]="menu">{{ selectedFilter | translate }}</button>
           <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="applyFilter('All Tickets')">{{ 'All Tickets' | translate }}</button>
             <button mat-menu-item (click)="applyFilter('Active Tickets')">{{ 'Active Tickets' | translate }}</button>
@@ -44,10 +44,10 @@
             <ng-container matColumnDef="action">
               <th mat-header-cell *matHeaderCellDef>{{ 'Action' | translate }}</th>
               <td mat-cell *matCellDef="let ticket">
-                <button mat-raised-button  *ngIf="ticket.status === TicketStatus.New" (click)="openAssignedDialog(ticket)">
+                <button class="btn-success m-1 mat-raised-button"  *ngIf="ticket.status === TicketStatus.New" (click)="openAssignedDialog(ticket)">
                   {{ 'Assign To' | translate }}
                 </button>
-                <button mat-raised-button *ngIf="ticket.status !== TicketStatus.Removed" (click)="removeTicket(ticket)">
+                <button  class="btn-dark mat-raised-button" *ngIf="ticket.status !== TicketStatus.Removed" (click)="removeTicket(ticket)">
                   {{ 'Remove' | translate }}
                 </button>
               </td>
