@@ -26,88 +26,70 @@ namespace YourNamespace.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost("ForgotPassword")]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
-        {
-            var user = await _unitOfWork.Users.GetAsync(u => u.Email == request.Email);
+        // [HttpPost("ForgotPassword")]
+        // public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        // {
+        //     var user = _unitOfWork.Users.Get(u => u.Email == request.Email);
+        //     if (user == null)
+        //     {
+        //         return BadRequest(new { Success = false, Code = ResponseCode.Error, Message = "Email not found." });
+        //     }
+        //     var resetToken = GeneratePasswordResetToken(user);
+        //     bool emailSent = await SendPasswordResetEmail(user.Email, resetToken);
+        //     if (emailSent)
+        //     {
+        //         return Ok(new { Success = true, Code = ResponseCode.Success, Message = "The email was sent successfully." });
+        //     }
+        //     else
+        //     {
+        //         return StatusCode(StatusCodes.Status500InternalServerError, new { Success = false, Code = ResponseCode.Null, Message = "Failed to send password reset email." });
+        //     }
+        // }
 
-            if (user == null)
-            {
-                return BadRequest(new { Success = false, Code = ResponseCode.Error, Message = "Email not found." });
-            }
+        // [HttpPost("ResetPassword")]
+        // public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        // {
+        //     var userId = GetUserIdFromToken();
+        //     var user = _unitOfWork.Users.GetById(userId.Value);
+        //     if (user == null)
+        //     {
+        //         return BadRequest(new { Success = false, Code = ResponseCode.Error, Message = "Invalid or expired token." });
+        //     }
+        // 
+        //     user.Password = request.NewPassword; 
+        //     _unitOfWork.Users.Update(user);
+        //     await _unitOfWork.CompleteAsync();
+        // 
+        //     return Ok(new { Success = true, Code = ResponseCode.Success, Message = "Password reset successful." });
+        // }
 
-            var resetToken = GeneratePasswordResetToken(user);
-            bool emailSent = await SendPasswordResetEmail(user.Email, resetToken);
-
-            if (emailSent)
-            {
-                return Ok(new { Success = true, Code = ResponseCode.Success, Message = "The email was sent successfully." });
-                /*{
-                           "success": true,
-                           "code": 200,
-                           "message": "The email was sent successfully."
-                  }  */
-
-                // return Ok(new APIResponse<bool>(true, "The email was sent successfully."));
-                /*    {
-                          "code": 400,
-                          "data": true,
-                          "message": "The email was sent successfully."
-                      } */
-            }
-            else
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Success = false, Code = ResponseCode.Null, Message = "Failed to send password reset email." });
-            }
-        }
-
-        [HttpPost("ResetPassword")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
-        {
-            var userId = GetUserIdFromToken();
-            var user = await _unitOfWork.Users.GetByIdAsync(userId.Value);
-            if (user == null)
-            {
-                return BadRequest(new { Success = false, Code = ResponseCode.Error, Message = "Invalid or expired token." });
-            }
-
-            user.Password = request.NewPassword; 
-            _unitOfWork.Users.Update(user);
-            await _unitOfWork.CompleteAsync();
-
-            return Ok(new { Success = true, Code = ResponseCode.Success, Message = "Password reset successful." });
-        }
-
-        [HttpPost("ChangePassword")]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
-        {
-            var userId = GetUserIdFromToken();
-            if (userId == null)
-            {
-                return Unauthorized(new { Success = false, Code = ResponseCode.Unauthorized, Message = "Unauthorized." });
-            }
-
-            var user = await _unitOfWork.Users.GetByIdAsync(userId.Value);
-            if (user == null)
-            {
-                return NotFound(new { Success = false, Code = ResponseCode.Error, Message = "User not found." });
-            }
-
-            if (!ValidatePassword(user, request.CurrentPassword))
-            {
-                return BadRequest(new { Success = false, Code = ResponseCode.Error, Message = "Current password is incorrect." });
-            }
-
-            var changeResult = await ChangePassword(user, request.NewPassword);
-            if (changeResult)
-            {
-                return Ok(new { Success = true, Code = ResponseCode.Success, Message = "Password changed successfully." });
-            }
-            else
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Success = false, Code = ResponseCode.Null, Message = "Failed to change password." });
-            }
-        }
+        // [HttpPost("ChangePassword")]
+        // public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+        // {
+        //     var userId = GetUserIdFromToken();
+        //     if (userId == null)
+        //     {
+        //         return Unauthorized(new { Success = false, Code = ResponseCode.Unauthorized, Message = "Unauthorized." });
+        //     }
+        //     var user = await _unitOfWork.Users.GetByIdAsync(userId.Value);
+        //     if (user == null)
+        //     {
+        //         return NotFound(new { Success = false, Code = ResponseCode.Error, Message = "User not found." });
+        //     }
+        //     if (!ValidatePassword(user, request.CurrentPassword))
+        //     {
+        //         return BadRequest(new { Success = false, Code = ResponseCode.Error, Message = "Current password is incorrect." });
+        //     }
+        //     var changeResult = await ChangePassword(user, request.NewPassword);
+        //     if (changeResult)
+        //     {
+        //         return Ok(new { Success = true, Code = ResponseCode.Success, Message = "Password changed successfully." });
+        //     }
+        //     else
+        //     {
+        //         return StatusCode(StatusCodes.Status500InternalServerError, new { Success = false, Code = ResponseCode.Null, Message = "Failed to change password." });
+        //     }
+        // }
 
         private string GenerateJwtToken(User user)
         {

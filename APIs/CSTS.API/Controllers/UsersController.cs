@@ -74,25 +74,6 @@ namespace CSTS.API.Controllers
         {
             try
             {
-                //  User user = _mapper.Map<User>(inputUser);
-                // 
-                //  if (user == null)
-                //  {
-                //      return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User is null or ID mismatch." });
-                //  }
-                // 
-                //  if (existingUser == null)
-                //  {
-                //      return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
-                //  }
-                // 
-                //  // Validate user
-                //  ValidationResult result = _validator.Validate(user);
-                //  if (!result.IsValid)
-                //  {
-                //      return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = result.Errors.ToString() });
-                //  }
-
                 var existingUser = _unitOfWork.Users.GetById(id);
                 
                 existingUser.FirstName = inputUser.FirstName;
@@ -112,25 +93,6 @@ namespace CSTS.API.Controllers
             }
         }
 
-        // DELETE api/users/5
-        //[HttpDelete("{id}")]
-        //public async Task<ActionResult<APIResponse<bool>>> Delete(Guid id)
-        //{
-        //    try
-        //    {
-        //        var response = _unitOfWork.Users.Delete(id);
-        //        if (!response)
-        //        {
-        //            return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
-        //        }
-
-        //        return Ok(new APIResponse<bool> { Data = response, Code = ResponseCode.Success, Message = "Success" });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = ex.Message });
-        //    }
-        //}
 
         // Activate a user
         [HttpPatch("{id}/activate")]
