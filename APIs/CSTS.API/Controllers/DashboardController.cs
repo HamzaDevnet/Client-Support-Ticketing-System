@@ -1,4 +1,5 @@
-﻿using CSTS.DAL.Enum;
+﻿using CSTS.API.ApiServices;
+using CSTS.DAL.Enum;
 using CSTS.DAL.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ namespace CSTS.API.Controllers
 
         // 1. Count of tickets of each state
         [HttpGet("TicketsCountByState")]
+        [CstsAuth(UserType.SupportManager)]
         public IActionResult GetTicketsCountByState()
         {
             _logger.LogInformation("Fetching tickets count by state");
@@ -47,6 +49,7 @@ namespace CSTS.API.Controllers
 
         // 2. Each client with count of tickets he created
         [HttpGet("ClientTicketsCount")]
+        [CstsAuth(UserType.SupportManager)]
         public IActionResult GetClientTicketsCount()
         {
             _logger.LogInformation("Fetching count of tickets created by each client");
@@ -70,6 +73,7 @@ namespace CSTS.API.Controllers
 
         // 3. Each TeamMember with count of tickets assigned to him
         [HttpGet("TeamMemberTicketsCount")]
+        [CstsAuth(UserType.SupportManager)]
         public IActionResult GetTeamMemberTicketsCount()
         {
             _logger.LogInformation("Fetching count of tickets assigned to each team member");
@@ -93,6 +97,7 @@ namespace CSTS.API.Controllers
 
         // 4. Each TeamMember with count of tickets assigned to him and closed
         [HttpGet("TeamMemberClosedTicketsCount")]
+        [CstsAuth(UserType.SupportManager)]
         public IActionResult GetTeamMemberClosedTicketsCount()
         {
             _logger.LogInformation("Fetching count of closed tickets assigned to each team member");
@@ -116,5 +121,7 @@ namespace CSTS.API.Controllers
 
             return Ok(result);
         }
+
+
     }
 }

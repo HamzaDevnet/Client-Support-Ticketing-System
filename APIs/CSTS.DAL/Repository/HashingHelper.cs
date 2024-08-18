@@ -10,25 +10,25 @@ namespace CSTS.DAL
         public static byte[] GetHash(string inputString)
         {
             using (HashAlgorithm algorithm = SHA256.Create())
-                return algorithm.ComputeHash(Encoding.UTF8.GetBytes(string.Concat(salt, inputString)));
+                return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
         }
 
 
         public static string GetHashString(string inputString)
         {
-            StringBuilder sb = new StringBuilder();
-            foreach (byte b in GetHash(string.Concat(salt, inputString)))
-                sb.Append(b.ToString("X2"));
+            // StringBuilder sb = new StringBuilder();
+            // foreach (byte b in GetHash(string.Concat(salt, inputString)))
+            //     sb.Append(b.ToString("X2"));
 
-            return sb.ToString();
+            return System.Text.Encoding.Default.GetString(GetHash(string.Concat(salt, inputString)));
         }
 
 
         public static bool CompareHash(string attemptedPassword, string hashed)
         {
-            string base64AttemptedHash = Convert.ToBase64String(GetHash(string.Concat(salt, attemptedPassword)));
+            string base64AttemptedHash = GetHashString(attemptedPassword);
 
-            return hashed == base64AttemptedHash;
+            return hashed.SequenceEqual(base64AttemptedHash);
         }
 
     }

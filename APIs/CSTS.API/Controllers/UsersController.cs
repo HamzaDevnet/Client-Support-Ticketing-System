@@ -38,7 +38,7 @@ namespace CSTS.API.Controllers
 
         // GET: api/users
         [HttpGet]
-        //[CstsAuth(UserType.ExternalClient)]
+        [CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<IEnumerable<UserResponseDTO>>>> Get([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
             
@@ -58,9 +58,9 @@ namespace CSTS.API.Controllers
 
         // GET api/users/5
         [HttpGet("{id}")]
+        [CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<UserResponseDTO>>> Get(Guid id)
         {
-           
             try
             {
                 _logger.LogInformation("Fetching user");
@@ -83,6 +83,7 @@ namespace CSTS.API.Controllers
 
         // PUT api/users/5
         [HttpPut("{id}")]
+        [CstsAuth(UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<bool>>> Put([FromRoute] Guid id, [FromBody] UserDto inputUser)
         {
             try
@@ -230,6 +231,8 @@ namespace CSTS.API.Controllers
                 return Ok(new APIResponse<IEnumerable<UserResponseDTO>>(new List<UserResponseDTO>(), ex.Message));
             }
         }
+       
+        
         [HttpPut("{id}/reset-password")]
         [CstsAuth(UserType.SupportTeamMember, UserType.ExternalClient, UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<bool>>> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
@@ -275,4 +278,5 @@ namespace CSTS.API.Controllers
             }
         }
     }
+
 }

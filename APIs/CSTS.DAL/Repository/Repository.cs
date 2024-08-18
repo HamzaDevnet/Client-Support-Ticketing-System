@@ -69,7 +69,7 @@ public class Repository<T> : IRepository<T> where T : class
         foreach (var includeProperty in includeProperties)
             query = query.Include(includeProperty);
 
-        return query.Where(predicate).Skip((PageNumber - 1) * PageSize).Take(PageSize);
+        return query.Where(predicate).Skip((PageNumber - 1) * PageSize).Take(PageSize).ToList();
     }
 
 

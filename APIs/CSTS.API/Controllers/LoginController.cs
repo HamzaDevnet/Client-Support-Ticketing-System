@@ -50,7 +50,7 @@ namespace CSTS.API.Controllers
                 return Ok(new APIResponse<bool>(false, "User is Deactivated."));
             }
 
-            if (HashingHelper.CompareHash(loginRequest.Password, user.Password))
+            if (!HashingHelper.CompareHash(loginRequest.Password, user.Password))
             {
                 _logger.LogWarning("Login attempt failed for Username: {Username}. Reason: Incorrect password", loginRequest.Username);
                 return Ok(new APIResponse<bool>(false, "Incorrect password."));

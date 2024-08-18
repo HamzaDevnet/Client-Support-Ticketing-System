@@ -33,6 +33,7 @@ namespace CSTS.API.ApiServices
             if (!_requiredUserType.Contains(userType))
             {
                 context.Result = new UnauthorizedResult();
+                return;
             }
         }
     }

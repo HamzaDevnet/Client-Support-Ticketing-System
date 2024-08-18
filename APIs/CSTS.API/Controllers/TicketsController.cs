@@ -140,6 +140,7 @@ namespace CSTS.API.Controllers
 
         // GET api/tickets/{id}
         [HttpGet("{id}")]
+        [CstsAuth(UserType.ExternalClient, UserType.SupportTeamMember, UserType.SupportManager)]
         public async Task<ActionResult<APIResponse<TicketResponseDTO>>> Get(Guid id)
         {
             _logger.LogError("LogError");
@@ -198,8 +199,8 @@ namespace CSTS.API.Controllers
             _logger.LogInformation("Creating new ticket for product: {Product}", createDto.Product);
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var user = _unitOfWork.Users.GetById(Guid.Parse(userId));
+                var userId = this.GetCurrentUserId();//  User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var user = _unitOfWork.Users.GetById(userId);
                 if (user == null || user.UserStatus != UserStatus.Active)
                     return Ok(new APIResponse<TicketResponseDTO>(null, "User is not active."));
 
@@ -209,7 +210,7 @@ namespace CSTS.API.Controllers
                     ProblemDescription = createDto.ProblemDescription,
                     CreatedDate = DateTime.UtcNow,
                     Status = TicketStatus.New,
-                    CreatedById = Guid.Parse(userId),
+                    CreatedById = userId,
                     Attachments = new List<Attachment>()
                 };
 
