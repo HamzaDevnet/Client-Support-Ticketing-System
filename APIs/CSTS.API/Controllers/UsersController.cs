@@ -11,6 +11,7 @@ using CSTS.API.ApiServices;
 using CSTS.DAL.AutoMapper.DTOs;
 using AutoMapper;
 using BCrypt.Net;
+using Microsoft.AspNetCore.Identity.Data;
 
 
 namespace CSTS.API.Controllers
@@ -172,38 +173,38 @@ namespace CSTS.API.Controllers
             }
         }
         [HttpPut("{id}/reset-password")]
-        [CstsAuth(UserType.SupportTeamMember, UserType.ExternalClient)]
-        public async Task<ActionResult<APIResponse<bool>>> ResetPassword([FromRoute] Guid id, [FromBody] ResetPasswordDto resetPasswordDto)
+        [CstsAuth(UserType.SupportTeamMember, UserType.ExternalClient, UserType.SupportManager)]
+        public async Task<ActionResult<APIResponse<bool>>> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
         {
             try
             {
-                var existingUser = _unitOfWork.Users.GetById(id);
-                if (existingUser == null)
+                Guid id = this.GetCurrentUserId();
+                var user = _unitOfWork.Users.GetById(id);
+
+                if (user == null)
                 {
                     return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Null, Message = "User not found." });
                 }
 
-                bool isPasswordValid;
-
-                if (existingUser.Password.StartsWith("$2a$") || existingUser.Password.StartsWith("$2b$") || existingUser.Password.StartsWith("$2y$"))
+                if (user.UserStatus == UserStatus.Deactivated)
                 {
-                    isPasswordValid = BCrypt.Net.BCrypt.Verify(resetPasswordDto.OldPassword, existingUser.Password);
-                }
-                else
-                {
-                    isPasswordValid = existingUser.Password == resetPasswordDto.OldPassword;
+                    return Ok(new APIResponse<bool>(false, "User is Deactivated."));
                 }
 
-                if (!isPasswordValid)
+                if (HashingHelper.CompareHash(resetPasswordDto.OldPassword, user.Password))
                 {
-                    return Ok(new APIResponse<bool> { Data = false, Code = ResponseCode.Error, Message = "Old password is incorrect." });
+                    return Ok(new APIResponse<bool>(false, "Incorrect password."));
+                }
+                
+                if (resetPasswordDto.NewPassword.Count() < 8 )
+                {
+                    return Ok(new APIResponse<bool>(false, "Password at least 8 characters"));
                 }
 
-                string hashedNewPassword = BCrypt.Net.BCrypt.HashPassword(resetPasswordDto.NewPassword);
-                existingUser.Password = hashedNewPassword;
-                var response = _unitOfWork.Users.Update(existingUser);
+                user.Password = HashingHelper.GetHashString(resetPasswordDto.NewPassword);
+                var response = _unitOfWork.Users.Update(user);
 
-                return Ok(new APIResponse<bool> { Data = response, Code = ResponseCode.Success, Message = "Password reset successfully." });
+                return Ok(new APIResponse<bool> { Data = response, Code = ResponseCode.Success, Message = "Password changed successfully." });
             }
             catch (Exception ex)
             {
