@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSTS.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240814222805_SeedData")]
+    [Migration("20240818104424_SeedData")]
     partial class SeedData
     {
         /// <inheritdoc />

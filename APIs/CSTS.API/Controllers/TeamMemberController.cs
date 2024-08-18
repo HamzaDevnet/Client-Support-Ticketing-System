@@ -13,12 +13,13 @@ namespace WebApplication1.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly FileService _fileService;
+        private readonly ILogger<TeamMemberController> _logger;
 
-
-        public TeamMemberController(IUnitOfWork unitOfWork, FileService fileService)
+        public TeamMemberController(IUnitOfWork unitOfWork, FileService fileService, ILogger<TeamMemberController> logger)
         {
             _unitOfWork = unitOfWork;
             _fileService = fileService; 
+            _logger = logger;
         }
 
         [HttpPost("RegisterSupportTeamMember")]

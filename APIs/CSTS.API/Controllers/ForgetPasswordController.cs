@@ -32,7 +32,7 @@ namespace YourNamespace.Controllers
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
             _logger.LogInformation("Received password reset request for Email: {Email}", request.Email);
-            var user = await _unitOfWork.Users.GetAsync(u => u.Email == request.Email);
+            var user = _unitOfWork.Users.Get().FirstOrDefault(u => u.Email == request.Email);
 
             if (user == null)
             {
@@ -77,7 +77,7 @@ namespace YourNamespace.Controllers
                 _logger.LogWarning("Invalid or expired token provided for password reset.");
                 return BadRequest(new { Success = false, Code = ResponseCode.Error, Message = "Invalid or expired token." });
             }
-            var user = await _unitOfWork.Users.GetByIdAsync(userId.Value);
+            var user =  _unitOfWork.Users.GetById(userId.Value);
             if (user == null)
             {
                 _logger.LogWarning("User not found for the provided token.");
@@ -103,7 +103,7 @@ namespace YourNamespace.Controllers
                 return Unauthorized(new { Success = false, Code = ResponseCode.Unauthorized, Message = "Unauthorized." });
             }
 
-            var user = await _unitOfWork.Users.GetByIdAsync(userId.Value);
+            var user = _unitOfWork.Users.GetById(userId.Value);
             if (user == null)
             {
                 _logger.LogWarning("User not found for password change.");
