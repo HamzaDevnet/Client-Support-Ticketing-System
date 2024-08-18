@@ -63,10 +63,13 @@ export class UsersService {
   }
 
   deactivatecUser(id: string): Observable<WebResponse<boolean>> {
-    return this.http.patch<WebResponse<boolean>>(`${environment.BaseURL}/users/${id}/deactivate`, null);
+    const headers = this.sheardService.Header_Post();
+    return this.http.patch<WebResponse<boolean>>(`${environment.BaseURL}/users/${id}/deactivate`,null, {headers});
   }
 
   activateUser(id: string): Observable<WebResponse<boolean>> {
-    return this.http.patch<WebResponse<boolean>>(`${environment.BaseURL}/users/${id}/activate`, null);
+    const headers = this.sheardService.Header_Post();
+    return this.http.patch<WebResponse<boolean>>(`${environment.BaseURL}/users/${id}/activate`, null,{headers} );
 }
+
 }

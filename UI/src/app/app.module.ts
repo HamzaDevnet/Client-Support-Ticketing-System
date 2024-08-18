@@ -46,8 +46,8 @@ import { ForgetComponent } from './pages/forget/forget.component';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { APP_INITIALIZER } from '@angular/core';
 
-// Function to create the TranslateHttpLoader
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
@@ -98,7 +98,6 @@ export function createTranslateLoader(http: HttpClient) {
     ToastrModule.forRoot(),
     FooterModule,
     FixedPluginModule,
-    // Use TranslateModule.forRoot() only once in your AppModule
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -107,7 +106,7 @@ export function createTranslateLoader(http: HttpClient) {
       }
     })
   ],
-  providers: [SupportTeamService, UsersService, TicketService, DatePipe],
+  providers: [  SupportTeamService, UsersService, TicketService, DatePipe ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
