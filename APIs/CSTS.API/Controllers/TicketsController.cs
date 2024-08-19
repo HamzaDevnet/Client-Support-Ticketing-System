@@ -62,7 +62,6 @@ namespace CSTS.API.Controllers
             }
 
             return Ok(new APIResponse<IEnumerable<TicketSummaryDTO>>(new List<TicketSummaryDTO>()));
-
         }
 
         private async Task<APIResponse<IEnumerable<TicketSummaryDTO>>> GetClientTickets([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
@@ -70,7 +69,16 @@ namespace CSTS.API.Controllers
             _logger.LogInformation("Getting client tickets for user: {UserId}", this.GetCurrentUserId());
             try
             {
-                var tickets = _unitOfWork.Tickets.Find(t => t.CreatedById == this.GetCurrentUserId(), PageNumber, PageSize, t => t.AssignedTo);
+                var tickets = _unitOfWork.Tickets.Find(
+                    t => t.CreatedById == this.GetCurrentUserId() &&
+                         (t.Status == TicketStatus.New ||
+                          t.Status == TicketStatus.Assigned ||
+                          t.Status == TicketStatus.InProgress ||
+                          t.Status == TicketStatus.Closed),
+                    PageNumber,
+                    PageSize,
+                    t => t.AssignedTo
+                );
 
                 var ticketDtos = tickets.Select(t => new TicketSummaryDTO
                 {
@@ -92,10 +100,19 @@ namespace CSTS.API.Controllers
 
         private async Task<APIResponse<IEnumerable<TicketSummaryDTO>>> GetSupportTickets([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
-            _logger.LogInformation("Getting Support tickets for user: {UserId}", this.GetCurrentUserId());
+            _logger.LogInformation("Getting support tickets for user: {UserId}", this.GetCurrentUserId());
             try
             {
-                var tickets = _unitOfWork.Tickets.Find(t => t.AssignedToId == this.GetCurrentUserId() && t.Status == TicketStatus.Assigned, PageNumber, PageSize, t => t.AssignedTo);
+                var tickets = _unitOfWork.Tickets.Find(
+                    t => t.AssignedToId == this.GetCurrentUserId() &&
+                         (t.Status == TicketStatus.Assigned ||
+                          t.Status == TicketStatus.InProgress ||
+                          t.Status == TicketStatus.Closed),
+                    PageNumber,
+                    PageSize,
+                    t => t.AssignedTo
+                );
+
                 var ticketDtos = tickets.Select(t => new TicketSummaryDTO
                 {
                     TicketId = t.TicketId,
@@ -104,22 +121,27 @@ namespace CSTS.API.Controllers
                     CreatedDate = t.CreatedDate,
                     AssignedToFullName = t.AssignedTo != null ? t.AssignedTo.FullName : "Not Assigned"
                 }).ToList();
-                _logger.LogInformation("Retrieved {Count} Support tickets", ticketDtos.Count);
-                return new APIResponse<IEnumerable<TicketSummaryDTO>>(ticketDtos) { Message = "Assigned tickets retrieved successfully." };
+                _logger.LogInformation("Retrieved {Count} support tickets", ticketDtos.Count);
+                return new APIResponse<IEnumerable<TicketSummaryDTO>>(ticketDtos) { Message = "Support tickets retrieved successfully." };
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting Support tickets");
+                _logger.LogError(ex, "Error occurred while getting support tickets");
                 return new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}");
             }
         }
 
         private async Task<APIResponse<IEnumerable<TicketSummaryDTO>>> GetManagerTickets([FromQuery] int PageNumber = 1, [FromQuery] int PageSize = 100)
         {
-            _logger.LogInformation("Getting Manager tickets for user: {UserId}", this.GetCurrentUserId());
+            _logger.LogInformation("Getting manager tickets for user: {UserId}", this.GetCurrentUserId());
             try
             {
-                var tickets = _unitOfWork.Tickets.Get(PageNumber, PageSize, t => t.AssignedTo);
+                var tickets = _unitOfWork.Tickets.Get(
+                    PageNumber,
+                    PageSize,
+                    t => t.AssignedTo
+                );
+
                 var ticketDtos = tickets.Select(t => new TicketSummaryDTO
                 {
                     TicketId = t.TicketId,
@@ -128,12 +150,12 @@ namespace CSTS.API.Controllers
                     CreatedDate = t.CreatedDate,
                     AssignedToFullName = t.AssignedTo != null ? t.AssignedTo.FullName : "Not Assigned"
                 }).ToList();
-                _logger.LogInformation("Retrieved {Count} Manager tickets", ticketDtos.Count);
+                _logger.LogInformation("Retrieved {Count} manager tickets", ticketDtos.Count);
                 return new APIResponse<IEnumerable<TicketSummaryDTO>>(ticketDtos) { Message = "All tickets retrieved successfully." };
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting Manager tickets");
+                _logger.LogError(ex, "Error occurred while getting manager tickets");
                 return new APIResponse<IEnumerable<TicketSummaryDTO>>(null, $"Internal server error: {ex.Message}");
             }
         }
