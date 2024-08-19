@@ -57,13 +57,14 @@ namespace CSTS.API.Controllers
         }
 
         // GET api/users/5
-        [HttpGet("{id}")]
-        [CstsAuth(UserType.SupportManager)]
-        public async Task<ActionResult<APIResponse<UserResponseDTO>>> Get(Guid id)
+        [HttpGet()]
+        [CstsAuth(UserType.SupportManager, UserType.ExternalClient , UserType.SupportTeamMember)]
+        public async Task<ActionResult<APIResponse<UserResponseDTO>>> Get()
         {
             try
             {
                 _logger.LogInformation("Fetching user");
+                Guid id = this.GetCurrentUserId();
                 var response = _mapper.Map<UserResponseDTO>(_unitOfWork.Users.GetById(id));
 
                 if (response == null)
