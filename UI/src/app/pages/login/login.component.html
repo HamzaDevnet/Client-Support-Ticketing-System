@@ -35,21 +35,21 @@
             </defs>
           </svg>
           <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
-            <h5 class="card-title text-center flex-grow-1">{{ 'login' | translate }}</h5>
+            <h5 class="card-title text-center flex-grow-1">{{ 'Login' | translate }}</h5>
           </div>
           <form [formGroup]="loginForm">
             <div class="row mb-2">
               <div class="col-12">
                 <div class="form-group">
-                  <label class="control-label required">{{ 'username' | translate }}</label>
-                  <input type="email" class="form-control" formControlName="username" [placeholder]="'usernameOrEmail' | translate">
+                  <label class="control-label required">{{ 'Username' | translate }}</label>
+                  <input type="email" class="form-control" formControlName="username">
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="col-12">
                 <div class="form-group">
-                  <label class="control-label required">{{ 'password' | translate }}</label>
+                  <label class="control-label required">{{ 'Password' | translate }}</label>
                   <input type="password" class="form-control" formControlName="password">
                 </div>
               </div>
@@ -64,9 +64,8 @@
             <div class="row mt-4">
               <div class="col">
                 <div class="d-flex justify-content-start">
-                  <button (click)="login()" class="btn btn-success rounded-5 me-2">{{ 'login' | translate }}</button>
-                  <button routerLink="/register" class="btn btn-secondary rounded-5 me-2">{{ 'cancel' | translate }}</button>
-                  <button routerLink="/forgot-password" class="btn btn-link">{{ 'forgotPassword' | translate }}</button>
+                  <button (click)="login()" class="btn btn-success rounded-5 me-2">{{ 'Login' | translate }}</button>
+                  <button routerLink="/register" class="btn btn-secondary rounded-5 me-2">{{ 'Cancel' | translate }}</button>
                 </div>
               </div>
             </div>

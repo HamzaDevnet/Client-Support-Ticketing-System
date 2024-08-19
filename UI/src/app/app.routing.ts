@@ -8,7 +8,6 @@ import { LoginComponent } from './pages/login/login.component';
 import { LandingComponent } from './pages/landing/landing.component';
 import { TicketDetailsComponent } from './pages/ticket-details/ticket-details.component';
 import { ClienttickectdetailsComponent } from './pages/clienttickectdetails/clienttickectdetails.component';
-import { ForgetComponent } from './pages/forget/forget.component'; // Import ForgetComponent
 import { AuthGuard } from './auth.guard';
 
 export const AppRoutes: Routes = [
@@ -29,10 +28,6 @@ export const AppRoutes: Routes = [
   {
     path: 'register',
     component: RegisterComponent
-  },
-  {
-    path: 'forgot-password', // Add this route for Forgot Password
-    component: ForgetComponent
   },
   {
     path: '',

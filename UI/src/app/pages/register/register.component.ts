@@ -2,10 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RegisterService } from 'app/register.service';
-import { UserLocalStorageService } from 'app/user-local-storage.service'; 
-import { Userdata } from 'app/userdata'; 
 import { ToastrService } from 'ngx-toastr';
-
 
 @Component({
   selector: 'app-register',
@@ -14,12 +11,13 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
+  backendErrors: any = {};
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private RegisterService: RegisterService,
-    private ToastrService : ToastrService
+    private ToastrService: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -27,33 +25,29 @@ export class RegisterComponent implements OnInit {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       username: ['', Validators.required],
-      MobileNumber: ['', [Validators.pattern('^[0-9]+$')]],
+      MobileNumber: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       DateOfBirth: [''],
-      address:[''],
-      userImage:[null], 
+      address: [''],
+      userImage: [null], 
     });
   }
 
   onSubmit(): void {
     if (this.registerForm.valid) {
-      const userData: Userdata = this.registerForm.value;
-      console.log('Form data:', userData);
+      const userData = this.registerForm.value;
 
       this.RegisterService.postRegister(userData).subscribe({
         next: (response) => {
-          console.log('Registration successful:', response);
-          this.router.navigate(['/login']);
-          if(response.code === 200){
-          this.ToastrService.error("some error eccor");
-          }else{
-            
+          if (response.code === 200) {
+            this.router.navigate(['/login']);
+          } else {
+            this.handleBackendErrors(response.message);
           }
         },
         error: (error) => {
-          console.error('Registration failed:', error);
-          this.ToastrService.error(error.message);
+          this.handleBackendErrors(error.error.message);
         }
       });
     } else {
@@ -61,7 +55,26 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  upload(event: Event){
+  handleBackendErrors(messages: any): void {
+    this.backendErrors = {};
+    if (Array.isArray(messages)) {
+      messages.forEach((message: any) => {
+        if (message.field && message.text) {
+          this.backendErrors[message.field] = message.text;
+        }
+      });
+    } else if (typeof messages === 'object') {
+     
+      Object.keys(messages).forEach((key) => {
+        this.backendErrors[key] = messages[key];
+      });
+    } else {
+      
+      this.ToastrService.error(messages);
+    }
+  }
+
+  upload(event: Event): void {
     const reader = new FileReader();
     const target = event.target as HTMLInputElement;
     const files = target.files;
@@ -71,16 +84,11 @@ export class RegisterComponent implements OnInit {
 
       reader.readAsDataURL(file);
       reader.onload = () => {
-        console.log(reader.result);
-        console.log(file.name);
         this.registerForm.controls.userImage.setValue({
-          file : reader.result.toString().split('base64,')[1] ,
+          file: reader.result.toString().split('base64,')[1],
           fileName: file.name
-        })
+        });
       };
-
     }
   }
-  
 }
-
