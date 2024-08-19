@@ -11,6 +11,7 @@ using CSTS.DAL.AutoMapper.DTOs;
 using Microsoft.EntityFrameworkCore;
 using CSTS.API.ApiServices;
 using System.Security.Claims;
+using System.Net.Mail;
 
 namespace CSTS.API.Controllers
 {
@@ -166,6 +167,7 @@ namespace CSTS.API.Controllers
                     CreatedDate = ticket.CreatedDate,
                     AssignedToUserName = ticket.AssignedTo?.UserName,
                     AssignedToFullName = ticket.AssignedTo?.FullName,
+                    Attachments = ticket.Attachments.Select(a => a.FileUrl).ToList(),
                     Comments = ticket.Comments.Select(c => new CommentResponseDTO
                     {
                         UserId = c.UserId,
