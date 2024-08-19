@@ -10,8 +10,6 @@ using CSTS.DAL.Enum;
 using CSTS.DAL.AutoMapper.DTOs;
 using Microsoft.EntityFrameworkCore;
 using CSTS.API.ApiServices;
-using System.Security.Claims;
-using System.Net.Mail;
 
 namespace CSTS.API.Controllers
 {
