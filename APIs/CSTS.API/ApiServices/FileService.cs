@@ -20,7 +20,7 @@ namespace CSTS.API.ApiServices
     public class FileService
     {
         private readonly IWebHostEnvironment _env;
-        private List<string> AllowedExtensions = new List<string>() { ".pdf", ".jepg" , ".webp" };
+        private List<string> AllowedExtensions = new List<string>() { ".pdf", ".jepg" , ".webp" , ".jpg" };
 
         public FileService(IWebHostEnvironment env)
         {
