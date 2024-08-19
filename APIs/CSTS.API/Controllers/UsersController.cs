@@ -57,7 +57,7 @@ namespace CSTS.API.Controllers
         }
 
         // GET api/users/5
-        [HttpGet()]
+        [HttpGet("Profile")]
         [CstsAuth(UserType.SupportManager, UserType.ExternalClient , UserType.SupportTeamMember)]
         public async Task<ActionResult<APIResponse<UserResponseDTO>>> Get()
         {
