@@ -117,6 +117,9 @@
       "Username":"اسم المستخدم",
       "Password":"كلمة المرور",
       "Date of Birth" : "تاريخ الميلاد",
-      "Add" : "إضافة"  
+      "Add" : "إضافة"  ,
+      "Upload Image" : "رفع صورة",
+      "Phone Number": "رقم الهاتف",
+      "Date Of Birth":"تاريخ الميلاد"
 
 }

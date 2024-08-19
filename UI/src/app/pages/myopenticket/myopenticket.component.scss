@@ -1,63 +1,78 @@
 .container {
-    padding: 20px;
-  }
-  
-  .card-title.text-left {
-    text-align: left;
-  }
-  
-  .comment-container {
-    background-color: #f9f9f9;
-    border-radius: 4px;
-  }
-  
-  .comment-box {
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    margin-bottom: 15px;
-    border: 1px solid #e0e0e0;
-    display: flex;
-    align-items: flex-start;
-  }
-  
-  .avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    margin-right: 15px;
-  }
-  
-  .comment-content-container {
-    flex: 1;
-  }
-  
-  .comment-header {
-    margin-bottom: 5px;
-  }
-  
-  .user-type {
-    font-size: 12px;
-    color: #6c757d; /* Gray color for the user type */
-  }
-  
-  .comment-content {
-    background-color: transparent; /* Remove the highlight */
-    padding: 10px 0 0 0; /* Adjust padding if needed */
-    border-radius: 4px;
-    display: inline-block;
-  }
-  
-  .input-group {
-    margin-top: 10px;
-  }
-  
-  .input-group .form-control {
-    border-radius: 4px 0 0 4px;
-  }
-  
-  .input-group .btn {
-    border-radius: 0 4px 4px 0;
-  }
-  
+  padding: 20px;
+}
+
+.landing-box {
+  height: 100%;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.text-muted {
+  color: #6c757d;
+  font-size: 24px;
+}
+
+.card-title.text-left {
+  text-align: left;
+}
+
+.comment-container {
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.comment-box {
+  background-color: #fff;
+  padding: 10px; /* Adjusted padding to make it more compact */
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px; /* Reduced margin to bring comments closer */
+  border: 1px solid #e0e0e0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.avatar {
+  width: 40px; /* Reduced size for a smaller avatar */
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px; /* Reduced margin to fit smaller avatar */
+}
+
+.comment-content-container {
+  flex: 1;
+}
+
+.comment-header {
+  margin-bottom: 5px;
+  font-size: 12px; /* Smaller font size for the header (name, date) */
+}
+
+.user-type {
+  font-size: 10px; /* Smaller font for user type */
+  color: #6c757d;
+}
+
+.comment-content {
+  font-size: 12px; /* Adjusted font size to be smaller */
+  padding: 5px 0 0 0; /* Adjusted padding */
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.input-group {
+  margin-top: 10px;
+}
+
+.input-group .form-control {
+  border-radius: 4px 0 0 4px;
+}
+
+.input-group .btn {
+  border-radius: 0 4px 4px 0;
+}

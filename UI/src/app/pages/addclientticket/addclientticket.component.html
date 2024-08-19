@@ -1,18 +1,24 @@
 <h1 mat-dialog-title>{{ 'Add Ticket' | translate }}</h1>
-<div mat-dialog-content>
-  <mat-form-field appearance="fill">
-    <mat-label>{{ 'Product' | translate }}</mat-label>
-    <input matInput [(ngModel)]="ticketData.product">
-  </mat-form-field>
+<div mat-dialog-content class="add-ticket-form">
+  <div class="form-grid">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'Product' | translate }}</mat-label>
+      <input matInput [(ngModel)]="ticketData.product">
+    </mat-form-field>
 
-  <mat-form-field appearance="fill">
-    <mat-label>{{ 'Description' | translate }}</mat-label>
-    <textarea matInput [(ngModel)]="ticketData.problemDescription"></textarea>
-  </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'Description' | translate }}</mat-label>
+      <textarea matInput [(ngModel)]="ticketData.problemDescription"></textarea>
+    </mat-form-field>
 
-  <input type="file" (change)="onFileSelected($event)" />
+    <div class="file-input">
+      <label class="file-label">{{ 'Attach File' | translate }}</label>
+      <input type="file" (change)="onFileSelected($event)" />
+    </div>
+  </div>
 </div>
-<div mat-dialog-actions>
-  <button mat-button (click)="onCancel()">{{ 'Cancel' | translate }}</button>
-  <button mat-button (click)="onSubmit()">{{ 'Submit' | translate }}</button>
+
+<div mat-dialog-actions align="end" class="action-buttons">
+  <button mat-button class="bg-secondary rounded-pill text-white" (click)="onCancel()">{{ 'Cancel' | translate }}</button>
+  <button mat-button class="bg-success rounded-pill text-white" (click)="onSubmit()">{{ 'Submit' | translate }}</button>
 </div>
