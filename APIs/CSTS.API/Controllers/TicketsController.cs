@@ -247,7 +247,9 @@ namespace CSTS.API.Controllers
                         //using var memoryStream = new MemoryStream();
                         // await file.CopyToAsync(memoryStream);
                         var filePath = _fileService.SaveFile(file, FolderType.Images);
-                        ticket.Attachments.Add(new Attachment { FileName = " ", FileUrl = filePath });
+                        
+                        if (!string.IsNullOrEmpty(filePath))
+                            ticket.Attachments.Add(new Attachment { FileName = " ", FileUrl = filePath });
                     }
                 }
 
@@ -279,7 +281,7 @@ namespace CSTS.API.Controllers
         // PUT api/tickets/{id}
         [HttpPut("{id}")]
         [CstsAuth(UserType.SupportTeamMember)]
-        public async Task<ActionResult<APIResponse<UpdateResponseDTO>>> Put([FromRoute]Guid id, [FromBody] UpdateTicketDTO updateDto)
+        public async Task<ActionResult<APIResponse<UpdateResponseDTO>>> Put([FromRoute] Guid id, [FromBody] UpdateTicketDTO updateDto)
         {
             _logger.LogError("LogError");
             _logger.LogInformation("LogInformation");
@@ -335,7 +337,7 @@ namespace CSTS.API.Controllers
                 return Ok(new APIResponse<bool>(false, $"Internal server error: {ex.Message}"));
             }
         }
-        
+
         // PUT api/tickets/Assign
         [HttpPut("Assign")]
         [CstsAuth(UserType.SupportManager)]
@@ -378,7 +380,7 @@ namespace CSTS.API.Controllers
                 var ticket = _unitOfWork.Tickets.GetById(id);
                 if (ticket == null)
                     return Ok(new APIResponse<bool>(false, "Ticket not found."));
-        
+
                 ticket.AssignedToId = null;
                 ticket.Status = TicketStatus.Removed;
                 var response = _unitOfWork.Tickets.Update(ticket);
