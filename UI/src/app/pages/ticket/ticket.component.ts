@@ -16,7 +16,7 @@ export class TicketComponent implements OnInit {
   tickets: Ticket[] = [];
   TicketStatus = TicketStatus;
   filteredTickets: Ticket[] = [];
-  displayedColumns: string[] = ['id', 'title', 'createdDate', 'assignedTo', 'status', 'action'];
+  displayedColumns: string[] = [ 'title', 'createdDate', 'assignedTo', 'status', 'action'];
   dataSource = new MatTableDataSource<Ticket>(this.tickets);
   selectedFilter: string = 'All Tickets';
 

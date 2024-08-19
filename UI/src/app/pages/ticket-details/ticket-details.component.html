@@ -1,27 +1,11 @@
 <h2 mat-dialog-title>{{ 'ticketDetails' | translate }}</h2>
 <mat-dialog-content *ngIf="ticket">
-  <p><strong>{{ 'id' | translate }}:</strong> {{ ticket.ticketId }}</p>
   <p><strong>{{ 'title' | translate }}:</strong> {{ ticket.product }}</p>
   <p><strong>{{ 'description' | translate }}:</strong> {{ ticket.problemDescription }}</p>
   <p><strong>{{ 'status' | translate }}:</strong> {{ getStatusText(ticket.status) }}</p>
   <p><strong>{{ 'createdDate' | translate }}:</strong> {{ ticket.createdDate | date }}</p>
   <p><strong>{{ 'assignedTo' | translate }}:</strong> {{ ticket.assignedToFullName || 'N/A' }}</p>
   
-  <div *ngIf="ticket.comments?.length">
-    <h3>{{ 'comments' | translate }}</h3>
-    <ul>
-      <li *ngFor="let comment of ticket.comments">{{ comment }}</li>
-    </ul>
-  </div>
-
-  <div *ngIf="ticket.attachments?.length">
-    <h3>{{ 'attachments' | translate }}</h3>
-    <ul>
-      <li *ngFor="let attachment of ticket.attachments">
-        <a [href]="attachment.fileUrl" target="_blank">{{ attachment.fileName }}</a>
-      </li>
-    </ul>
-  </div>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button (click)="onClose()">{{ 'close' | translate }}</button>
