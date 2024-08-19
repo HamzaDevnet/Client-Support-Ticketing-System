@@ -1,0 +1,44 @@
+.add-ticket-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; // Adjust the spacing between form fields
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr; // One column layout; can be adjusted for multiple columns if needed
+    gap: 16px; // Space between form elements
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
+  .file-input {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  
+  .file-label {
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    
+    button {
+      padding: 5px 15px;
+      &.bg-secondary {
+        background-color: #6c757d; // Override if needed
+      }
+      &.bg-success {
+        background-color: #28a745; // Override if needed
+      }
+    }
+  }
+  

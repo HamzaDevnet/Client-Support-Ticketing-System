@@ -19,7 +19,11 @@
         </div>
       </div>
     </div>
+    
     <div class="col-md-9">
+      <div *ngIf="!selectedTicket" class="landing-box d-flex align-items-center justify-content-center">
+        <h2 class="text-muted">{{ 'Select a ticket to view details' | translate }}</h2>
+      </div>
       <div class="card" *ngIf="selectedTicket">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="card-title">{{ selectedTicket.product }}</h5>
@@ -75,9 +79,6 @@
             </div>
           </div>
         </div>
-      </div>
-      <div *ngIf="!selectedTicket" class="card-body">
-        <p>{{ 'Select a ticket to view details' | translate }}</p>
       </div>
     </div>
   </div>

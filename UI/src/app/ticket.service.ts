@@ -52,8 +52,8 @@ export class TicketService {
   getTickets(userId?: string): Observable<Ticket[]> {
     const headers = this.sheardService.getToken();
     const url = userId ? `${this.baseUrl}?userId=${userId}` : this.baseUrl;
-    return this.http.get<{ result: { data: Ticket[] } }>(url, { headers }).pipe(
-      map(response => response.result.data)
+    return this.http.get<WebResponse<Ticket[]>>(url, { headers }).pipe(
+      map(response => response.data)
     );
   }
 
