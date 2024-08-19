@@ -41,6 +41,7 @@ export class RegisterComponent implements OnInit {
       this.RegisterService.postRegister(userData).subscribe({
         next: (response) => {
           if (response.code === 200) {
+           this.ToastrService.success("Registeration successful ");
             this.router.navigate(['/login']);
           } else {
             this.handleBackendErrors(response.message);

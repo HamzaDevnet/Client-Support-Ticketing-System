@@ -19,12 +19,12 @@ export class UserProfileComponent implements OnInit {
 
   ngOnInit(): void {
    const userId=  this.SheardServiceService.getUserId();
-   this.getUserData(userId);
+   this.getUserData();
   }
 
 
-  getUserData(userId: string):void{ 
-    this.UsersService.getUserInfo(userId).subscribe({
+  getUserData():void{ 
+    this.UsersService.getUserInfo().subscribe({
       next: (response)=>{
        console.log(response);
        this.userProfile = response.data; 

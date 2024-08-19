@@ -66,7 +66,7 @@ export class NavbarComponent implements OnInit{
     this.translate.use(language); 
   }
     getUserData(userId: string):void{
-      this.UsersService.getUserInfo(userId).subscribe({
+      this.UsersService.getUserInfo().subscribe({
         next: (response)=>{
          console.log(response);
          this.userProfile = response.data; 

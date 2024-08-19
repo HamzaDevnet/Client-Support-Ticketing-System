@@ -16,8 +16,10 @@ export class UsersService {
   private supportMemberUrl = `${environment.BaseURL}/Users/support-team-members`;
   private clientsUrl = `${environment.BaseURL}/Users/external-clients`;
 
-  getUserInfo(id: string):Observable<WebResponse<Users>>{
-    return this.http.get<WebResponse<Users>>(`${environment.BaseURL}/users/${id}`);
+
+  getUserInfo():Observable<WebResponse<Users>>{
+    const headers = this.sheardService.getToken();
+    return this.http.get<WebResponse<Users>>(`${environment.BaseURL}/users/Profile`,{headers});
   }
 
   getSupportTeamMembers(): Observable<User[]> {
