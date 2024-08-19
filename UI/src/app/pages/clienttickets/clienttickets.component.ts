@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddclientticketComponent } from '../addclientticket/addclientticket.component';
 import { SheardServiceService } from 'app/sheard-service.service';
 import { UserType } from 'app/enums/user.enum';  // Import the UserType enum
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-clienttickets',
@@ -22,6 +23,7 @@ export class ClientticketsComponent implements OnInit {
   userId: string | undefined;
   isLoadingTickets = false;
   isLoadingComments = false;
+  backendURL = environment.BackendURL;
 
   constructor(public dialog: MatDialog, private ticketService: TicketService, private sheardService: SheardServiceService) {}
 
@@ -55,27 +57,23 @@ export class ClientticketsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        const newTicket: CreateTicketDTO = {
-          product: result.product,
-          problemDescription: result.problemDescription,
-        };
-        this.ticketService.addTicket(newTicket).subscribe({
-          next: (ticket) => {
-            this.tickets.push(ticket);
-            this.dataSource.data = [...this.tickets];
-          },
-          error: (error) => {
-            console.error('Error adding ticket', error);
-          }
-        });
+      if (result && result.isdone) {
+        this.getTickets(this.userId)
       }
     });
   }
 
   selectTicket(ticket: Ticket): void {
-    this.selectedTicket = ticket;
+    this.loadTicket(ticket.ticketId);
     this.loadComments(ticket.ticketId);
+  }
+
+  loadTicket(ticketId:string):void{
+    this.ticketService.getTicketById(ticketId).subscribe({
+      next:(ticket) =>{
+        this.selectedTicket = ticket;
+      }
+    })
   }
 
   loadComments(ticketId: string): void {

@@ -5,6 +5,7 @@ import { Ticket } from 'app/ticket';
 import { TicketStatus } from '../../enums/ticket.enum';
 import { SheardServiceService } from 'app/sheard-service.service';
 import { UserType } from 'app/enums/user.enum';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-myopenticket',
@@ -23,6 +24,8 @@ export class MyopenticketComponent implements OnInit {
   userId: string | undefined;
   isLoadingTickets = false;
   isLoadingComments = false;
+  backendURL = environment.BackendURL;
+
 
   constructor(private ticketService: TicketService, private sheardService: SheardServiceService) {
     this.statuses = [
@@ -71,9 +74,19 @@ export class MyopenticketComponent implements OnInit {
   }
 
   selectTicket(ticket: Ticket): void {
-    this.selectedTicket = ticket;
+    this.loadTicket(ticket.ticketId);
     this.loadComments(ticket.ticketId);
   }
+
+  loadTicket(ticketId:string):void{
+    this.ticketService.getTicketById(ticketId).subscribe({
+      next:(ticket) =>{
+        this.selectedTicket = ticket;
+      }
+    })
+  }
+
+
 
   loadComments(ticketId: string): void {
     this.isLoadingComments = true;

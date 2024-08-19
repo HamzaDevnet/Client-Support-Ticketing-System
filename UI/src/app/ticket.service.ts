@@ -21,6 +21,13 @@ export interface WebResponse<T> {
 export interface CreateTicketDTO {
   product: string;
   problemDescription: string;
+  attachments: 
+    {
+      file: string,
+      fileExtension: string,
+      fileName: string
+    }[]
+
 }
 
 export interface Comment {
@@ -61,9 +68,8 @@ export class TicketService {
 
   getTicketById(id: string): Observable<Ticket> {
     const headers = this.sheardService.Header_Get();
-    return this.http.get<{ code: number, data: Ticket }>(`${this.baseUrl}/${id}`, { headers }).pipe(
+    return this.http.get<WebResponse<Ticket>>(`${this.baseUrl}/${id}`, { headers }).pipe(
       map(response => {
-        console.log('API response:', response);
         if (response && response.data) {
           return response.data;
         } else {
@@ -125,10 +131,9 @@ export class TicketService {
     );
   }
 
-  addTicket(ticket: CreateTicketDTO): Observable<Ticket> {
+  addTicket(ticket: CreateTicketDTO): Observable<WebResponse<Ticket>>{
     const headers = this.sheardService.Header_Post();
-    return this.http.post<{ data: Ticket }>(this.baseUrl, ticket, { headers }).pipe(
-      map(response => response.data)
-    );
+    return this.http.post<WebResponse<Ticket>>(this.baseUrl, ticket, { headers })
+    
   }
 }

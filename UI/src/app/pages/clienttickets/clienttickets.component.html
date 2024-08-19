@@ -8,7 +8,7 @@
       <div class="card card-full-height">
         <div class="card-body">
           <div class="list-group">
-            <a *ngFor="let ticket of tickets" class="list-group-item list-group-item-action" (click)="selectTicket(ticket)">
+            <a *ngFor="let ticket of tickets" class="list-group-item list-group-item-action" (click)="selectTicket(ticket)" [ngClass]="{active:selectedTicket?.ticketId === ticket.ticketId}">
               {{ ticket.product }}
             </a>
           </div>
@@ -31,6 +31,11 @@
                 <p><strong>{{ 'Assigned To' | translate }}:</strong> {{ selectedTicket.assignedToFullName || 'Not Assigned' }}</p>
                 <p><strong>{{ 'Created Date' | translate }}:</strong> {{ selectedTicket.createdDate | date }}</p>
                 <p><strong>{{ 'Status' | translate }}:</strong> {{ getStatusText(selectedTicket.status) }}</p>
+                <div><strong>{{ 'Attachments' | translate }}:</strong> 
+                <a *ngFor="let attachment of selectedTicket.attachments" target="_blank" href="{{backendURL}}/{{attachment?.fileUrl}}" download>
+                  <mat-icon> attach_file</mat-icon>
+                </a>
+                </div> 
               </div>
             </div>
             <div class="row">
@@ -52,7 +57,7 @@
                     </div>
                   </div>
                   <ng-template #noComments>
-                    <p class="text-muted">No comments yet. Be the first to comment!</p>
+                    <p class="text-muted">{{'No comments yet. Be the first to comment!' | translate}}</p>
                   </ng-template>
                 </div>
                 <div class="input-group mt-2">
